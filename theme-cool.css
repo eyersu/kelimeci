@@ -1,0 +1,71 @@
+/* "Cool flat": dark navy, no gradients or shadows, thin borders, cyan accent, mint for correct */
+body { background: #0a111d; }
+#app { background: #0e1726; color: #e6edf7; }
+.wood { background: #0e1726; box-shadow: 0 1px 0 #24344f; color: #e6edf7; }
+.homeTop { box-shadow: none; }
+.logo, .hdr h2, .playerBar b { text-shadow: none; }
+.logo { font-weight: 700; letter-spacing: .2em; font-size: 32px; }
+.tagline { color: #4cc9f0; }
+#hello { color: #e6edf7; }
+.lbl, .fieldLbl, .sec, .credit, .nextIn, .lobbyLbl, .lobbyNote, .hdr .x { color: #7f92b0; }
+.field { background: #17233a; color: #e6edf7; border: 1px solid #24344f; box-shadow: none; border-radius: 10px; }
+.field::placeholder { color: #56688a; }
+.field:focus { border-color: #4cc9f0; box-shadow: none; }
+.mode { background: #17233a; color: #e6edf7; border: 1px solid #24344f; box-shadow: none; border-radius: 14px; }
+.mode svg [fill="#fff"] { fill: #4cc9f0; }
+.mode svg [stroke="#fff"] { stroke: #4cc9f0; }
+.mode svg [stroke="#ec8112"] { stroke: #17233a; }
+.mode span { color: #7f92b0; }
+.mode em { color: #3ddc97; }
+.mode:disabled { background: #121c2e; color: #56688a; border-color: #1c2a42; box-shadow: none; }
+.btn { background: #17233a; color: #e6edf7; border: 1px solid #24344f; box-shadow: none; border-radius: 10px; }
+.btn.primary { background: #4cc9f0; border-color: #4cc9f0; color: #06202b; box-shadow: none; }
+.panel { background: #17233a; box-shadow: none; border: 1px solid #24344f; }
+.counts div { border-left-color: #24344f; }
+.counts div::before { background: #24344f; }
+.counts div.last::before { background: #4cc9f0; box-shadow: none; }
+.counts i { color: #7f92b0; }
+.dial { background: conic-gradient(#4cc9f0 var(--p, 360deg), #24344f 0); box-shadow: none; }
+.dial span { background: #0e1726; color: #e6edf7; }
+.dial small { color: #7f92b0; }
+.dial.low b { color: #ff8fa3; }
+.dial.plus b { color: #3ddc97; }
+.score small { color: #7f92b0; }
+.bar { background: #24344f; }
+.bar i { background: #4cc9f0; }
+.t { background: #17233a; color: #e6edf7; border: 1px solid #24344f; box-shadow: none; border-radius: 8px; font-weight: 700; }
+.t.on { background: #4cc9f0; border-color: #4cc9f0; color: #06202b; box-shadow: none; }
+.t.ok { background: #3ddc97; border-color: #3ddc97; color: #06281b; box-shadow: none; }
+.t.dup { background: #121c2e; color: #56688a; border-color: #1c2a42; }
+.t.bad { background: #3a1f2e; color: #ff8fa3; border-color: #5a2b40; }
+.t.hinted { background: #ffd166; color: #2b2000; border-color: #ffd166; }
+.pop { background: #e6edf7; color: #0e1726; box-shadow: none; border-radius: 6px; }
+.pop.ok, .pop.big { background: #3ddc97; color: #06281b; }
+.pop.dup { background: #24344f; color: #7f92b0; }
+.pop.bad { background: #ff8fa3; color: #3a0f1c; }
+.hintBtn { background: #17233a; color: #e6edf7; border: 1px solid #24344f; box-shadow: none; }
+.hint.used .hintBtn { background: #4cc9f0; border-color: #4cc9f0; color: #06202b; box-shadow: none; }
+.slots i { background: #17233a; box-shadow: none; border: 1px solid #24344f; color: #4cc9f0; }
+.row { background: #17233a; }
+.row.cur { background: #1d2d4a; color: #4cc9f0; }
+.row::before { background: #3ddc97; color: #06281b; }
+.row.missed::before { background: #8b9cf7; }
+.row i { color: #ffd166; }
+.mini .t { box-shadow: none; }
+.mini .t.on { background: #8b9cf7; border-color: #8b9cf7; color: #0b1030; }
+.playerBar { background: #17233a; box-shadow: 0 -1px 0 #24344f; }
+.playerBar i { background: #0e1726; box-shadow: none; }
+.playerBar i small { color: #7f92b0; }
+.rank div { background: #17233a; }
+.rank div > i, .rank em { color: #7f92b0; }
+.rank div > b { color: #e6edf7; }
+.rank.big { background: #17233a; box-shadow: none; border: 1px solid #24344f; }
+.rank.big div { border-top-color: #24344f; }
+.rank.big div.me { background: #1d2d4a; }
+.rank.big div.me > span { color: #4cc9f0; }
+.lobbyCount { color: #4cc9f0; }
+.themeOpt { background: #17233a; color: #e6edf7; border: 1px solid #24344f; box-shadow: none; border-radius: 10px; }
+.themeOpt.on { border-color: #4cc9f0; background: #1d2d4a; }
+.themeOpt small { color: #7f92b0; }
+.themeOpt .tick { color: #4cc9f0; }
+.themeOpt .sw { box-shadow: 0 0 0 1px #24344f; }

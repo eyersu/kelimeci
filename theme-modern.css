@@ -1,0 +1,75 @@
+/* "Modern": light, warm-neutral, chunky tiles with a solid ledge, one vivid accent */
+body { background: #e9e5de; color: #1f1b16; }
+#app { background: #f6f3ee; }
+.wood { background: none; box-shadow: none; color: #1f1b16; padding-bottom: 8px; }
+.hdr h2 { text-shadow: none; letter-spacing: .06em; font-size: 20px; }
+.hdr .x { color: #8a8378; }
+.homeTop { padding-bottom: 6px; }
+.logo { text-shadow: none; letter-spacing: .02em; font-size: 44px; }
+.tagline { color: #ff6b1a; letter-spacing: .2em; }
+#hello { color: #1f1b16; }
+.lbl, .fieldLbl, .sec, .credit, .nextIn, .lobbyLbl, .lobbyNote { color: #8a8378; }
+.field { background: #fff; border: 2px solid #e7e1d6; box-shadow: none; border-radius: 16px; }
+.field:focus { border-color: #ff6b1a; box-shadow: 0 0 0 4px rgba(255,107,26,.18); }
+.mode { background: #fff; color: #1f1b16; border: 2px solid #e7e1d6; box-shadow: 0 5px 0 #e2dbcf; border-radius: 22px; }
+.mode svg [fill="#fff"] { fill: #ff6b1a; }
+.mode svg [stroke="#fff"] { stroke: #ff6b1a; }
+.mode svg [stroke="#ec8112"] { stroke: #fff; }
+.mode b { letter-spacing: .06em; }
+.mode span { color: #8a8378; }
+.mode em { color: #1fae5b; }
+.mode:disabled { background: #efebe4; color: #a79f92; border-color: #e7e1d6; box-shadow: none; }
+.btn { background: #fff; color: #1f1b16; border: 2px solid #e7e1d6; box-shadow: 0 4px 0 #e2dbcf; border-radius: 16px; }
+.btn.primary { background: #ff6b1a; border-color: #ff6b1a; box-shadow: 0 4px 0 #d9530a; color: #fff; }
+.panel { background: #fff; box-shadow: 0 0 0 1.5px #e7e1d6; border-radius: 18px; }
+.counts div { color: #1f1b16; border-left-color: #eee8dd; }
+.counts div::before { background: #e1dacd; }
+.counts div.last::before { background: #ff6b1a; box-shadow: none; }
+.counts i { color: #8a8378; }
+.dial { background: conic-gradient(#ff6b1a var(--p, 360deg), #eee8dd 0); box-shadow: none; }
+.dial span { background: #fff; color: #1f1b16; }
+.dial small { color: #8a8378; }
+.score small { color: #8a8378; }
+.bar { background: #eee8dd; }
+.bar i { background: #ff6b1a; }
+.board { gap: 6px; }
+.t { background: #fff; color: #1f1b16; border: 0; border-radius: 16px; box-shadow: 0 4px 0 #dcd4c6; }
+.t.on { background: #ff6b1a; color: #fff; box-shadow: 0 4px 0 #d9530a; }
+.t.ok { background: #1fae5b; color: #fff; box-shadow: 0 4px 0 #17864a; }
+.t.dup { background: #ebe6dd; color: #a79f92; box-shadow: 0 4px 0 #dcd4c6; }
+.t.bad { background: #ffd9d2; color: #c4402f; box-shadow: 0 4px 0 #f0b9ae; }
+.t.hinted { background: #ffd84f; box-shadow: 0 4px 0 #e0b21f; }
+.pop { background: #1f1b16; box-shadow: 0 6px 16px rgba(31,27,22,.25); border-radius: 999px; }
+.pop.ok, .pop.big { background: #1fae5b; }
+.pop.dup { background: #a79f92; color: #fff; }
+.pop.bad { background: #e0533f; }
+.hintBtn { background: #fff; color: #1f1b16; border: 2px solid #e7e1d6; box-shadow: 0 3px 0 #e2dbcf; border-radius: 12px; }
+.hint.used .hintBtn { background: #ff6b1a; border-color: #ff6b1a; box-shadow: 0 3px 0 #d9530a; color: #fff; }
+.slots i { background: #ebe6dd; box-shadow: none; color: #d9530a; }
+.row { background: #fff; color: #1f1b16; box-shadow: 0 0 0 1.5px #e7e1d6; border-radius: 10px; margin-bottom: 5px; }
+.row.cur { background: #fff1e6; color: #d9530a; }
+.row::before { background: #1fae5b; }
+.row.missed::before { background: #ff6b1a; }
+.row i { color: #f0a800; }
+.mini .t { border-radius: 8px; box-shadow: 0 2px 0 #dcd4c6; }
+.mini .t.on { box-shadow: 0 2px 0 #d9530a; }
+.mini .t.ok { box-shadow: 0 2px 0 #17864a; }
+.playerBar { background: #fff; box-shadow: 0 -1.5px 0 #e7e1d6; color: #1f1b16; }
+.playerBar b { text-shadow: none; }
+.playerBar i { background: #f6f3ee; box-shadow: none; }
+.playerBar i small { color: #8a8378; }
+.rank div { background: #fff; }
+.rank div > i { color: #a79f92; }
+.rank div > b { color: #1f1b16; }
+.rank em { color: #8a8378; }
+.rank.big { background: #fff; box-shadow: 0 0 0 1.5px #e7e1d6; border-radius: 18px; }
+.rank.big div { border-top-color: #eee8dd; }
+.rank.big div.me { background: #fff1e6; }
+.rank.big div.me > span { color: #d9530a; }
+.rank.big div > b { color: #1f1b16; }
+.lobbyCount { color: #ff6b1a; }
+.themeOpt { background: #fff; color: #1f1b16; border: 2px solid #e7e1d6; box-shadow: none; border-radius: 16px; }
+.themeOpt.on { border-color: #ff6b1a; background: #fff1e6; }
+.themeOpt small { color: #8a8378; }
+.themeOpt .tick { color: #ff6b1a; }
+.themeOpt .sw { box-shadow: 0 0 0 1px #e7e1d6; }

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" id="themeColor" content="#96551f">
+<title>Kelimeci</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=29">
+<script>
+  // The colour theme is the player's choice (saved on the device); ?theme= forces one for previews
+  (function () {
+    var files = { acik: 'theme-modern.css', koyu: 'theme-cool.css', modern: 'theme-modern.css', cool: 'theme-cool.css' };
+    var pick = new URLSearchParams(location.search).get('theme');
+    if (!pick) { try { pick = localStorage.getItem('kelime-avi-theme'); } catch (e) {} }
+    document.write('<link id="themeCss" rel="stylesheet"' + (files[pick] ? ' href="' + files[pick] + '?v=2"' : '') + '>');
+  })();
+</script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kelimeci">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+</head>
+<body>
+<main id="app">
+
+  <section id="name" class="screen" hidden>
+    <header class="wood homeTop">
+      <h1 class="logo">KELİMECİ</h1>
+    </header>
+    <form class="body" id="nameForm">
+      <label class="fieldLbl" for="nameInput">ADIN</label>
+      <input class="field" id="nameInput" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Adını yaz">
+      <button class="btn primary" type="submit">Devam</button>
+    </form>
+  </section>
+
+  <section id="play" class="screen" hidden>
+    <header class="wood homeTop">
+      <h1 class="logo">KELİMECİ</h1>
+      <p class="tagline">MERHABA, <span id="hello"></span></p>
+    </header>
+    <div class="body">
+      <div class="modes">
+        <button class="mode" id="online">
+          <svg viewBox="0 0 80 80"><circle fill="#fff" cx="29" cy="40" r="21"/><circle fill="#fff" opacity=".65" cx="51" cy="40" r="21"/></svg>
+          <b>CANLI</b><span>Herkes aynı tahtada</span>
+        </button>
+        <button class="mode" id="offline">
+          <svg viewBox="0 0 80 80"><circle fill="#fff" cx="40" cy="40" r="21"/></svg>
+          <b>SOLO</b><span>Tek başına, internetsiz</span>
+        </button>
+      </div>
+      <button class="btn" id="openSettings">Ayarlar</button>
+    </div>
+  </section>
+
+  <section id="settings" class="screen" hidden>
+    <header class="wood">
+      <div class="hdr"><span></span><h2>AYARLAR</h2><button class="x" id="closeSettings" type="button" aria-label="Kapat">✕</button></div>
+    </header>
+    <form class="body" id="settingsForm">
+      <label class="fieldLbl" for="nameEdit">ADIN</label>
+      <input class="field" id="nameEdit" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <div class="fieldLbl">TEMA</div>
+      <div class="themes" id="themes"></div>
+      <button class="btn primary" type="submit">Tamam</button>
+    </form>
+  </section>
+
+  <section id="home" class="screen" hidden>
+    <header class="wood homeTop">
+      <h1 class="logo">KELİMECİ</h1>
+      <p class="tagline" id="homeTag">SOLO</p>
+    </header>
+    <div class="body">
+      <div class="modes" id="modes"></div>
+      <button class="btn" id="backToPlay">‹ Geri</button>
+      <p class="credit">Kelimeler TDK Güncel Türkçe Sözlük madde başlarına dayanır · Vikisözlük (CC BY-SA 4.0)</p>
+    </div>
+  </section>
+
+  <section id="game" class="screen" hidden>
+    <header class="wood">
+      <div class="hdr"><span></span><h2 id="modeName"></h2><button class="x" id="quit" aria-label="Çık">✕</button></div>
+      <div class="panel">
+        <div>
+          <div class="lbl">GİZLİ KELİMELER</div>
+          <div class="counts" id="counts"></div>
+        </div>
+        <div class="dial" id="dial"><span><b id="time"></b><small id="solved"></small></span></div>
+        <div class="score">
+          <div class="lbl">SKOR</div>
+          <b id="score">0</b><small id="scoreMax"></small>
+          <div class="bar"><i id="meter"></i></div>
+        </div>
+      </div>
+    </header>
+    <div class="stage">
+      <div class="board" id="board"></div>
+      <div class="pop" id="pop" hidden></div>
+    </div>
+    <div class="hint" id="hintRow">
+      <button class="hintBtn" id="hint"></button>
+      <div class="slots" id="hintSlots" hidden></div>
+    </div>
+  </section>
+
+  <section id="lobby" class="screen" hidden>
+    <header class="wood">
+      <div class="hdr"><span></span><h2 id="lobbyTitle"></h2><button class="x" id="lobbyQuit" aria-label="Çık">✕</button></div>
+    </header>
+    <div class="body">
+      <p class="lobbyLbl">SIRADAKİ TUR</p>
+      <div class="lobbyCount" id="lobbyCount"></div>
+      <p class="lobbyNote">Tur devam ediyor. Yeni tahta birazdan herkese aynı anda açılacak.</p>
+      <div class="rank" id="lobbyPlayers"></div>
+    </div>
+  </section>
+
+  <section id="results" class="screen" hidden>
+    <header class="wood">
+      <div class="hdr"><span></span><h2 id="resTitle"></h2><span></span></div>
+    </header>
+    <div class="review" id="review">
+      <div class="wordList" id="wordList"></div>
+      <div class="side">
+        <div class="board mini" id="miniBoard"></div>
+        <div class="nextIn" id="nextIn" hidden></div>
+        <button class="btn primary" id="again">Yeni tur</button>
+        <button class="btn" id="toHome">Ana menü</button>
+      </div>
+    </div>
+    <div class="scoreboard" id="scoreboard" hidden>
+      <div class="nextIn" id="nextIn2"></div>
+      <div class="rank big" id="rank"></div>
+      <button class="btn" id="leave">Çık</button>
+    </div>
+    <footer class="playerBar wood">
+      <b id="pbName"></b>
+      <span id="pbScore"></span>
+    </footer>
+  </section>
+
+</main>
+<script src="words.js?v=29"></script>
+<script src="game.js?v=29"></script>
+</body>
+</html>
