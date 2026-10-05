@@ -440,3 +440,7 @@ h2 .ic { margin-right: .45em; }
   #results .panel.resTop { padding: 12px 10px; }
   #results .dial.after { width: 64px; height: 64px; }
 }
+
+/* The X stays in the same place after the round (word lists and scoreboard), so there is always a way out */
+#results .hdr > span { width: 40px; }
+#resTitle { font-size: clamp(13px, 4.6vw, 18px); letter-spacing: .08em; }

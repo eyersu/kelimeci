@@ -943,6 +943,7 @@ $('again').addEventListener('click', () => start(newSeed()));
 $('toHome').addEventListener('click', () => { leaveOnline(); renderHome(); show('home'); });
 $('lobbyQuit').addEventListener('click', () => { leaveOnline(); renderHome(); show('home'); });
 $('leave').addEventListener('click', () => { leaveOnline(); renderHome(); show('home'); });
+$('resQuit').addEventListener('click', () => { leaveOnline(); renderHome(); show('home'); });
 $('offline').addEventListener('click', () => { menuOnline = false; renderHome(); show('home'); });
 $('online').addEventListener('click', () => { menuOnline = true; syncClock(); connect(); renderHome(); show('home'); });
 $('backToPlay').addEventListener('click', () => show('play'));
