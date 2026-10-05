@@ -444,3 +444,9 @@ h2 .ic { margin-right: .45em; }
 /* The X stays in the same place after the round (word lists and scoreboard), so there is always a way out */
 #results .hdr > span { width: 40px; }
 #resTitle { font-size: clamp(13px, 4.6vw, 18px); letter-spacing: .08em; }
+
+/* The small results board is a fixed square cut into four equal rows and columns, so its size comes only from
+   its column's width and can't be left stretched after the phone is tilted and brought back */
+.review > *, .side > * { min-width: 0; }
+.board.mini { aspect-ratio: 1; width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); }
+.mini .t { aspect-ratio: auto; min-width: 0; min-height: 0; }

@@ -391,9 +391,9 @@ $('closeHistory').addEventListener('click', () => show('play'));
 
 /* ---------- Post-game review ---------- */
 
-// Like the original: your found words slide in and the first few light up on the small board one
-// after another, then that list slides away and the words you missed do the same.
-const REVIEW_SHOWN = 7, REVIEW_STEP = 1100;      // 7 words from each list; the scoreboard gets what's left of the break
+// Only the words you didn't find are listed (her call, 2026-10-05): they slide in and the first few light up
+// on the small board one after another. A perfect round has nothing missed, so it lists what you found.
+const REVIEW_SHOWN = 7, REVIEW_STEP = 1100;      // 7 words light up; the scoreboard gets what's left of the break
 function startReview() {
   const run = ++reviewRun;
   // The slideshow holds still while a word's description is open
@@ -431,12 +431,8 @@ function startReview() {
     light('', '');
   };
   (async () => {
-    if (mine.length) {
-      await phase('BULDUKLARIN', mine, false);
-      list.className = 'wordList leaving';
-      await wait(600);
-    }
-    await phase('BULAMADIKLARIN', missed, true);
+    if (missed.length) await phase('BULAMADIKLARIN', missed, true);
+    else await phase('BULDUKLARIN', mine, false);
     if (online) showScoreboard();
   })().catch(() => { /* left the screen mid-slideshow */ });
 }
@@ -1005,7 +1001,12 @@ function lockPortrait() {
   // The rotation itself is CSS; this only says which way the phone was turned
   let angle = screen.orientation && typeof screen.orientation.angle === 'number' ? screen.orientation.angle : (window.orientation || 0);
   document.documentElement.classList.toggle('turnR', (angle + 360) % 360 === 270);
+  // iPhones can keep the small results board at its sideways size after the phone is upright again;
+  // laying the review out afresh once the turn has settled puts it back.
+  clearTimeout(relayTimer);
+  relayTimer = setTimeout(() => { const r = $('review'); if (r.hidden) return; r.style.display = 'none'; void r.offsetHeight; r.style.display = ''; }, 350);
 }
+let relayTimer = 0;
 addEventListener('resize', lockPortrait);
 addEventListener('orientationchange', lockPortrait);
 if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change', lockPortrait);
