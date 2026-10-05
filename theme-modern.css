@@ -83,3 +83,6 @@ html { background: #e9e5de; }
 .dial.low span { background: #e0533f; }
 .dial.low b { color: #fff; }
 .dial.low small { color: #ffe1dc; }
+.pop.gold { background: #f5b400; color: #3a2a00; }
+.hdr > span.tenMark { color: #a79f92; box-shadow: inset 0 0 0 2px #e1dacd; }
+.hdr > span.tenMark.on { color: #3a2a00; background: #f5b400; box-shadow: none; }

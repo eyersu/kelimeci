@@ -7,7 +7,7 @@
 <title>Kelimeci</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=50">
+<link rel="stylesheet" href="style.css?v=57">
 <script>
   // The colour theme is the player's choice (saved on the device); ?theme= forces one for previews
   (function () {
@@ -62,7 +62,7 @@
 
   <section id="settings" class="screen" hidden>
     <header class="wood">
-      <div class="hdr"><span></span><h2>AYARLAR</h2><button class="x" id="closeSettings" type="button" aria-label="Kapat">✕</button></div>
+      <div class="hdr"><span></span><h2>AYARLAR</h2><button class="x" id="closeSettings" type="button" aria-label="Kapat"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 2.5l13 13M15.5 2.5l-13 13"/></svg></button></div>
     </header>
     <form class="body" id="settingsForm">
       <label class="fieldLbl" for="nameEdit">ADIN</label>
@@ -75,7 +75,7 @@
 
   <section id="history" class="screen" hidden>
     <header class="wood">
-      <div class="hdr"><span></span><h2>SON KELİMELER</h2><button class="x" id="closeHistory" aria-label="Kapat">✕</button></div>
+      <div class="hdr"><span></span><h2>SON KELİMELER</h2><button class="x" id="closeHistory" aria-label="Kapat"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 2.5l13 13M15.5 2.5l-13 13"/></svg></button></div>
     </header>
     <div class="body">
       <p class="histNote">Son 25 turun 10 harfli gizli kelimeleri. Anlamı için kelimeye dokun.</p>
@@ -97,7 +97,7 @@
 
   <section id="game" class="screen" hidden>
     <header class="wood">
-      <div class="hdr"><span></span><h2 id="modeName"></h2><button class="x" id="quit" aria-label="Çık">✕</button></div>
+      <div class="hdr"><span class="tenMark" id="tenMark" aria-label="10 harfli kelime">10</span><h2 id="modeName"></h2><button class="x" id="quit" aria-label="Çık"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 2.5l13 13M15.5 2.5l-13 13"/></svg></button></div>
       <div class="panel">
         <div>
           <div class="lbl">GİZLİ KELİMELER</div>
@@ -123,7 +123,7 @@
 
   <section id="lobby" class="screen" hidden>
     <header class="wood">
-      <div class="hdr"><span></span><h2 id="lobbyTitle"></h2><button class="x" id="lobbyQuit" aria-label="Çık">✕</button></div>
+      <div class="hdr"><span></span><h2 id="lobbyTitle"></h2><button class="x" id="lobbyQuit" aria-label="Çık"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 2.5l13 13M15.5 2.5l-13 13"/></svg></button></div>
     </header>
     <div class="body">
       <p class="lobbyLbl">SIRADAKİ TUR</p>
@@ -168,7 +168,7 @@
   </div>
 
 </main>
-<script src="words.js?v=50"></script>
-<script src="game.js?v=50"></script>
+<script src="words.js?v=57"></script>
+<script src="game.js?v=57"></script>
 </body>
 </html>

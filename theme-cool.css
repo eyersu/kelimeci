@@ -78,3 +78,6 @@ html { background: #0a111d; }
 .histNote, .histEmpty, #histList .row small { color: #7f92b0; }
 .dial.low span { background: #d1435b; }
 .dial.low small { color: #ffd6dd; }
+.pop.gold { background: #ffd166; color: #2b2000; }
+.hdr > span.tenMark { color: #56688a; box-shadow: inset 0 0 0 1px #24344f; }
+.hdr > span.tenMark.on { color: #2b2000; background: #ffd166; box-shadow: none; }

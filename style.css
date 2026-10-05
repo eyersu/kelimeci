@@ -45,7 +45,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .hdr { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 12px; }
 .hdr h2 { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: .16em; text-shadow: 0 -1px 0 rgba(60,25,0,.8); }
 .hdr > span, .hdr .x { width: 40px; }
-.hdr .x { height: 30px; padding: 0; border: 0; background: none; text-align: right; font-size: 16px; color: var(--tan); }
+/* The close X is drawn as tall as the title's capitals, inside a full-size touch target */
+.hdr .x { height: 40px; margin: -5px 0; padding: 0; border: 0; background: none; display: grid; place-items: center end; color: var(--tan); }
+.hdr .x svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; }
 
 /* Home */
 .homeTop { padding: calc(40px + var(--safe-top)) 16px 28px; text-align: center; }
@@ -116,7 +118,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .pop.ok { background: #3f9d48; }
 .pop.dup { background: rgba(70,62,56,.9); color: #b9aea2; }
 .pop.bad { background: #c9665c; }
-.pop.big { top: -26px; font-size: 25px; padding: 9px 22px; background: linear-gradient(115deg, #3f9d48 0 38%, #7ad883 50%, #3f9d48 62%); }
+.pop.big { top: -26px; font-size: 25px; padding: 9px 22px; }
+/* The 10-letter word's label is plain gold, no sheen */
+.pop.gold { background: #f2b824; color: #4a2c00; box-shadow: 0 3px 10px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.35); }
 
 /* Hint (İdealist) */
 .hint { display: flex; gap: 8px; align-items: center; min-height: 38px; margin: 30px 12px 0; }
@@ -264,3 +268,11 @@ html { background: #32241d; }
 .wordList .row { height: 42px; gap: 11px; margin-bottom: 6px; border-radius: 8px; font-size: clamp(15px, 4.7vw, 20px); font-weight: 400; letter-spacing: .02em; white-space: nowrap; }
 .wordList .row::before { width: 22px; font-size: 15px; }
 .wordList .row i { padding-right: 8px; font-size: 13px; }
+
+/* Top-left marker for the 10-letter word: a faint outlined square until it is found, then a gold square with a tick */
+.hdr > span.tenMark { flex: none; width: 30px; height: 30px; margin-right: 10px; border-radius: 8px; display: grid; place-items: center; font-size: 12px; font-weight: 800; color: #c79a66; box-shadow: inset 0 0 0 1.5px rgba(255,213,150,.38); }
+.hdr > span.tenMark.on { color: #5a3a00; font-size: 17px; background: #f2b824; box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 1px 3px rgba(0,0,0,.5); animation: okPop .3s ease-out; }
+
+/* The flying tick for the 10-letter word: same motion as the bonus star, but a gold rounded square */
+.checkFx { width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 20px; background: #f2b824; box-shadow: inset 0 2px 0 rgba(255,255,255,.4), 0 4px 10px rgba(0,0,0,.45); }
+.checkFx span { font-size: 44px; font-weight: 800; color: #5a3a00; line-height: 1; }

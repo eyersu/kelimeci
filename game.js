@@ -136,7 +136,8 @@ const FX = (function () {
       if (p.life <= 0 || p.y > H + 40) { parts.splice(i, 1); continue; }
       ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
       ctx.fillStyle = p.color;
-      if (p.type === 'rect') { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 0.6); ctx.restore(); }
+      if (p.type === 'star') { ctx.globalAlpha = Math.max(0, Math.min(1, p.life * 2.2)); drawStar(p); }
+      else if (p.type === 'rect') { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * 0.6); ctx.restore(); }
       else { ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, 6.2832); ctx.fill(); }
     }
     ctx.globalAlpha = 1;
@@ -167,6 +168,26 @@ const FX = (function () {
       setTimeout(shoot, 220 + Math.random() * 260);
     })();
   }
+  function drawStar(p) {
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const r = i % 2 ? p.s * 0.44 : p.s, a = -Math.PI / 2 + i * Math.PI / 5;
+      ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+    }
+    ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+  // Gold stars thrown out wide in every direction; drawn on the same canvas as the fireworks so
+  // they move with the same fluid motion
+  function stars(x, y) {
+    const n = 18, tones = ['#ffd84f', '#ffe58a', '#f6bd2a', '#fff3c4'];
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * 6.2832 + Math.random() * 0.35, sp = (Math.random() * 4.5 + 5.5) * Math.max(k, 0.8);
+      add({ type: 'star', x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 1.5, g: 0.11, drag: 0.972,
+        s: (Math.random() * 6 + 7) * Math.max(k, 0.8), rot: Math.random() * 6.28, spin: (Math.random() - 0.5) * 0.16,
+        color: tones[i % tones.length], life: 1, decay: 0.0125 + Math.random() * 0.004 });
+    }
+  }
   function sparkle(x, y) {
     for (let i = 0; i < 34; i++) {
       const a = Math.random() * 6.2832, sp = (Math.random() * 3.2 + 0.6) * k;
@@ -174,13 +195,13 @@ const FX = (function () {
         s: Math.random() * 1.8 + 1, color: Math.random() < 0.6 ? '#ffe58a' : '#ffffff', life: 1, decay: 0.02 + Math.random() * 0.015 });
     }
   }
-  return { confetti, fireworks, sparkle };
+  return { confetti, fireworks, sparkle, stars };
 })();
 
 /* ---------- Game state ---------- */
 
 let mode = 'rasyonel';
-let board, found, score, maxScore, timeLeft, elapsed, startedAt, ticker, playing, secret, hintWord, hints, penalty, solvedAt, lastLength;
+let board, found, score, maxScore, timeLeft, elapsed, startedAt, ticker, playing, secret, hintWord, hints, penalty, solvedAt, lastLength, tenLanded;
 let reviewRun = 0;
 let player = '';
 try { player = localStorage.getItem('kelime-avi-name') || ''; } catch (e) { /* private mode */ }
@@ -228,6 +249,7 @@ function start(seed) {
   playing = true;
   secret = board.words.find(w => w.length === LONGEST);
   hintWord = secret;       // the 10-letter word the hint button is currently spelling out
+  tenLanded = false;       // the tick only appears top-left once it has flown there
   hints = 0;
   penalty = 0;
   solvedAt = null;
@@ -442,7 +464,10 @@ function submit(word, tiles) {
   // The long word and the hidden bonus word get the same green flash, held longer, plus a celebration
   if (word.length === LONGEST) {
     flash(word, tiles, 'ok', 2600, true);
+    $('pop').classList.add('gold');
     FX.fireworks();
+    starBurst();
+    if (!tenLanded) checkFly();
   } else if (isBonus(word)) {
     flash(word, tiles, 'ok', 1200, true);
     starFly(BONUS_POINTS);
@@ -490,6 +515,50 @@ function renderHint() {
   $('solved').textContent = solved ? formatTime(solvedAt) : '';     // your time sits under the clock, as in the original
 }
 
+const STAR_POINTS = (() => {
+  const pts = [];
+  for (let k = 0; k < 10; k++) {
+    const r = k % 2 ? 20 : 46, a = -Math.PI / 2 + k * Math.PI / 5;
+    pts.push((50 + r * Math.cos(a)).toFixed(1) + ',' + (52 + r * Math.sin(a)).toFixed(1));
+  }
+  return pts.join(' ');
+})();
+const starSvg = `<svg viewBox="0 0 100 100"><polygon fill="#ffd84f" stroke="#e0a516" stroke-width="2.5" stroke-linejoin="round" points="${STAR_POINTS}"/></svg>`;
+
+// A burst of gold stars from the word label, for the 10-letter word
+function starBurst() {
+  const from = $('pop').getBoundingClientRect();
+  FX.stars(from.left + from.width / 2, from.top + from.height / 2);
+}
+
+// The gold tick pops over the grid like the bonus star, then flies up into its square at the top left
+function checkFly() {
+  const from = $('pop').getBoundingClientRect(), to = $('tenMark').getBoundingClientRect();
+  const x = from.left + from.width / 2, y = from.top + 78;
+  const dx = to.left + to.width / 2 - x, dy = to.top + to.height / 2 - y;
+  const el = document.createElement('div');
+  el.className = 'starFx checkFx';
+  el.style.left = x + 'px'; el.style.top = y + 'px';
+  el.innerHTML = '<span>✓</span>';
+  document.body.appendChild(el);
+  FX.sparkle(x, y);
+  const thisBoard = board;
+  const land = () => {
+    el.remove();
+    if (board !== thisBoard) return;        // a new round began while it was in the air
+    tenLanded = true;
+    FX.sparkle(x + dx, y + dy);
+    if (playing) renderStatus();
+  };
+  el.animate([
+    { transform: 'scale(.2) rotate(-25deg)', opacity: 0 },
+    { transform: 'scale(1.15) rotate(6deg)', opacity: 1, offset: 0.16 },
+    { transform: 'scale(1) rotate(0deg)', opacity: 1, offset: 0.26 },
+    { transform: 'scale(1) rotate(0deg)', opacity: 1, offset: 0.55 },
+    { transform: `translate(${dx}px, ${dy}px) scale(${(to.width / 76).toFixed(2)}) rotate(0deg)`, opacity: 1 },
+  ], { duration: 1500, easing: 'ease-in-out' }).onfinish = land;
+}
+
 // A gold star carrying the bonus points pops over the grid, then flies up into the score
 function starFly(points) {
   const from = $('pop').getBoundingClientRect(), to = $('score').getBoundingClientRect();
@@ -498,7 +567,7 @@ function starFly(points) {
   const el = document.createElement('div');
   el.className = 'starFx';
   el.style.left = x + 'px'; el.style.top = y + 'px';
-  el.innerHTML = '<svg viewBox="0 0 100 100"><polygon fill="#ffd84f" stroke="#e0a516" stroke-width="2.5" stroke-linejoin="round" points="50.0,6.0 61.8,35.8 93.7,37.8 69.0,58.2 77.0,89.2 50.0,72.0 23.0,89.2 31.0,58.2 6.3,37.8 38.2,35.8"/></svg><b>' + points + '</b>';
+  el.innerHTML = starSvg + '<b>' + points + '</b>';
   document.body.appendChild(el);
   FX.sparkle(x, y);
   const fly = el.animate([
@@ -528,6 +597,8 @@ function renderStatus() {
     html += `<div class="${n === lastLength ? 'last' : ''}">${n}<i>${left || ''}</i></div>`;
   }
   $('counts').innerHTML = html;
+  $('tenMark').classList.toggle('on', tenLanded);
+  $('tenMark').textContent = tenLanded ? '✓' : LONGEST;
   $('score').textContent = score;
   $('scoreMax').textContent = ' / ' + maxScore;
   $('meter').style.width = (100 * score / maxScore) + '%';
@@ -596,7 +667,7 @@ const boardEl = $('board');
 boardEl.addEventListener('pointerdown', e => {
   if (!playing) return;
   e.preventDefault();
-  boardEl.setPointerCapture(e.pointerId);
+  try { boardEl.setPointerCapture(e.pointerId); } catch (err) { /* capture is a nicety; swiping works without it */ }
   measureTiles();
   path = [];
   extend(e);
@@ -798,8 +869,8 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=5', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=5', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=8', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=8', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }
