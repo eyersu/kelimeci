@@ -228,3 +228,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .defList li em { font-style: normal; font-size: 12px; font-weight: 700; color: #9a7a4a; margin-right: 6px; }
 .defList.plain { list-style: none; padding-left: 0; color: #7a6548; }
 .defSrc { margin-top: 14px; font-size: 11px; color: #a08a66; }
+
+/* Portrait lock: when a phone is turned sideways the game is counter-rotated, so it stays exactly
+   as it was, upright along the phone's long side, with no separate landscape layout */
+html.turnL #app, html.turnR #app { position: absolute; top: 0; left: 0; margin: 0; max-width: none; width: 100vh; height: 100vw; transform-origin: top left; }
+html.turnL #app { transform: rotate(-90deg) translateX(-100%); }
+html.turnR #app { transform: rotate(90deg) translateY(-100%); }
+html.turnL .stage, html.turnR .stage { width: min(calc(100% - 24px), calc(100vw - 300px)); }
+html.turnL .mini .t, html.turnR .mini .t { font-size: clamp(17px, 6vh, 27px); }

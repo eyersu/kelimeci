@@ -819,5 +819,18 @@ $('quit').addEventListener('click', () => { playing = false; cancelAnimationFram
 $('hello').textContent = upper(player);
 show(player ? 'play' : 'name');
 
+// Portrait lock. Browsers can't lock rotation for a web page, so when a touch device goes
+// landscape the whole game is rotated back the other way (see style.css).
+function lockPortrait() {
+  const sideways = matchMedia('(pointer: coarse)').matches && innerWidth > innerHeight;
+  let angle = screen.orientation && typeof screen.orientation.angle === 'number' ? screen.orientation.angle : (window.orientation || 0);
+  angle = (angle + 360) % 360;
+  document.documentElement.classList.toggle('turnL', sideways && angle !== 270);
+  document.documentElement.classList.toggle('turnR', sideways && angle === 270);
+}
+addEventListener('resize', lockPortrait);
+addEventListener('orientationchange', lockPortrait);
+lockPortrait();
+
 // Keeps a copy of the game on the phone so Solo opens without a connection
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => { /* no offline copy */ });
