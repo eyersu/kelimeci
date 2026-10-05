@@ -89,10 +89,15 @@ function solve(letters) {
 }
 
 // Same seed -> same board for every player
+const VERB_SHARE = 0.1, isVerb = w => /m[ae]k$/.test(w);
+const SEED_VERBS = SEED_WORDS.filter(isVerb), SEED_OTHERS = SEED_WORDS.filter(w => !isVerb(w));
 function makeBoard(seed) {
   for (let attempt = 0; ; attempt++) {
     const rng = rngFrom(seed + attempt * 7919);
-    const secret = SEED_WORDS[Math.floor(rng() * SEED_WORDS.length)];
+    // Verbs make up 3 in 10 of the 10-letter words and also pass the board test more easily, so hidden words
+    // used to come up as verbs about half the time. Now roughly 1 board in 8 is built on a verb.
+    const pool = rng() < VERB_SHARE ? SEED_VERBS : SEED_OTHERS;
+    const secret = pool[Math.floor(rng() * pool.length)];
     const path = randomPath(rng, LONGEST);
     if (!path) continue;
     const letters = Array(SIZE * SIZE).fill('');
@@ -256,6 +261,7 @@ function start(seed) {
   tenLanded = false;       // the tick only appears top-left once it has flown there
   hints = 0;
   penalty = 0;
+  frozenUntil = 0; clearTimeout(thawTimer); boardEl.classList.remove('frozen');
   solvedAt = null;
   lastLength = 0;
 
@@ -538,11 +544,22 @@ function submit(word, tiles) {
 /* ---------- Hint ---------- */
 
 // Each hint reveals the next letter of the hidden word and costs time
+let frozenUntil = 0, thawTimer = 0;
 function useHint() {
   if (!playing || !hintWord || hints >= LONGEST - 1) return;
   hints++;
-  penalty += HINT_PENALTY;
-  timeLeft -= HINT_PENALTY;
+  if (online) {
+    // In Canlı the round has to end for everyone at the same moment, so a hint can't take time off your clock
+    // (that ended your round early and left you waiting for the others). It costs the same 5 seconds another
+    // way: the board is locked for 5 seconds.
+    frozenUntil = Math.max(frozenUntil, performance.now()) + HINT_PENALTY * 1000;
+    boardEl.classList.add('frozen');
+    clearTimeout(thawTimer);
+    thawTimer = setTimeout(() => boardEl.classList.remove('frozen'), frozenUntil - performance.now());
+  } else {
+    penalty += HINT_PENALTY;
+    timeLeft -= HINT_PENALTY;
+  }
   renderHint();
   const tile = $('board').children[pathFor(hintWord)[hints - 1]];
   tile.classList.add('hinted');
@@ -568,7 +585,7 @@ function renderHint() {
   $('hintRow').classList.toggle('used', hints > 0);
   $('hintSlots').hidden = hints === 0;
   $('hintSlots').innerHTML = [...(hintWord || '')].map((l, i) => `<i>${i < hints ? upper(l) : ''}</i>`).join('');
-  $('hint').innerHTML = 'İpucu <small>+5 sn</small>';
+  $('hint').innerHTML = online ? 'İpucu <small>5 sn bekle</small>' : 'İpucu <small>+5 sn</small>';
   $('hint').disabled = hints >= LONGEST - 1;
   $('solved').textContent = solved ? formatTime(solvedAt) : '';     // your time sits under the clock, as in the original
 }
@@ -723,7 +740,7 @@ function extend(e) {
 
 const boardEl = $('board');
 boardEl.addEventListener('pointerdown', e => {
-  if (!playing) return;
+  if (!playing || performance.now() < frozenUntil) return;
   e.preventDefault();
   try { boardEl.setPointerCapture(e.pointerId); } catch (err) { /* capture is a nicety; swiping works without it */ }
   measureTiles();

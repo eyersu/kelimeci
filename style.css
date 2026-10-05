@@ -450,3 +450,7 @@ h2 .ic { margin-right: .45em; }
 .review > *, .side > * { min-width: 0; }
 .board.mini { aspect-ratio: 1; width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); }
 .mini .t { aspect-ratio: auto; min-width: 0; min-height: 0; }
+
+/* Canlı hint: the board is locked for 5 seconds (the hinted tile still shows) */
+.board.frozen .t:not(.hinted) { opacity: .45; }
+.board .t { transition: opacity .2s; }
