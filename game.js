@@ -344,6 +344,7 @@ const definitions = {};       // word -> { meta, meanings } or { note }
 async function lookUp(word) {
   if (definitions[word]) return definitions[word];
   if (COUNTRIES.has(word)) return (definitions[word] = { meta: 'özel isim', meanings: [['', 'Bir ülke adı.']] });
+  if (NAMES.has(word)) return (definitions[word] = { meta: 'özel isim', meanings: [['', 'Bir kişi adı.']] });
   try {
     const res = await fetch('https://sozluk.gov.tr/gts?ara=' + encodeURIComponent(word));
     const data = await res.json();
@@ -378,7 +379,7 @@ async function describe(word) {
     li.appendChild(document.createTextNode(text));
     $('defList').appendChild(li);
   }
-  if (!COUNTRIES.has(word)) $('defSrc').textContent = 'Kaynak: TDK Güncel Türkçe Sözlük';
+  if (!COUNTRIES.has(word) && !NAMES.has(word)) $('defSrc').textContent = 'Kaynak: TDK Güncel Türkçe Sözlük';
 }
 $('sheetClose').addEventListener('click', () => { $('sheet').hidden = true; });
 $('sheet').addEventListener('click', e => { if (e.target === $('sheet')) $('sheet').hidden = true; });
