@@ -467,10 +467,24 @@ h2 .ic { margin-right: .45em; }
 .toggle i::after { content: ""; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: #cdbfae; box-shadow: 0 1px 2px rgba(0,0,0,.5); transition: transform .18s, background-color .18s; }
 .toggle.on i { background: #ec8112; }
 .toggle.on i::after { transform: translateX(18px); background: #fff; }
-/* Hint cost: the clock goes red for a moment and a "−5 sn" tag drops out under it */
+/* Hint cost: the clock goes red for a moment and a "−3 sn" tag drops out under it */
 .dial { position: relative; }
 .hitTag { position: absolute; left: 50%; top: 100%; margin-top: -8px; transform: translateX(-50%); padding: 4px 10px; border-radius: 8px; font-style: normal; font-size: 14px; font-weight: 800; white-space: nowrap; color: #fff; background: #d93a2e; box-shadow: 0 3px 8px rgba(0,0,0,.45); opacity: 0; pointer-events: none; z-index: 5; }
 .dial.hit span { background: linear-gradient(#e2473a, #c4301f); }
 .dial.hit b { color: #fff; }
 .dial.hit .hitTag { animation: hitTag 1.1s ease-out both; }
 @keyframes hitTag { 0% { opacity: 0; transform: translate(-50%, -6px); } 15%, 75% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 4px); } }
+
+/* Hint row, second pass: the ten boxes are always there and clearly drawn, a revealed letter is a small tile
+   (so its position in the word reads at a glance), the button carries its price */
+.hintBtn { flex-direction: column; display: flex; align-items: center; justify-content: center; gap: 1px; }
+.hintBtn svg { width: 22px; height: 22px; }
+.slots i { color: var(--ink); background: rgba(255,236,205,.09); box-shadow: inset 0 0 0 1.5px rgba(255,213,150,.34); }
+.slots i.got { background: var(--ivory); box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 2px 0 rgba(0,0,0,.35); }
+.slots i.land { animation: okPop .28s ease-out; }
+.slots i.gold { color: #4a2c00; background: #f2b824; box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 2px 0 rgba(0,0,0,.35); animation: okPop .3s ease-out; }
+/* A tile whose letter was bought keeps a gold outline until the word is found */
+.t[data-hint] { outline: 3px solid #f2b824; outline-offset: -3px; }
+/* The price of a hint, written out small under the row */
+.hintNote { margin: 16px 12px 0; text-align: center; font-size: 12px; font-weight: 500; letter-spacing: .01em; color: var(--muted); }
+.hintNote[hidden] { display: none; }

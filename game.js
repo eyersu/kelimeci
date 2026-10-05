@@ -5,7 +5,7 @@ const LONGEST = 10;
 const POINTS = { 3: 1, 4: 2, 5: 4, 6: 6, 7: 9, 8: 12, 9: 16, 10: 25 };
 const BONUS_POINTS = 10;
 const MIN_BOARD_WORDS = 25;
-const HINT_PENALTY = 5;
+const HINT_PENALTY = 3;
 
 // Signal-strength bars: one, two or three lit
 const bars = n => [[14, 22], [34, 36], [54, 50]].map(([x, h], k) =>
@@ -261,7 +261,7 @@ function start(seed) {
   tenLanded = false;       // the tick only appears top-left once it has flown there
   hints = 0; revealed = [];
   penalty = 0;
-  roundHints = 0; $('dial').classList.remove('hit');
+  $('dial').classList.remove('hit'); landed = hintGold = null; clearTimeout(goldTimer);
   solvedAt = null;
   lastLength = 0;
 
@@ -520,6 +520,11 @@ function submit(word, tiles) {
     // Some boards hide more than one 10-letter word: the hint then starts over on the next one
     hintWord = board.words.find(w => w.length === LONGEST && !found.includes(w)) || null;
     hints = 0; revealed = [];
+    for (const t of $('board').children) delete t.dataset.hint;
+    // The found word fills the ten boxes in gold for a moment before the row clears (or starts on the next word)
+    hintGold = word;
+    clearTimeout(goldTimer);
+    goldTimer = setTimeout(() => { hintGold = null; if (playing) renderHint(); }, 1300);
     renderHint();
   }
   renderStatus();
@@ -544,35 +549,33 @@ function submit(word, tiles) {
 /* ---------- Hint ---------- */
 
 // Each hint reveals the next letter of the hidden word and costs time
-let revealed = [], roundHints = 0, hitTimer = 0;
-// On the shared clock a hint ends your round 5 s before everyone else's, and you wait that long for the next
-// board. Two hints a round keeps that wait short (the post-game words and player list absorb it).
-const LIVE_HINTS = 2;
-const hintsSpent = () => online && !MODES[mode].gain && roundHints >= LIVE_HINTS;
+let revealed = [], hitTimer = 0, landed = null, hintGold = null, goldTimer = 0;
 const HINT_ORDER_KEY = 'kelime-avi-hint-order';
 let hintOrder = 'sira';
 try { hintOrder = localStorage.getItem(HINT_ORDER_KEY) || hintOrder; } catch (e) { /* private mode */ }
 const HINT_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.4-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.4 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>';
 function useHint() {
-  if (!playing || !hintWord || hints >= LONGEST - 1 || hintsSpent()) return;
+  if (!playing || !hintWord || hintGold || revealed.length >= LONGEST) return;      // no limit: every letter can be bought
   hints++;
   // The first hint is always the word's first letter. After that: the next letter in order, or (her setting)
   // any letter not shown yet.
   const hidden = [...hintWord].map((_, i) => i).filter(i => !revealed.includes(i));
   const at = !revealed.length || hintOrder !== 'karisik' ? hidden[0] : hidden[Math.floor(Math.random() * hidden.length)];
   revealed.push(at);
-  // A hint takes 5 seconds off your clock, and the clock says so: it flashes red with "−5 sn"
+  // A hint takes 3 seconds off your clock, and the clock says so: it flashes red with "−3 sn"
   penalty += HINT_PENALTY;
   timeLeft -= HINT_PENALTY;
-  roundHints++;
   const dial = $('dial');
   dial.classList.remove('hit'); void dial.offsetWidth; dial.classList.add('hit');
   clearTimeout(hitTimer);
   hitTimer = setTimeout(() => dial.classList.remove('hit'), 1100);
-  renderHint();
+  // The tile flashes gold, then keeps a gold outline until the word is found; the letter appears in its box
   const tile = $('board').children[pathFor(hintWord)[at]];
+  tile.dataset.hint = '1';
   tile.classList.add('hinted');
   setTimeout(() => tile.classList.remove('hinted'), 1200);
+  landed = at;
+  renderHint();
 }
 
 function pathFor(word) {
@@ -590,13 +593,19 @@ function pathFor(word) {
 // The button stays quiet, with no letter slots, until the first hint is asked for
 function renderHint() {
   const solved = solvedAt !== null;
-  $('hintRow').hidden = !hintWord;      // every level has the hint; it goes once every 10-letter word is found
+  const word = hintGold || hintWord;
+  $('hintRow').hidden = $('hintNote').hidden = !word;      // every level has the hint; it goes once every 10-letter word is found
   $('hintRow').classList.toggle('used', hints > 0);
-  $('hintSlots').hidden = hints === 0;
-  $('hintSlots').innerHTML = [...(hintWord || '')].map((l, i) => `<i>${revealed.includes(i) ? upper(l) : ''}</i>`).join('');
+  // The ten boxes are there from the start, so each letter's position in the word is always readable.
+  // A revealed letter is a small tile.
+  $('hintSlots').innerHTML = [...(word || '')].map((l, i) => {
+    const got = hintGold || revealed.includes(i);
+    return `<i class="${hintGold ? 'gold' : got ? 'got' : ''}${i === landed ? ' land' : ''}">${got ? upper(l) : ''}</i>`;
+  }).join('');
+  landed = null;
   $('hint').innerHTML = HINT_ICON;
-  $('hint').setAttribute('aria-label', 'İpucu: 5 saniye götürür');
-  $('hint').disabled = hints >= LONGEST - 1 || hintsSpent();
+  $('hint').setAttribute('aria-label', 'İpucu: sürenizi 3 saniye kısaltır');
+  $('hint').disabled = !!hintGold || revealed.length >= LONGEST;
   $('solved').textContent = solved ? formatTime(solvedAt) : '';     // your time sits under the clock, as in the original
 }
 
@@ -1005,7 +1014,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=22', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=23', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }

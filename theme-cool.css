@@ -112,3 +112,8 @@ html { background: #0a111d; }
 .toggle.on i { background: #4cc9f0; }
 .toggle.on i::after { background: #06202b; }
 .dial.hit span { background: #d1435b; }
+.slots i { color: #e6edf7; background: #121c2e; box-shadow: inset 0 0 0 1.5px #2f4468; border: 0; }
+.slots i.got { color: #06202b; background: #4cc9f0; box-shadow: none; }
+.slots i.gold { color: #2b2000; background: #ffd166; box-shadow: none; }
+.t[data-hint] { outline-color: #ffd166; }
+.hintNote { color: #7f92b0; }
