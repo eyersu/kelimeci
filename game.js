@@ -427,7 +427,7 @@ function startReview() {
     list.onclick = e => {
       const r = e.target.closest('.row');
       if (!r) return;
-      light(r.dataset.w, missedList ? 'miss' : 'ok');
+      light(r.dataset.w, 'ok');
       describe(r.dataset.w);
     };
     await wait(700);
@@ -436,7 +436,7 @@ function startReview() {
     const shown = words.slice(0, REVIEW_SHOWN);
     const step = online ? Math.max(REVIEW_STEP, Math.min(2000, (round.next - netNow() - 5500) / shown.length)) : REVIEW_STEP;
     for (const w of shown) {
-      light(w, missedList ? 'miss' : 'ok');
+      light(w, 'ok');
       await wait(step);
     }
     light('', '');
