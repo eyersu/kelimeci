@@ -321,3 +321,10 @@ html { background: #32241d; }
 .rank.big div.me > span small { color: var(--tan); }
 #resTitle { font-size: 16px; letter-spacing: .1em; white-space: nowrap; }
 #results .hdr > span { width: 8px; }
+
+.playerBar[hidden] { display: none; }
+/* Opened from the home-screen icon on an iPhone, the page is laid out one status-bar height short,
+   which left an empty strip under the game. Stretch it by that amount. */
+@media (display-mode: standalone) {
+  body { bottom: auto; height: calc(100% + env(safe-area-inset-top)); }
+}

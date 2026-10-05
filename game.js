@@ -311,7 +311,8 @@ function finish() {
   $('resDial').style.visibility = timeOnly ? 'visible' : 'hidden';      // in Canlı the countdown only appears with the scoreboard, not over the word lists
   $('resDial').classList.toggle('timeOnly', timeOnly);
   if (!online) { $('resCount').textContent = timeOnly ? formatTime(solvedAt) : ''; $('resDial').style.setProperty('--p', '360deg'); }
-  $('resSolved').textContent = online && solvedAt !== null ? formatTime(solvedAt) : '';
+  $('resSolved').textContent = '';      // the time is already in your scoreboard row; repeating it under the countdown was redundant
+  document.querySelector('.playerBar').hidden = false;
   $('toHome').textContent = online ? 'Çık' : 'Ana menü';
   $('review').hidden = false;
   $('scoreboard').hidden = true;
@@ -844,6 +845,8 @@ function renderScoreboard() {
   $('rank').innerHTML = scoreRows(rows);
   $('pbName').textContent = (rows.findIndex(p => p.me) + 1) + ' · ' + upper(player);
   $('pbScore').innerHTML = `<i>${rowValue(rows.find(p => p.me))}${mode === 'idealist' ? '' : ' <small>puan</small>'}</i>`;
+  // The bar at the bottom repeats your own row, so it only shows when the list is too long to see every row at once
+  document.querySelector('.playerBar').hidden = $('rank').scrollHeight <= $('rank').clientHeight + 1;
 }
 
 function refreshOnline() {
