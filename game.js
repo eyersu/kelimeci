@@ -343,11 +343,18 @@ function startReview() {
 const definitions = {};       // word -> { meta, meanings } or { note }
 async function lookUp(word) {
   if (definitions[word]) return definitions[word];
-  if (COUNTRIES.has(word)) return (definitions[word] = { meta: 'özel isim', meanings: [['', 'Bir ülke adı.']] });
-  if (NAMES.has(word)) return (definitions[word] = { meta: 'özel isim', meanings: [['', 'Bir kişi adı.']] });
+  for (const [set, text] of [[COUNTRIES, 'Bir ülke adı.'], [CITIES, 'Bir şehir adı.'], [NAMES, 'Bir kişi adı.']]) {
+    if (set.has(word)) return (definitions[word] = { meta: 'özel isim', meanings: [['', text]], own: true });
+  }
   try {
-    const res = await fetch('https://sozluk.gov.tr/gts?ara=' + encodeURIComponent(word));
-    const data = await res.json();
+    // Place and people names are capitalised in the dictionary, so try that spelling second
+    const capital = word[0].toLocaleUpperCase('tr-TR') + word.slice(1);
+    let data = null;
+    for (const spelling of [word, capital]) {
+      const res = await fetch('https://sozluk.gov.tr/gts?ara=' + encodeURIComponent(spelling));
+      data = await res.json();
+      if (Array.isArray(data) && data.length) break;
+    }
     if (!Array.isArray(data) || !data.length) return (definitions[word] = { note: 'Bu kelime için tanım bulunamadı.' });
     const entry = data[0];
     const meanings = (entry.anlamlarListe || []).slice(0, 4).map(a => [((a.ozelliklerListe || [])[0] || {}).tam_adi || '', a.anlam]);
@@ -379,7 +386,7 @@ async function describe(word) {
     li.appendChild(document.createTextNode(text));
     $('defList').appendChild(li);
   }
-  if (!COUNTRIES.has(word) && !NAMES.has(word)) $('defSrc').textContent = 'Kaynak: TDK Güncel Türkçe Sözlük';
+  if (!d.own) $('defSrc').textContent = 'Kaynak: TDK Güncel Türkçe Sözlük';
 }
 $('sheetClose').addEventListener('click', () => { $('sheet').hidden = true; });
 $('sheet').addEventListener('click', e => { if (e.target === $('sheet')) $('sheet').hidden = true; });
