@@ -73,3 +73,8 @@ body { background: #e9e5de; color: #1f1b16; }
 .themeOpt small { color: #8a8378; }
 .themeOpt .tick { color: #ff6b1a; }
 .themeOpt .sw { box-shadow: 0 0 0 1px #e7e1d6; }
+.sheetCard { background: #fff; color: #1f1b16; box-shadow: 0 -8px 24px rgba(31,27,22,.18); border-radius: 26px 26px 0 0; }
+.sheetX { background: #f1ede6; color: #1f1b16; }
+.defMeta, .defList li em, .defSrc { color: #8a8378; }
+.defList li::marker { color: #ff6b1a; }
+.defList.plain { color: #8a8378; }

@@ -201,6 +201,7 @@ const SCREENS = ['name', 'play', 'settings', 'home', 'lobby', 'game', 'results']
 let currentScreen = '';
 function show(screen) {
   reviewRun++;      // leaving the results screen stops its slideshow
+  $('sheet').hidden = true;
   const back = SCREENS.indexOf(screen) < SCREENS.indexOf(currentScreen);
   for (const id of SCREENS) {
     const el = $(id);
@@ -292,7 +293,11 @@ function finish() {
 const REVIEW_SHOWN = 5, REVIEW_STEP = 1100;
 function startReview() {
   const run = ++reviewRun;
-  const wait = ms => new Promise((resolve, reject) => setTimeout(() => (run === reviewRun ? resolve() : reject()), ms));
+  // The slideshow holds still while a word's description is open
+  const wait = ms => new Promise((resolve, reject) => {
+    const check = () => (run !== reviewRun ? reject() : $('sheet').hidden ? resolve() : setTimeout(check, 200));
+    setTimeout(check, ms);
+  });
   const byLength = (a, b) => b.length - a.length || a.localeCompare(b, 'tr');
   const mine = found.slice().sort(byLength);
   const missed = board.words.filter(w => !found.includes(w)).sort(byLength);
@@ -309,7 +314,12 @@ function startReview() {
     list.scrollTop = 0;
     list.innerHTML = `<div class="sec">${title} · ${words.length}</div>` + words.map((w, i) =>
       `<div class="row ${missedList ? 'missed' : ''}" data-w="${w}" style="--i:${Math.min(i + 1, 14)}">${upper(w)}${isBonus(w) ? '<i>★</i>' : ''}</div>`).join('');
-    list.onclick = e => { const r = e.target.closest('.row'); if (r) light(r.dataset.w, missedList ? 'on' : 'ok'); };
+    list.onclick = e => {
+      const r = e.target.closest('.row');
+      if (!r) return;
+      light(r.dataset.w, missedList ? 'on' : 'ok');
+      describe(r.dataset.w);
+    };
     await wait(700);
     for (const w of words.slice(0, REVIEW_SHOWN)) {
       light(w, missedList ? 'on' : 'ok');
@@ -327,6 +337,51 @@ function startReview() {
     if (online) showScoreboard();
   })().catch(() => { /* left the screen mid-slideshow */ });
 }
+
+/* ---------- Word descriptions (looked up live from TDK's online dictionary) ---------- */
+
+const definitions = {};       // word -> { meta, meanings } or { note }
+async function lookUp(word) {
+  if (definitions[word]) return definitions[word];
+  if (COUNTRIES.has(word)) return (definitions[word] = { meta: 'özel isim', meanings: [['', 'Bir ülke adı.']] });
+  try {
+    const res = await fetch('https://sozluk.gov.tr/gts?ara=' + encodeURIComponent(word));
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return (definitions[word] = { note: 'Bu kelime için tanım bulunamadı.' });
+    const entry = data[0];
+    const meanings = (entry.anlamlarListe || []).slice(0, 4).map(a => [((a.ozelliklerListe || [])[0] || {}).tam_adi || '', a.anlam]);
+    return (definitions[word] = { meta: entry.lisan || '', meanings });
+  } catch (e) {
+    return { note: 'Tanım yüklenemedi. İnternet bağlantını kontrol et.' };      // not cached, so it can be retried
+  }
+}
+
+async function describe(word) {
+  $('defWord').textContent = upper(word);
+  $('defMeta').textContent = '';
+  $('defList').className = 'defList plain';
+  $('defList').innerHTML = '<li>Yükleniyor…</li>';
+  $('defSrc').textContent = '';
+  $('sheet').hidden = false;
+  const d = await lookUp(word);
+  if ($('defWord').textContent !== upper(word)) return;       // another word was tapped meanwhile
+  $('defList').innerHTML = '';
+  if (d.note) {
+    $('defList').appendChild(Object.assign(document.createElement('li'), { textContent: d.note }));
+    return;
+  }
+  $('defMeta').textContent = d.meta;
+  $('defList').className = 'defList';
+  for (const [kind, text] of d.meanings) {
+    const li = document.createElement('li');
+    if (kind) li.appendChild(Object.assign(document.createElement('em'), { textContent: kind }));
+    li.appendChild(document.createTextNode(text));
+    $('defList').appendChild(li);
+  }
+  if (!COUNTRIES.has(word)) $('defSrc').textContent = 'Kaynak: TDK Güncel Türkçe Sözlük';
+}
+$('sheetClose').addEventListener('click', () => { $('sheet').hidden = true; });
+$('sheet').addEventListener('click', e => { if (e.target === $('sheet')) $('sheet').hidden = true; });
 
 function submit(word, tiles) {
   if (!playing || word.length < 3) return setPop('', '');
