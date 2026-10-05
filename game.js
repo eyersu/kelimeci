@@ -533,7 +533,9 @@ function submit(word, tiles) {
   // The long word and the hidden bonus word get the same green flash, held longer, plus a celebration
   if (word.length === LONGEST) {
     flash(word, tiles, 'ok', 2600, true);
-    setPop('', '');      // the word is spelled out in gold in the hint row, so no label over the grid as well
+    // With the hint row on, the word is spelled out there in gold, so no label over the grid as well.
+    // With the hint switched off there is no row, and the gold label is back where every other word's is.
+    if (showHint) setPop('', ''); else $('pop').classList.add('gold');
     FX.fireworks();
     starBurst();
     if (!tenLanded) checkFly();
@@ -551,11 +553,12 @@ function submit(word, tiles) {
 // Each hint reveals the next letter of the hidden word and costs time
 let revealed = [], hitTimer = 0, landed = null, hintGold = null, goldTimer = 0;
 const HINT_ORDER_KEY = 'kelime-avi-hint-order';
-let hintOrder = 'sira';
-try { hintOrder = localStorage.getItem(HINT_ORDER_KEY) || hintOrder; } catch (e) { /* private mode */ }
+const HINT_SHOW_KEY = 'kelime-avi-hint-show';
+let hintOrder = 'sira', showHint = true;      // the hint can be switched off altogether in settings
+try { hintOrder = localStorage.getItem(HINT_ORDER_KEY) || hintOrder; showHint = localStorage.getItem(HINT_SHOW_KEY) !== '0'; } catch (e) { /* private mode */ }
 const HINT_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.4-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.4 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>';
 function useHint() {
-  if (!playing || !hintWord || hintGold || revealed.length >= LONGEST) return;      // no limit: every letter can be bought
+  if (!playing || !showHint || !hintWord || hintGold || revealed.length >= LONGEST) return;      // no limit: every letter can be bought
   hints++;
   // The first hint is always the word's first letter. After that: the next letter in order, or (her setting)
   // any letter not shown yet.
@@ -593,7 +596,7 @@ function pathFor(word) {
 // The button stays quiet, with no letter slots, until the first hint is asked for
 function renderHint() {
   const solved = solvedAt !== null;
-  const word = hintGold || hintWord;
+  const word = showHint ? hintGold || hintWord : null;
   $('hintRow').hidden = $('hintNote').hidden = !word;      // every level has the hint; it goes once every 10-letter word is found
   $('hintRow').classList.toggle('used', hints > 0);
   // The ten boxes are there from the start, so each letter's position in the word is always readable.
@@ -622,6 +625,7 @@ const starSvg = `<svg viewBox="0 0 100 100"><polygon fill="#ffd84f" stroke="#e0a
 // A burst of gold stars from the word label, for the 10-letter word
 // Where the word label would sit: top centre of the grid (the 10-letter word no longer shows that label)
 function labelSpot() {
+  if (!showHint) return $('pop').getBoundingClientRect();
   const b = $('board').getBoundingClientRect();
   return { left: b.left, width: b.width, top: b.top - 26, height: 44 };
 }
@@ -1033,9 +1037,17 @@ function applyTheme(id) {
   renderThemes();
 }
 function renderHintOrder() {
+  $('hintShow').classList.toggle('on', showHint);
+  $('hintShow').setAttribute('aria-checked', showHint);
   $('hintOrder').classList.toggle('on', hintOrder === 'karisik');
   $('hintOrder').setAttribute('aria-checked', hintOrder === 'karisik');
+  $('hintOrder').disabled = !showHint;      // nothing to shuffle when the hint is switched off
 }
+$('hintShow').addEventListener('click', () => {
+  showHint = !showHint;
+  try { localStorage.setItem(HINT_SHOW_KEY, showHint ? '1' : '0'); } catch (err) { /* not remembered in private mode */ }
+  renderHintOrder();
+});
 $('hintOrder').addEventListener('click', () => {
   hintOrder = hintOrder === 'karisik' ? 'sira' : 'karisik';
   try { localStorage.setItem(HINT_ORDER_KEY, hintOrder); } catch (err) { /* not remembered in private mode */ }
@@ -1091,6 +1103,18 @@ addEventListener('resize', lockPortrait);
 addEventListener('orientationchange', lockPortrait);
 if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change', lockPortrait);
 lockPortrait();
+
+// Keep the screen awake while the game is open and in front (phones dim after a few idle seconds, and a
+// round has plenty of those). The lock is dropped by the phone whenever the app goes to the background, so
+// it is asked for again each time it comes back, and on the first touch (some phones want a touch first).
+let wakeLock = null;
+async function stayAwake() {
+  if (!('wakeLock' in navigator) || document.hidden || (wakeLock && !wakeLock.released)) return;
+  try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { /* refused (low battery mode, old phone): nothing to do */ }
+}
+document.addEventListener('visibilitychange', stayAwake);
+addEventListener('pointerdown', stayAwake);
+stayAwake();
 
 // Keeps a copy of the game on the phone so Solo opens without a connection
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => { /* no offline copy */ });
