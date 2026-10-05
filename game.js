@@ -214,6 +214,9 @@ function elapsedNow() {
   return (online ? (netNow() - round.start) : (performance.now() - startedAt)) / 1000 + penalty;
 }
 
+// A level's name with its bar icon in front, for screen titles
+const levelTitle = id => `<svg class="ic" viewBox="0 0 80 80" aria-hidden="true">${MODES[id].icon}</svg>${MODES[id].name}`;
+
 function wordPoints(w) { return MODES[mode].flat ? 1 : POINTS[w.length] + (isBonus(w) ? BONUS_POINTS : 0); }
 
 // Screens in the order a player moves through them, so going forward slides in from the right
@@ -256,7 +259,7 @@ function start(seed) {
   solvedAt = null;
   lastLength = 0;
 
-  $('modeName').textContent = MODES[mode].name;
+  $('modeName').innerHTML = levelTitle(mode);
   $('board').innerHTML = board.letters.map(l => `<div class="t">${upper(l)}</div>`).join('');
   $('board').classList.remove('deal');
   void $('board').offsetWidth;
@@ -307,10 +310,13 @@ function finish() {
   $('resScoreMax').textContent = maxScore;
   $('resMeter').style.width = (100 * score / maxScore) + '%';
   // Solo has no next round to count down to: the ring is hidden, except in Uzman where it holds your time
-  const timeOnly = !online && mode === 'idealist' && solvedAt !== null;
-  $('resDial').style.visibility = timeOnly ? 'visible' : 'hidden';      // in Canlı the countdown only appears with the scoreboard, not over the word lists
+  // Over the word lists the circle is there but not counting: empty, or holding your Uzman time.
+  // The countdown itself only runs in it once the scoreboard is up.
+  const timeOnly = mode === 'idealist' && solvedAt !== null;
+  $('resDial').style.visibility = 'visible';
   $('resDial').classList.toggle('timeOnly', timeOnly);
-  if (!online) { $('resCount').textContent = timeOnly ? formatTime(solvedAt) : ''; $('resDial').style.setProperty('--p', '360deg'); }
+  $('resCount').textContent = timeOnly ? formatTime(solvedAt) : '';
+  $('resDial').style.setProperty('--p', '360deg');
   $('resSolved').textContent = '';      // the time is already in your scoreboard row; repeating it under the countdown was redundant
   document.querySelector('.playerBar').hidden = false;
   $('toHome').textContent = online ? 'Çık' : 'Ana menü';
@@ -323,14 +329,14 @@ function finish() {
 
 /* ---------- Last 25 hidden words (kept on the device) ---------- */
 
-const HISTORY_KEY = 'kelime-avi-history', HISTORY_MAX = 25;
+const HISTORY_KEY = 'kelime-avi-history', HISTORY_MAX = 25, LOBBY_WORDS = 10;
 function loadHistory() {
   try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch (e) { return []; }
 }
 // Called when a round ends: notes its 10-letter word and whether you found it
 function remember() {
   const list = loadHistory();
-  list.unshift({ w: secret, hit: found.some(w => w.length === LONGEST), level: mode });
+  list.unshift({ w: secret, hit: found.some(w => w.length === LONGEST), level: mode, t: Date.now(), n: online ? round.n : null });
   const stats = loadStats();
   stats.points += score; stats.rounds += 1; stats.tens += found.some(w => w.length === LONGEST) ? 1 : 0;
   try {
@@ -350,12 +356,34 @@ function renderLifetime() {
   $('lifeNote').textContent = s.rounds ? `${dots(s.rounds)} tur · ${dots(s.tens)} kez 10 harfli kelime` : 'İlk turunu oyna, puanların burada birikir';
 }
 
-function renderHistory() {
-  const list = loadHistory();
-  $('histList').innerHTML = list.length
-    ? list.map(r => `<div class="row ${r.hit ? '' : 'missed'}" data-w="${r.w}">${upper(r.w)}<small>${(MODES[r.level] || {}).name || ''}</small></div>`).join('')
-    : '<div class="histEmpty">Henüz bitirdiğin bir tur yok.</div>';
+// Canlı rounds run on the clock whether or not anyone is playing, so their hidden words can be worked
+// out for any past round. That fills the list from the very first visit. The round being played right
+// now is left out, so the list never gives its word away.
+function pastRounds(count, only) {
+  const rounds = [];
+  for (const level of only ? [only] : Object.keys(MODES)) {
+    const slot = slotSeconds(level) * 1000, cycle = slot + BREAK * 1000;
+    let n = Math.floor(netNow() / cycle);
+    if (netNow() < n * cycle + slot) n -= 1;
+    for (let k = 0; k < count; k++, n--) rounds.push({ level, n, t: n * cycle + slot });
+  }
+  return rounds.sort((a, b) => b.t - a.t).slice(0, count);
 }
+// The newest hidden words, her own rounds first-class among them; `only` narrows it to one level's Canlı rounds.
+function recentWords(count, only) {
+  const mine = loadHistory().map((r, i) => ({ ...r, mine: true, t: r.t || Date.now() - (i + 1) * 3600e3 }));
+  const played = r => mine.find(m => m.level === r.level && m.n === r.n);
+  const list = only ? pastRounds(count, only).map(r => played(r) || r)
+    : mine.concat(pastRounds(count).filter(r => !played(r))).sort((a, b) => b.t - a.t).slice(0, count);
+  for (const r of list) if (!r.w) r.w = makeBoard(roundSeed(r.level, r.n)).words.find(w => w.length === LONGEST);
+  return list;
+}
+const wordRows = (list, tag) => list.map(r =>
+  `<div class="row ${r.mine ? (r.hit ? '' : 'missed') : 'unplayed'}" data-w="${r.w}">${upper(r.w)}${tag ? `<small>${(MODES[r.level] || {}).name || ''}</small>` : ''}</div>`).join('');
+function renderHistory() { $('histList').innerHTML = wordRows(recentWords(HISTORY_MAX), true); }
+// Up to ten of the level's last words on the waiting screen (the CSS hides whole rows that don't fit the phone).
+function renderLobbyWords(level) { $('lobbyWords').innerHTML = wordRows(recentWords(LOBBY_WORDS, level)); }
+$('lobbyWords').addEventListener('click', e => { const r = e.target.closest('.row'); if (r) describe(r.dataset.w); });
 $('histList').addEventListener('click', e => { const r = e.target.closest('.row'); if (r) describe(r.dataset.w); });
 $('openHistory').addEventListener('click', () => { renderHistory(); show('history'); });
 renderLifetime();
@@ -747,10 +775,11 @@ const peers = {};          // peers[level][id] = { name, round, score, found, so
 
 const netNow = () => Date.now() + clockOffset;
 const slotSeconds = level => (MODES[level].gain ? TIMED_SLOT : MODES[level].seconds);
+const roundSeed = (level, n) => Math.imul(n * 4 + Object.keys(MODES).indexOf(level), 2654435761) >>> 0;
 function roundInfo(level) {
   const cycle = (slotSeconds(level) + BREAK) * 1000;
   const n = Math.floor(netNow() / cycle), start = n * cycle;
-  const seed = Math.imul(n * 4 + Object.keys(MODES).indexOf(level), 2654435761) >>> 0;
+  const seed = roundSeed(level, n);
   return { n, start, playEnd: start + slotSeconds(level) * 1000, next: start + cycle, seed };
 }
 
@@ -805,8 +834,8 @@ const activePeers = level => Object.values(peers[level] || {}).filter(p => Date.
 
 // This round's table: you plus everyone heard from in the same round
 const KIND_ICON = {
-  canli: '<svg viewBox="6 17 68 46"><circle fill="#fff" cx="29" cy="40" r="21"/><circle fill="#fff" opacity=".65" cx="51" cy="40" r="21"/></svg>',
-  solo: '<svg viewBox="17 17 46 46"><circle fill="#fff" cx="40" cy="40" r="21"/></svg>',
+  canli: '<svg viewBox="3 12 74 56"><circle fill="#fff" cx="27" cy="26" r="12"/><path fill="#fff" d="M5 66c0-15 9-23 22-23s22 8 22 23z"/><circle fill="#fff" cx="56" cy="30" r="10" opacity=".7"/><path fill="#fff" opacity=".7" d="M54 46c12 0 21 7 21 20H55c0-8-2-14-6-19 2-.6 3-1 5-1z"/></svg>',
+  solo: '<svg viewBox="13 11 54 59"><circle fill="#fff" cx="40" cy="26" r="13"/><path fill="#fff" d="M15 68c0-16 10-25 25-25s25 9 25 25z"/></svg>',
 };
 const longestFound = () => found.reduce((best, w) => (w.length > best.length ? w : best), '');
 
@@ -837,7 +866,8 @@ function showScoreboard() {
   $('resTitle').textContent = MODES[mode].name + ' · TUR SONUÇLARI';
   $('review').hidden = true;
   $('scoreboard').hidden = false;
-  $('resDial').style.visibility = 'visible';
+  $('resDial').classList.remove('timeOnly');
+  $('resCount').textContent = '';
   renderScoreboard();
 }
 function renderScoreboard() {
@@ -853,10 +883,6 @@ function refreshOnline() {
   if (!$('home').hidden && menuOnline) renderHome();
   if (!online) return;
   if (!$('results').hidden && !$('scoreboard').hidden) renderScoreboard();
-  if (!$('lobby').hidden) {
-    const here = activePeers(mode);
-    $('lobbyPlayers').innerHTML = here.length ? rankHtml(here.map(p => ({ ...p, value: p.score }))) : '<em>Şu an başka oyuncu yok</em>';
-  }
 }
 
 function enterOnline(level) {
@@ -867,8 +893,9 @@ function enterOnline(level) {
   // Too little of this round left (or it's the results break): wait for the next board
   round = r;
   found = []; score = 0; solvedAt = null;
-  $('lobbyTitle').textContent = MODES[level].name;
+  $('lobbyTitle').innerHTML = levelTitle(level);
   show('lobby');
+  renderLobbyWords(level);
   refreshOnline();
   awaitNextRound();
 }
@@ -888,8 +915,11 @@ function awaitNextRound() {
     if (!online) return clearInterval(nextTimer);
     const left = Math.ceil((next - netNow()) / 1000);
     if (left <= 0) return startOnlineRound(roundInfo(mode));
-    $('lobbyCount').textContent = $('resCount').textContent = left;
-    $('resDial').style.setProperty('--p', 360 * Math.min(1, (next - netNow()) / (BREAK * 1000)) + 'deg');
+    $('lobbyCount').textContent = left;
+    if (!$('scoreboard').hidden) {
+      $('resCount').textContent = left;
+      $('resDial').style.setProperty('--p', 360 * Math.min(1, (next - netNow()) / (BREAK * 1000)) + 'deg');
+    }
   };
   update();
   nextTimer = setInterval(update, 250);
@@ -921,8 +951,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=15', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=15', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=21', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }

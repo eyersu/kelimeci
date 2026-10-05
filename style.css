@@ -82,7 +82,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .counts div.last::before { background: #f9a53c; box-shadow: 0 0 4px #f9a53c; }
 .counts i { display: block; min-height: 13px; margin-top: 1px; font-style: normal; font-size: 9.5px; font-weight: 500; color: #d3a56c; }
 /* brass ring empties as time runs out */
-.dial { align-self: center; width: 56px; height: 56px; padding: 4px; border-radius: 50%; background: conic-gradient(#e9cf8b var(--p, 360deg), #5d3f1c 0); box-shadow: 0 0 0 1px #7a5b22, 0 2px 5px rgba(0,0,0,.45); }
+.dial { align-self: center; width: 56px; height: 56px; padding: 4px; border-radius: 50%; background: conic-gradient(#e9cf8b var(--p, 360deg), #a88a55 0); box-shadow: 0 0 0 1px #7a5b22, 0 2px 5px rgba(0,0,0,.45); }
 .dial span { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; border-radius: 50%; background: #f6ebd0; color: var(--ink); font-variant-numeric: tabular-nums; }
 .dial b { font-size: 21px; font-weight: 800; line-height: 1; }
 .dial small { font-size: 8px; font-weight: 700; line-height: 1; margin-top: 1px; color: #8a6a3a; }
@@ -100,7 +100,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* Board */
 /* On short screens the board shrinks so the whole round always fits without scrolling */
-.stage { position: relative; width: min(calc(100% - 24px), calc(100vh - 300px), calc(100dvh - 300px)); margin: 30px auto 0; touch-action: none; container-type: inline-size; }
+.stage { position: relative; width: min(calc(100% - 24px), calc(100vh - 345px), calc(100dvh - 345px)); margin: 30px auto 0; touch-action: none; container-type: inline-size; }
 .stage .t { font-size: clamp(24px, 13cqw, 58px); }
 .board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; touch-action: none; }
 .t { aspect-ratio: 1; display: grid; place-items: center; border-radius: 9px; font-size: clamp(36px, 12.5vw, 54px); font-weight: 800;
@@ -257,10 +257,10 @@ html { background: #32241d; }
 
 /* Last 25 hidden words */
 .histNote { margin: 0; font-size: 13px; color: var(--muted); }
-#histList .row { height: 40px; font-size: 16px; margin-bottom: 4px; animation: none; }
-#histList .row { gap: 12px; }
-#histList .row::before { width: 11px; height: 11px; margin-left: 15px; }
-#histList .row small { margin-left: auto; padding-right: 12px; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+.words .row { height: 40px; font-size: 16px; margin-bottom: 4px; animation: none; }
+.words .row { gap: 12px; }
+.words .row::before { width: 11px; height: 11px; margin-left: 15px; }
+.words .row small { margin-left: auto; padding-right: 12px; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
 .histEmpty { padding: 30px 0; text-align: center; font-size: 14px; color: var(--muted); }
 
 /* Results word list: larger, regular-weight words with room around them; a 10-letter word nearly fills its row */
@@ -294,7 +294,7 @@ html { background: #32241d; }
 .resTop { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; column-gap: 14px; padding: 12px 14px; text-align: center; }
 /* Mode name and icon side by side, the same height, in the quiet label colour so they don't read as a button */
 .resTop .kind { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 700; letter-spacing: .1em; line-height: 1; color: var(--tan); }
-.resTop .kindIcon { display: block; height: 15px; }
+.resTop .kindIcon { display: block; height: 17px; }
 .resTop .kindIcon svg { display: block; height: 100%; width: auto; }
 .resTop .kindIcon svg [fill] { fill: var(--tan); }
 /* Score as in the original: label, then both numbers and the slash in one size, weight and colour,
@@ -304,7 +304,7 @@ html { background: #32241d; }
 .resTop .nums { font-size: 20px; font-weight: 600; line-height: 1; color: #fff; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .resTop .bar { height: 4px; margin: 7px 0 0; }
 /* The after-round countdown: a slim brass ring that empties around a plain wood-brown face */
-.dial.after { width: 68px; height: 68px; padding: 3px; background: conic-gradient(#e9cf8b var(--p, 360deg), rgba(0,0,0,.35) 0); box-shadow: none; }
+.dial.after { width: 68px; height: 68px; padding: 3px; background: conic-gradient(#e9cf8b var(--p, 360deg), #a88a55 0); box-shadow: none; }
 .dial.after span { background: #7e4a1e; box-shadow: none; }
 .dial.after b { font-size: 28px; font-weight: 700; color: #fff3df; }
 .dial.after small { margin-top: 3px; font-size: 10px; font-weight: 700; color: var(--tan); }
@@ -325,3 +325,101 @@ html { background: #32241d; }
 #results .hdr > span { width: 8px; }
 
 .playerBar[hidden] { display: none; }
+
+/* The in-round header, enlarged (after the original's proportions) so it carries more of the
+   screen and leaves less empty space around the grid */
+#game .hdr { padding: 20px 16px 14px; }
+#game .hdr h2 { font-size: 22px; }
+#game .hdr > span.tenMark { width: 34px; height: 34px; border-radius: 9px; font-size: 13px; }
+#game .hdr > span.tenMark.on { font-size: 19px; }
+#game .hdr .x svg { width: 21px; height: 21px; }
+#game .panel { grid-template-columns: minmax(0, 2.2fr) auto minmax(0, 1fr); gap: 14px; padding: 15px 14px 16px; align-items: center; border-radius: 14px; }
+#game .lbl { font-size: 10px; }
+#game .counts { margin-top: 9px; }
+#game .counts div { font-size: 14px; }
+#game .counts div::before { width: 5px; height: 5px; margin-bottom: 5px; }
+#game .counts i { min-height: 16px; margin-top: 3px; font-size: 12px; }
+#game .dial { width: 78px; height: 78px; padding: 5px; }
+#game .dial b { font-size: 31px; }
+#game .dial small { font-size: 10px; margin-top: 2px; }
+/* Score as on the results screen: both numbers and the slash in one size */
+#game .score { white-space: nowrap; }
+#game .score b, #game .score small { display: inline; margin: 0; font-size: 16px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
+#game .score .lbl { margin-bottom: 9px; }
+#game .score .bar { height: 6px; margin-top: 9px; }
+@media (max-width: 359px) {
+  #game .hdr h2 { font-size: 19px; }
+  #game .panel { gap: 9px; padding: 12px 10px; }
+  #game .counts div { font-size: 12px; } #game .counts i { font-size: 10.5px; }
+  #game .dial { width: 64px; height: 64px; } #game .dial b { font-size: 25px; }
+  #game .score b, #game .score small { font-size: 14px; }
+}
+
+/* In-round score: the bar is as wide as the numbers above it, as on the results screen */
+#game .score .fit { display: inline-block; text-align: right; }
+#game .score .fit .bar { margin-top: 8px; }
+
+/* Welcome screen: more air between the total, the two tiles and the buttons */
+#play .homeTop { padding-bottom: 34px; }
+#play .body { gap: 22px; padding-top: 26px; }
+#play .modes { gap: 16px; margin-bottom: 0; }
+#play .total { padding: 16px 18px; }
+#play .btn { padding: 16px; }
+#play .btn + .btn { margin-top: -8px; }
+
+/* ---- Breathing-room pass (2026-10-05): one header size everywhere, looser bodies ---- */
+/* Brand header on the name, welcome and level screens: always the same height, content centred */
+.homeTop, #play .homeTop { min-height: calc(172px + var(--safe-top)); display: flex; flex-direction: column; justify-content: center; padding: calc(22px + var(--safe-top)) 16px 22px; }
+/* Title header on every other screen: same padding, same title size, same X */
+.hdr, #game .hdr { padding: 20px 16px 16px; }
+.hdr h2, #game .hdr h2 { font-size: 20px; }
+#resTitle { font-size: 18px; }
+.hdr .x svg, #game .hdr .x svg { width: 20px; height: 20px; }
+/* Bodies: more space from the header and between things */
+.body { gap: 18px; padding: 26px 16px 0; }
+.modes { gap: 14px; }
+.btn { padding: 16px; }
+.fieldLbl { margin-bottom: -10px; font-size: 11px; }
+.field { padding: 16px 18px; }
+.themes { gap: 10px; }
+.themeOpt { padding: 14px 16px; }
+#settingsForm .fieldLbl ~ .fieldLbl { margin-top: 10px; }
+#settingsForm .btn { margin-top: 8px; }
+.histNote { margin-bottom: 2px; line-height: 1.45; }
+.words .row { margin-bottom: 7px; }
+.lobbyLbl { margin-top: 36px; }
+.lobbyNote { margin-bottom: 18px; }
+/* The name screen has one small job, so it sits in the middle of the screen, not stuck under the header */
+#name .body { flex: 1; justify-content: center; padding-bottom: 22vh; gap: 20px; }
+#name .field { font-size: 22px; padding: 18px 20px; }
+/* Scoreboard: the "% · longest word" line under each name in white */
+.rank.big div > span small, .rank.big div.me > span small { color: #fff; opacity: .92; }
+/* Settings, Son kelimeler and the waiting screen get the same header height as the brand screens */
+#settings .wood, #history .wood, #lobby .wood { min-height: calc(172px + var(--safe-top)); display: flex; flex-direction: column; justify-content: center; padding-bottom: 0; }
+#settings .hdr h2, #history .hdr h2, #lobby .hdr h2 { font-size: 21px; white-space: nowrap; }
+
+/* Icons in front of button labels and screen titles: same height as the text, same colour */
+.ic { width: 1.15em; height: 1.15em; margin-right: .5em; vertical-align: -.2em; fill: currentColor; }
+h2 .ic [fill="#fff"] { fill: currentColor; }
+h2 .ic { margin-right: .45em; }
+
+/* Son kelimeler: a round you didn't play gets a hollow dot (green = found, solid gray = played but missed) */
+.row.unplayed::before { background: none; box-shadow: inset 0 0 0 2px #8f8982; }
+
+/* Waiting screen: the level's last hidden words instead of the player list */
+#lobby .lobbyNote + .lobbyLbl { margin: 8px 0 10px; }
+/* column-wrap: a row that doesn't fit moves to a second column, which is clipped, so no row is ever cut in half */
+#lobbyWords { flex: 1 1 0; min-height: 0; overflow: hidden; margin-bottom: calc(14px + var(--safe-bottom)); display: flex; flex-flow: column wrap; align-content: flex-start; }
+#lobbyWords .row { flex: none; width: 100%; }
+
+/* Title: the app icon and the name carved into the wood (darker than the wood, shadow on the upper edge,
+   light catching the lower edge). The line under it stays regular text. */
+.logo { display: flex; align-items: center; justify-content: center; gap: .32em; font-size: clamp(28px, 9vw, 35px); letter-spacing: .1em;
+  color: #5d3210; text-shadow: 0 1.5px 0 rgba(255,222,170,.5), 0 -1px 1px rgba(35,12,0,.75); }
+.logoMark { flex: none; width: 1.32em; height: 1.32em; filter: drop-shadow(0 1.5px 0 rgba(255,222,170,.5)); }
+.logoMark .cut { fill: #54290c; }
+.logoMark .tick { fill: none; stroke: #a9682c; stroke-width: 16; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Tall headers (settings, last words, waiting): the carved name on top, the screen's own title as the second line */
+#settings .hdr, #history .hdr, #lobby .hdr { padding: 12px 16px 0; }
+#settings .hdr h2, #history .hdr h2, #lobby .hdr h2 { font-size: 17px; }

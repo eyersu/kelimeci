@@ -7,14 +7,14 @@
 <title>Kelimeci</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=71">
+<link rel="stylesheet" href="style.css?v=87">
 <script>
   // The colour theme is the player's choice (saved on the device); ?theme= forces one for previews
   (function () {
-    var files = { acik: 'theme-modern.css', koyu: 'theme-cool.css', modern: 'theme-modern.css', cool: 'theme-cool.css' };
+    var files = { koyu: 'theme-cool.css', cool: 'theme-cool.css' };
     var pick = new URLSearchParams(location.search).get('theme');
     if (!pick) { try { pick = localStorage.getItem('kelime-avi-theme'); } catch (e) {} }
-    document.write('<link id="themeCss" rel="stylesheet"' + (files[pick] ? ' href="' + files[pick] + '?v=2"' : '') + '>');
+    document.write('<link id="themeCss" rel="stylesheet"' + (files[pick] ? ' href="' + files[pick] + '?v=21"' : '') + '>');
   })();
 </script>
 <link rel="manifest" href="manifest.webmanifest">
@@ -30,7 +30,7 @@
 
   <section id="name" class="screen" hidden>
     <header class="wood homeTop">
-      <h1 class="logo">KELİMECİ</h1>
+      <h1 class="logo"><svg class="logoMark" viewBox="120 92 346 346" aria-hidden="true"><mask id="logoCut1"><rect width="512" height="512" fill="#fff"/><g fill="none" stroke="#000" stroke-width="36"><path d="M226 168v138"/><path d="M318 168l-74 70 78 68"/></g><circle cx="384" cy="366" r="76" fill="#000"/></mask><rect class="cut" x="140" y="112" width="250" height="250" rx="58" mask="url(#logoCut1)"/><circle class="cut" cx="384" cy="366" r="62"/><path class="tick" d="M356 367l19 20 38-42"/></svg>KELİMECİ</h1>
     </header>
     <form class="body" id="nameForm">
       <label class="fieldLbl" for="nameInput">ADIN</label>
@@ -41,7 +41,7 @@
 
   <section id="play" class="screen" hidden>
     <header class="wood homeTop">
-      <h1 class="logo">KELİMECİ</h1>
+      <h1 class="logo"><svg class="logoMark" viewBox="120 92 346 346" aria-hidden="true"><mask id="logoCut2"><rect width="512" height="512" fill="#fff"/><g fill="none" stroke="#000" stroke-width="36"><path d="M226 168v138"/><path d="M318 168l-74 70 78 68"/></g><circle cx="384" cy="366" r="76" fill="#000"/></mask><rect class="cut" x="140" y="112" width="250" height="250" rx="58" mask="url(#logoCut2)"/><circle class="cut" cx="384" cy="366" r="62"/><path class="tick" d="M356 367l19 20 38-42"/></svg>KELİMECİ</h1>
       <p class="tagline">MERHABA, <span id="hello"></span></p>
     </header>
     <div class="body">
@@ -51,22 +51,23 @@
       </div>
       <div class="modes">
         <button class="mode" id="online">
-          <svg viewBox="0 0 80 80"><circle fill="#fff" cx="29" cy="40" r="21"/><circle fill="#fff" opacity=".65" cx="51" cy="40" r="21"/></svg>
+          <svg viewBox="0 0 80 80"><circle fill="#fff" cx="27" cy="26" r="12"/><path fill="#fff" d="M5 66c0-15 9-23 22-23s22 8 22 23z"/><circle fill="#fff" cx="56" cy="30" r="10" opacity=".7"/><path fill="#fff" opacity=".7" d="M54 46c12 0 21 7 21 20H55c0-8-2-14-6-19 2-.6 3-1 5-1z"/></svg>
           <b>CANLI</b><span>Herkes aynı tahtada</span>
         </button>
         <button class="mode" id="offline">
-          <svg viewBox="0 0 80 80"><circle fill="#fff" cx="40" cy="40" r="21"/></svg>
+          <svg viewBox="0 0 80 80"><circle fill="#fff" cx="40" cy="26" r="13"/><path fill="#fff" d="M15 68c0-16 10-25 25-25s25 9 25 25z"/></svg>
           <b>SOLO</b><span>Tek başına, internetsiz</span>
         </button>
       </div>
-      <button class="btn" id="openHistory">Son kelimeler</button>
-      <button class="btn" id="openSettings">Ayarlar</button>
+      <button class="btn" id="openHistory"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="4" cy="6" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="4" cy="18" r="2"/><rect x="9" y="4.5" width="13" height="3" rx="1.5"/><rect x="9" y="10.5" width="13" height="3" rx="1.5"/><rect x="9" y="16.5" width="13" height="3" rx="1.5"/></svg>Son kelimeler</button>
+      <button class="btn" id="openSettings"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.840c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.390-.96c-.22-.08-.47 0-.59.22L2.740 8.87c-.12.21-.08.47.12.61l2.030 1.580c-.05.3-.09.63-.09.94s.02.64.07.94l-2.030 1.580c-.18.14-.23.41-.12.61l1.920 3.320c.12.22.37.29.59.22l2.390-.96c.5.38 1.030.7 1.620.94l.36 2.540c.05.24.24.41.48.41h3.840c.24 0 .44-.17.47-.41l.36-2.540c.59-.24 1.130-.56 1.620-.94l2.390.96c.22.08.47 0 .59-.22l1.920-3.320c.12-.22.07-.47-.12-.61l-2.010-1.580zM12 15.6c-1.980 0-3.600-1.620-3.600-3.600s1.620-3.600 3.600-3.600 3.600 1.620 3.600 3.600-1.620 3.600-3.600 3.600z"/></svg>Ayarlar</button>
     </div>
   </section>
 
   <section id="settings" class="screen" hidden>
     <header class="wood">
-      <div class="hdr"><span></span><h2>AYARLAR</h2><button class="x" id="closeSettings" type="button" aria-label="Kapat"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 2.5l13 13M15.5 2.5l-13 13"/></svg></button></div>
+      <div class="logo"><svg class="logoMark" viewBox="120 92 346 346" aria-hidden="true"><mask id="logoCut4"><rect width="512" height="512" fill="#fff"/><g fill="none" stroke="#000" stroke-width="36"><path d="M226 168v138"/><path d="M318 168l-74 70 78 68"/></g><circle cx="384" cy="366" r="76" fill="#000"/></mask><rect class="cut" x="140" y="112" width="250" height="250" rx="58" mask="url(#logoCut4)"/><circle class="cut" cx="384" cy="366" r="62"/><path class="tick" d="M356 367l19 20 38-42"/></svg>KELİMECİ</div>
+      <div class="hdr"><span></span><h2><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.840c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.390-.96c-.22-.08-.47 0-.59.22L2.740 8.87c-.12.21-.08.47.12.61l2.030 1.580c-.05.3-.09.63-.09.94s.02.64.07.94l-2.030 1.580c-.18.14-.23.41-.12.61l1.920 3.320c.12.22.37.29.59.22l2.390-.96c.5.38 1.030.7 1.620.94l.36 2.540c.05.24.24.41.48.41h3.840c.24 0 .44-.17.47-.41l.36-2.540c.59-.24 1.130-.56 1.620-.94l2.390.96c.22.08.47 0 .59-.22l1.920-3.320c.12-.22.07-.47-.12-.61l-2.010-1.580zM12 15.6c-1.980 0-3.600-1.620-3.600-3.600s1.620-3.600 3.600-3.600 3.600 1.620 3.600 3.600-1.620 3.600-3.600 3.600z"/></svg>AYARLAR</h2><button class="x" id="closeSettings" type="button" aria-label="Kapat"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 2.5l13 13M15.5 2.5l-13 13"/></svg></button></div>
     </header>
     <form class="body" id="settingsForm">
       <label class="fieldLbl" for="nameEdit">ADIN</label>
@@ -79,17 +80,18 @@
 
   <section id="history" class="screen" hidden>
     <header class="wood">
-      <div class="hdr"><span></span><h2>SON KELİMELER</h2><button class="x" id="closeHistory" aria-label="Kapat"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 2.5l13 13M15.5 2.5l-13 13"/></svg></button></div>
+      <div class="logo"><svg class="logoMark" viewBox="120 92 346 346" aria-hidden="true"><mask id="logoCut5"><rect width="512" height="512" fill="#fff"/><g fill="none" stroke="#000" stroke-width="36"><path d="M226 168v138"/><path d="M318 168l-74 70 78 68"/></g><circle cx="384" cy="366" r="76" fill="#000"/></mask><rect class="cut" x="140" y="112" width="250" height="250" rx="58" mask="url(#logoCut5)"/><circle class="cut" cx="384" cy="366" r="62"/><path class="tick" d="M356 367l19 20 38-42"/></svg>KELİMECİ</div>
+      <div class="hdr"><span></span><h2><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="4" cy="6" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="4" cy="18" r="2"/><rect x="9" y="4.5" width="13" height="3" rx="1.5"/><rect x="9" y="10.5" width="13" height="3" rx="1.5"/><rect x="9" y="16.5" width="13" height="3" rx="1.5"/></svg>SON KELİMELER</h2><button class="x" id="closeHistory" aria-label="Kapat"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 2.5l13 13M15.5 2.5l-13 13"/></svg></button></div>
     </header>
     <div class="body">
       <p class="histNote">Son 25 turun 10 harfli gizli kelimeleri. Anlamı için kelimeye dokun.</p>
-      <div id="histList"></div>
+      <div class="words" id="histList"></div>
     </div>
   </section>
 
   <section id="home" class="screen" hidden>
     <header class="wood homeTop">
-      <h1 class="logo">KELİMECİ</h1>
+      <h1 class="logo"><svg class="logoMark" viewBox="120 92 346 346" aria-hidden="true"><mask id="logoCut3"><rect width="512" height="512" fill="#fff"/><g fill="none" stroke="#000" stroke-width="36"><path d="M226 168v138"/><path d="M318 168l-74 70 78 68"/></g><circle cx="384" cy="366" r="76" fill="#000"/></mask><rect class="cut" x="140" y="112" width="250" height="250" rx="58" mask="url(#logoCut3)"/><circle class="cut" cx="384" cy="366" r="62"/><path class="tick" d="M356 367l19 20 38-42"/></svg>KELİMECİ</h1>
       <p class="tagline" id="homeTag">SOLO</p>
     </header>
     <div class="body">
@@ -110,8 +112,10 @@
         <div class="dial" id="dial"><span><b id="time"></b><small id="solved"></small></span></div>
         <div class="score">
           <div class="lbl">SKOR</div>
-          <b id="score">0</b><small id="scoreMax"></small>
-          <div class="bar"><i id="meter"></i></div>
+          <div class="fit">
+            <b id="score">0</b><small id="scoreMax"></small>
+            <div class="bar"><i id="meter"></i></div>
+          </div>
         </div>
       </div>
     </header>
@@ -127,13 +131,15 @@
 
   <section id="lobby" class="screen" hidden>
     <header class="wood">
+      <div class="logo"><svg class="logoMark" viewBox="120 92 346 346" aria-hidden="true"><mask id="logoCut6"><rect width="512" height="512" fill="#fff"/><g fill="none" stroke="#000" stroke-width="36"><path d="M226 168v138"/><path d="M318 168l-74 70 78 68"/></g><circle cx="384" cy="366" r="76" fill="#000"/></mask><rect class="cut" x="140" y="112" width="250" height="250" rx="58" mask="url(#logoCut6)"/><circle class="cut" cx="384" cy="366" r="62"/><path class="tick" d="M356 367l19 20 38-42"/></svg>KELİMECİ</div>
       <div class="hdr"><span></span><h2 id="lobbyTitle"></h2><button class="x" id="lobbyQuit" aria-label="Çık"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 2.5l13 13M15.5 2.5l-13 13"/></svg></button></div>
     </header>
     <div class="body">
       <p class="lobbyLbl">SIRADAKİ TUR</p>
       <div class="lobbyCount" id="lobbyCount"></div>
       <p class="lobbyNote">Tur devam ediyor. Yeni tahta birazdan herkese aynı anda açılacak.</p>
-      <div class="rank" id="lobbyPlayers"></div>
+      <p class="lobbyLbl">SON KELİMELER</p>
+      <div class="words" id="lobbyWords"></div>
     </div>
   </section>
 
@@ -180,7 +186,7 @@
   </div>
 
 </main>
-<script src="words.js?v=71"></script>
-<script src="game.js?v=71"></script>
+<script src="words.js?v=87"></script>
+<script src="game.js?v=87"></script>
 </body>
 </html>

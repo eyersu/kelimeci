@@ -1,7 +1,7 @@
 // Kelimeci offline copy. Always tries the network first, so a new version shows up straight away;
 // falls back to the saved copy when there is no connection.
-const CACHE = 'kelimeci-v27';
-const CORE = ['./', 'index.html', 'style.css', 'game.js', 'words.js', 'theme-modern.css', 'theme-cool.css', 'manifest.webmanifest', 'icon-192.png'];
+const CACHE = 'kelimeci-v28';
+const CORE = ['./', 'index.html', 'style.css', 'game.js', 'words.js', 'theme-cool.css', 'manifest.webmanifest', 'icon-192.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));

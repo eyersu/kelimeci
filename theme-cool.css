@@ -25,7 +25,7 @@ body { background: #0a111d; }
 .counts div::before { background: #24344f; }
 .counts div.last::before { background: #4cc9f0; box-shadow: none; }
 .counts i { color: #7f92b0; }
-.dial { background: conic-gradient(#4cc9f0 var(--p, 360deg), #24344f 0); box-shadow: none; }
+.dial { background: conic-gradient(#4cc9f0 var(--p, 360deg), #2f5670 0); box-shadow: none; }
 .dial span { background: #0e1726; color: #e6edf7; }
 .dial small { color: #7f92b0; }
 .dial.low b { color: #fff; }
@@ -75,7 +75,7 @@ body { background: #0a111d; }
 .defList li::marker { color: #4cc9f0; }
 .defList.plain { color: #7f92b0; }
 html { background: #0a111d; }
-.histNote, .histEmpty, #histList .row small { color: #7f92b0; }
+.histNote, .histEmpty, .words .row small { color: #7f92b0; }
 .dial.low span { background: #d1435b; }
 .dial.low small { color: #ffd6dd; }
 .pop.gold { background: #ffd166; color: #2b2000; }
@@ -88,7 +88,20 @@ html { background: #0a111d; }
 .resTop .nums { color: #e6edf7; }
 .resTop .kind { color: #7f92b0; }
 .resTop .kindIcon svg [fill] { fill: #7f92b0; }
-.dial.after { background: conic-gradient(#4cc9f0 var(--p, 360deg), #24344f 0); }
+.dial.after { background: conic-gradient(#4cc9f0 var(--p, 360deg), #2f5670 0); }
 .dial.after span { background: #17233a; }
 .dial.after b { color: #e6edf7; }
 .dial.after small { color: #7f92b0; }
+.rank.big div > span small, .rank.big div.me > span small { color: #e6edf7; opacity: .9; }
+
+/* Catch-up with Nostaljik (2026-10-05). Same colours as before; only the newer pieces are filled in. */
+/* Title: the app mark beside the name, flat in the accent colour (there is no wood to carve into) */
+.logo { color: inherit; text-shadow: none; letter-spacing: .16em; font-size: clamp(26px, 8.2vw, 32px); }
+.logoMark { filter: none; }
+.logoMark .cut { fill: #4cc9f0; }
+.logoMark .tick { stroke: #0e1726; }
+/* A round you didn't play: hollow dot */
+.row.unplayed::before { background: none; box-shadow: inset 0 0 0 2px #56688a; }
+.row.cur::before { box-shadow: 0 0 0 4px rgba(76,201,240,.25); }
+.checkFx { background: #ffd166; box-shadow: none; }
+.checkFx span { color: #2b2000; }
