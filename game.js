@@ -762,7 +762,7 @@ const NET = {
   brokers: ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt'],
   lib: 'https://unpkg.com/mqtt@5.16.0/dist/mqtt.min.js',
 };
-const BREAK = 25;          // seconds of results between rounds
+const BREAK = 14;          // seconds between rounds: ~8.5 s of missed words lighting up, then ~5 s of scoreboard
 const JOIN_MIN = 15;       // with less than this left in a round, wait for the next one
 const TIMED_SLOT = 120;    // Zamanlı rounds stretch, so online they get a fixed slot
 const myId = Math.random().toString(36).slice(2, 10);
