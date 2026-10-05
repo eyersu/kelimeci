@@ -15,7 +15,9 @@
   --raise: inset 0 1px 0 rgba(255,255,255,.35), 0 2px 0 rgba(0,0,0,.35);
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; margin: 0; }
+/* The app fills the screen exactly and never scrolls as a page; only long lists scroll inside it */
+html, body { height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; }
+body { position: fixed; inset: 0; }
 body {
   background: #2e211b;
   color: var(--cream);
@@ -24,10 +26,10 @@ body {
   user-select: none; -webkit-user-select: none;
 }
 button { font: inherit; color: inherit; cursor: pointer; }
-#app { max-width: 460px; min-height: 100%; margin: 0 auto; background: var(--noise), linear-gradient(#443229, #32241d); }
-.screen { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+#app { max-width: 460px; height: 100%; margin: 0 auto; overflow: hidden; background: var(--noise), linear-gradient(#443229, #32241d); }
+.screen { height: 100%; overflow: hidden; display: flex; flex-direction: column; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
 .screen[hidden] { display: none; }
-.body { display: flex; flex-direction: column; gap: 12px; padding: 18px 14px 0; }
+.body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 12px; padding: 18px 14px 0; }
 .lbl { font-size: 8px; font-weight: 700; letter-spacing: .1em; color: var(--tan); }
 
 /* Wood header */
@@ -89,7 +91,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .bar i { display: block; width: 0; height: 100%; border-radius: 3px; background: var(--orange); transition: width .3s; }
 
 /* Board */
-.stage { position: relative; margin: 30px 12px 0; touch-action: none; }
+/* On short screens the board shrinks so the whole round always fits without scrolling */
+.stage { position: relative; width: min(calc(100% - 24px), calc(100vh - 300px), calc(100dvh - 300px)); margin: 30px auto 0; touch-action: none; container-type: inline-size; }
+.stage .t { font-size: clamp(24px, 13cqw, 58px); }
 .board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; touch-action: none; }
 .t { aspect-ratio: 1; display: grid; place-items: center; border-radius: 9px; font-size: clamp(36px, 12.5vw, 54px); font-weight: 800;
   color: var(--ink); background: var(--ivory); border: 1px solid #a48a56; box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 2px 0 rgba(0,0,0,.35); }
@@ -120,9 +124,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .slots i { height: 30px; display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 14px; color: #f9a53c; background: rgba(0,0,0,.3); border-radius: 5px; box-shadow: inset 0 1px 2px rgba(0,0,0,.5); }
 
 /* Post-game review: word list on the left, small board on the right */
-#results { height: 100vh; height: 100dvh; padding-bottom: 0; }
+#results { padding-bottom: 0; }
 .review { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr); gap: 10px; padding: 12px 10px 0; }
-.wordList { min-height: 0; overflow-y: auto; padding-bottom: 12px; -webkit-overflow-scrolling: touch; }
+.wordList { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-bottom: 12px; -webkit-overflow-scrolling: touch; }
 .sec { margin: 10px 0 5px; font-size: 9px; font-weight: 700; letter-spacing: .1em; color: var(--tan); }
 .sec:first-child { margin-top: 0; }
 @keyframes rowIn { from { transform: translateX(-110%); opacity: 0; } }
@@ -190,7 +194,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @keyframes enterBack { from { opacity: 0; transform: translateX(-26px); } }
 .screen.enter { animation: enter .24s cubic-bezier(.2,.8,.3,1) both; }
 .screen.enterBack { animation: enterBack .24s cubic-bezier(.2,.8,.3,1) both; }
-#app { overflow-x: hidden; }
 @keyframes deal { from { opacity: 0; transform: translateY(14px) scale(.86); } }
 .board.deal .t { animation: deal .3s cubic-bezier(.2,.9,.3,1.2) both; }
 .board.deal .t:nth-child(4n+2) { animation-delay: .03s; } .board.deal .t:nth-child(4n+3) { animation-delay: .06s; } .board.deal .t:nth-child(4n) { animation-delay: .09s; }
