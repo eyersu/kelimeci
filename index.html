@@ -7,14 +7,14 @@
 <title>Kelimeci</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=98">
+<link rel="stylesheet" href="style.css?v=100">
 <script>
   // The colour theme is the player's choice (saved on the device); ?theme= forces one for previews
   (function () {
     var files = { koyu: 'theme-cool.css', cool: 'theme-cool.css' };
     var pick = new URLSearchParams(location.search).get('theme');
     if (!pick) { try { pick = localStorage.getItem('kelime-avi-theme'); } catch (e) {} }
-    document.write('<link id="themeCss" rel="stylesheet"' + (files[pick] ? ' href="' + files[pick] + '?v=21"' : '') + '>');
+    document.write('<link id="themeCss" rel="stylesheet"' + (files[pick] ? ' href="' + files[pick] + '?v=22"' : '') + '>');
   })();
 </script>
 <link rel="manifest" href="manifest.webmanifest">
@@ -74,6 +74,7 @@
       <input class="field" id="nameEdit" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false">
       <div class="fieldLbl">TEMA</div>
       <div class="themes" id="themes"></div>
+      <button type="button" class="toggle" id="hintOrder" role="switch" aria-checked="false"><span><b>İpucu harfleri karışık</b><small>Kapalıyken harfler sırayla gelir</small></span><i></i></button>
       <button class="btn primary" type="submit">Tamam</button>
     </form>
   </section>
@@ -109,7 +110,7 @@
           <div class="lbl">GİZLİ KELİMELER</div>
           <div class="counts" id="counts"></div>
         </div>
-        <div class="dial" id="dial"><span><b id="time"></b><small id="solved"></small></span></div>
+        <div class="dial" id="dial"><span><b id="time"></b><small id="solved"></small></span><em class="hitTag">−5 sn</em></div>
         <div class="score">
           <div class="lbl">SKOR</div>
           <div class="fit">
@@ -185,7 +186,7 @@
   </div>
 
 </main>
-<script src="words.js?v=98"></script>
-<script src="game.js?v=98"></script>
+<script src="words.js?v=100"></script>
+<script src="game.js?v=100"></script>
 </body>
 </html>

@@ -451,6 +451,26 @@ h2 .ic { margin-right: .45em; }
 .board.mini { aspect-ratio: 1; width: 100%; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(4, minmax(0, 1fr)); }
 .mini .t { aspect-ratio: auto; min-width: 0; min-height: 0; }
 
-/* Canlı hint: the board is locked for 5 seconds (the hinted tile still shows) */
-.board.frozen .t:not(.hinted) { opacity: .45; }
-.board .t { transition: opacity .2s; }
+
+
+/* Hint row: an icon-only button and larger letter boxes */
+.hint { min-height: 42px; gap: 10px; }
+.hintBtn { width: 42px; height: 42px; padding: 0; display: grid; place-items: center; border-radius: 10px; }
+.hintBtn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.slots { gap: 4px; }
+.slots i { height: 42px; font-size: clamp(17px, 5.6vw, 22px); border-radius: 7px; }
+/* Settings: an on/off switch row */
+.toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 13px 14px; border-radius: 12px; text-align: left; border: 1px solid transparent; background: rgba(0,0,0,.28); box-shadow: inset 0 1px 3px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.08); }
+.toggle b { display: block; font-size: 16px; }
+.toggle small { font-size: 12.5px; color: var(--muted); }
+.toggle i { flex: none; position: relative; width: 46px; height: 28px; border-radius: 14px; background: rgba(0,0,0,.5); box-shadow: inset 0 1px 3px rgba(0,0,0,.6); transition: background-color .18s; }
+.toggle i::after { content: ""; position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: #cdbfae; box-shadow: 0 1px 2px rgba(0,0,0,.5); transition: transform .18s, background-color .18s; }
+.toggle.on i { background: #ec8112; }
+.toggle.on i::after { transform: translateX(18px); background: #fff; }
+/* Hint cost: the clock goes red for a moment and a "−5 sn" tag drops out under it */
+.dial { position: relative; }
+.hitTag { position: absolute; left: 50%; top: 100%; margin-top: -8px; transform: translateX(-50%); padding: 4px 10px; border-radius: 8px; font-style: normal; font-size: 14px; font-weight: 800; white-space: nowrap; color: #fff; background: #d93a2e; box-shadow: 0 3px 8px rgba(0,0,0,.45); opacity: 0; pointer-events: none; z-index: 5; }
+.dial.hit span { background: linear-gradient(#e2473a, #c4301f); }
+.dial.hit b { color: #fff; }
+.dial.hit .hitTag { animation: hitTag 1.1s ease-out both; }
+@keyframes hitTag { 0% { opacity: 0; transform: translate(-50%, -6px); } 15%, 75% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, 4px); } }

@@ -105,3 +105,10 @@ html { background: #0a111d; }
 .row.cur::before { box-shadow: 0 0 0 4px rgba(76,201,240,.25); }
 .checkFx { background: #ffd166; box-shadow: none; }
 .checkFx span { color: #2b2000; }
+.toggle { background: #17233a; color: #e6edf7; border: 1px solid #24344f; box-shadow: none; border-radius: 10px; }
+.toggle small { color: #7f92b0; }
+.toggle i { background: #0e1726; box-shadow: inset 0 0 0 1px #24344f; }
+.toggle i::after { background: #7f92b0; box-shadow: none; }
+.toggle.on i { background: #4cc9f0; }
+.toggle.on i::after { background: #06202b; }
+.dial.hit span { background: #d1435b; }
