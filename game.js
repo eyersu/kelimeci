@@ -197,7 +197,7 @@ function wordPoints(w) { return MODES[mode].flat ? 1 : POINTS[w.length] + (isBon
 
 // Screens in the order a player moves through them, so going forward slides in from the right
 // and going back slides in from the left
-const SCREENS = ['name', 'play', 'settings', 'home', 'lobby', 'game', 'results'];
+const SCREENS = ['name', 'play', 'settings', 'history', 'home', 'lobby', 'game', 'results'];
 let currentScreen = '';
 function show(screen) {
   reviewRun++;      // leaving the results screen stops its slideshow
@@ -271,6 +271,7 @@ function finish() {
   cancelAnimationFrame(ticker);
   path = [];
 
+  remember();
   $('resTitle').textContent = MODES[mode].name + ' · SONUÇ';
   $('pbName').textContent = upper(player);
   $('pbScore').innerHTML =
@@ -285,6 +286,28 @@ function finish() {
   startReview();
   if (online) { announce(); awaitNextRound(); }
 }
+
+/* ---------- Last 25 hidden words (kept on the device) ---------- */
+
+const HISTORY_KEY = 'kelime-avi-history', HISTORY_MAX = 25;
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch (e) { return []; }
+}
+// Called when a round ends: notes its 10-letter word and whether you found it
+function remember() {
+  const list = loadHistory();
+  list.unshift({ w: secret, hit: found.some(w => w.length === LONGEST), level: mode });
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX))); } catch (e) { /* private mode */ }
+}
+function renderHistory() {
+  const list = loadHistory();
+  $('histList').innerHTML = list.length
+    ? list.map(r => `<div class="row ${r.hit ? '' : 'missed'}" data-w="${r.w}">${upper(r.w)}<small>${(MODES[r.level] || {}).name || ''}</small></div>`).join('')
+    : '<div class="histEmpty">Henüz bitirdiğin bir tur yok.</div>';
+}
+$('histList').addEventListener('click', e => { const r = e.target.closest('.row'); if (r) describe(r.dataset.w); });
+$('openHistory').addEventListener('click', () => { renderHistory(); show('history'); });
+$('closeHistory').addEventListener('click', () => show('play'));
 
 /* ---------- Post-game review ---------- */
 

@@ -75,3 +75,4 @@ body { background: #0a111d; }
 .defList li::marker { color: #4cc9f0; }
 .defList.plain { color: #7f92b0; }
 html { background: #0a111d; }
+.histNote, .histEmpty, #histList .row small { color: #7f92b0; }

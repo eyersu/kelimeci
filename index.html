@@ -7,7 +7,7 @@
 <title>Kelimeci</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=44">
+<link rel="stylesheet" href="style.css?v=45">
 <script>
   // The colour theme is the player's choice (saved on the device); ?theme= forces one for previews
   (function () {
@@ -55,6 +55,7 @@
           <b>SOLO</b><span>Tek başına, internetsiz</span>
         </button>
       </div>
+      <button class="btn" id="openHistory">Son kelimeler</button>
       <button class="btn" id="openSettings">Ayarlar</button>
     </div>
   </section>
@@ -70,6 +71,16 @@
       <div class="themes" id="themes"></div>
       <button class="btn primary" type="submit">Tamam</button>
     </form>
+  </section>
+
+  <section id="history" class="screen" hidden>
+    <header class="wood">
+      <div class="hdr"><span></span><h2>SON KELİMELER</h2><button class="x" id="closeHistory" aria-label="Kapat">✕</button></div>
+    </header>
+    <div class="body">
+      <p class="histNote">Son 25 turun 10 harfli gizli kelimeleri. Anlamı için kelimeye dokun.</p>
+      <div id="histList"></div>
+    </div>
   </section>
 
   <section id="home" class="screen" hidden>
@@ -140,23 +151,24 @@
       <div class="rank big" id="rank"></div>
       <button class="btn" id="leave">Çık</button>
     </div>
-    <div class="sheet" id="sheet" hidden>
-      <div class="sheetCard">
-        <button class="sheetX" id="sheetClose" aria-label="Kapat">✕</button>
-        <h3 id="defWord"></h3>
-        <div class="defMeta" id="defMeta"></div>
-        <ol class="defList" id="defList"></ol>
-        <div class="defSrc" id="defSrc"></div>
-      </div>
-    </div>
     <footer class="playerBar wood">
       <b id="pbName"></b>
       <span id="pbScore"></span>
     </footer>
   </section>
 
+  <div class="sheet" id="sheet" hidden>
+    <div class="sheetCard">
+      <button class="sheetX" id="sheetClose" aria-label="Kapat">✕</button>
+      <h3 id="defWord"></h3>
+      <div class="defMeta" id="defMeta"></div>
+      <ol class="defList" id="defList"></ol>
+      <div class="defSrc" id="defSrc"></div>
+    </div>
+  </div>
+
 </main>
-<script src="words.js?v=44"></script>
-<script src="game.js?v=44"></script>
+<script src="words.js?v=45"></script>
+<script src="game.js?v=45"></script>
 </body>
 </html>

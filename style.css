@@ -216,7 +216,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* Word description card: slides up over the results when a word is tapped */
 .sheet { position: absolute; inset: 0; z-index: 20; display: flex; align-items: flex-end; background: rgba(0,0,0,.5); animation: sheetFade .18s ease-out; }
 .sheet[hidden] { display: none; }
-#results { position: relative; }
+#app { position: relative; }
 @keyframes sheetFade { from { opacity: 0; } }
 @keyframes sheetUp { from { transform: translateY(40px); opacity: 0; } }
 .sheetCard { position: relative; width: 100%; max-height: 70%; overflow-y: auto; overscroll-behavior: contain; padding: 20px 20px calc(22px + var(--safe-bottom)); border-radius: 20px 20px 0 0;
@@ -246,3 +246,10 @@ html { background: #32241d; }
   .mini .t { font-size: clamp(17px, 6vh, 27px); }
   .screen.enter, .screen.enterBack { animation: none; }
 }
+
+/* Last 25 hidden words */
+.histNote { margin: 0; font-size: 13px; color: var(--muted); }
+#histList .row { height: 40px; font-size: 16px; margin-bottom: 4px; animation: none; }
+#histList .row::before { width: 26px; }
+#histList .row small { margin-left: auto; padding-right: 12px; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+.histEmpty { padding: 30px 0; text-align: center; font-size: 14px; color: var(--muted); }
