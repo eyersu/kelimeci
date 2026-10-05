@@ -180,7 +180,7 @@ const FX = (function () {
 /* ---------- Game state ---------- */
 
 let mode = 'rasyonel';
-let board, found, score, maxScore, timeLeft, elapsed, startedAt, ticker, playing, secret, hints, penalty, solvedAt, lastLength;
+let board, found, score, maxScore, timeLeft, elapsed, startedAt, ticker, playing, secret, hintWord, hints, penalty, solvedAt, lastLength;
 let reviewRun = 0;
 let player = '';
 try { player = localStorage.getItem('kelime-avi-name') || ''; } catch (e) { /* private mode */ }
@@ -227,6 +227,7 @@ function start(seed) {
   path = [];
   playing = true;
   secret = board.words.find(w => w.length === LONGEST);
+  hintWord = secret;       // the 10-letter word the hint button is currently spelling out
   hints = 0;
   penalty = 0;
   solvedAt = null;
@@ -428,8 +429,11 @@ function submit(word, tiles) {
     setTimeout(() => $('dial').classList.remove('plus'), 400);
   }
   // In İdealist the long word stops your clock, but the round carries on
-  if (mode === 'idealist' && word.length === LONGEST && solvedAt === null) {
-    solvedAt = elapsedNow();
+  if (mode === 'idealist' && word.length === LONGEST) {
+    if (solvedAt === null) solvedAt = elapsedNow();
+    // Some boards hide more than one 10-letter word: the hint then starts over on the next one
+    hintWord = board.words.find(w => w.length === LONGEST && !found.includes(w)) || null;
+    hints = 0;
     renderHint();
   }
   renderStatus();
@@ -452,12 +456,12 @@ function submit(word, tiles) {
 
 // Each hint reveals the next letter of the hidden word and costs time
 function useHint() {
-  if (!playing || mode !== 'idealist' || solvedAt !== null || hints >= LONGEST - 1) return;
+  if (!playing || mode !== 'idealist' || !hintWord || hints >= LONGEST - 1) return;
   hints++;
   penalty += HINT_PENALTY;
   timeLeft -= HINT_PENALTY;
   renderHint();
-  const tile = $('board').children[pathFor(secret)[hints - 1]];
+  const tile = $('board').children[pathFor(hintWord)[hints - 1]];
   tile.classList.add('hinted');
   setTimeout(() => tile.classList.remove('hinted'), 1200);
 }
@@ -477,10 +481,10 @@ function pathFor(word) {
 // The button stays quiet, with no letter slots, until the first hint is asked for
 function renderHint() {
   const solved = solvedAt !== null;
-  $('hintRow').hidden = mode !== 'idealist' || solved;      // nothing left to hint at once it's found
+  $('hintRow').hidden = mode !== 'idealist' || !hintWord;      // gone once every 10-letter word is found
   $('hintRow').classList.toggle('used', hints > 0);
   $('hintSlots').hidden = hints === 0;
-  $('hintSlots').innerHTML = [...secret].map((l, i) => `<i>${i < hints ? upper(l) : ''}</i>`).join('');
+  $('hintSlots').innerHTML = [...(hintWord || '')].map((l, i) => `<i>${i < hints ? upper(l) : ''}</i>`).join('');
   $('hint').innerHTML = 'İpucu <small>+5 sn</small>';
   $('hint').disabled = hints >= LONGEST - 1;
   $('solved').textContent = solved ? formatTime(solvedAt) : '';     // your time sits under the clock, as in the original
@@ -794,8 +798,8 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=3', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=3', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=4', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=4', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }

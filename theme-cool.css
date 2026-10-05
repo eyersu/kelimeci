@@ -76,3 +76,5 @@ body { background: #0a111d; }
 .defList.plain { color: #7f92b0; }
 html { background: #0a111d; }
 .histNote, .histEmpty, #histList .row small { color: #7f92b0; }
+.dial.low { background: conic-gradient(#ff8fa3 var(--p, 360deg), #3a1f2e 0); box-shadow: none; }
+.dial.low span { background: #2a1722; }
