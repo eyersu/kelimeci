@@ -305,6 +305,7 @@ function finish() {
   path = [];
 
   remember();
+  if (online && MODES[mode].gain) timedDone();
   $('resTitle').textContent = MODES[mode].name + ' · SONUÇ';
   $('pbName').textContent = upper(player);
   $('pbScore').innerHTML = `<i>${score} <small>/ ${maxScore} puan</small></i><i>${dots(loadStats().points)} <small>toplam</small></i>`;
@@ -367,7 +368,7 @@ function renderLifetime() {
 // now is left out, so the list never gives its word away.
 function pastRounds(count, only) {
   const rounds = [];
-  for (const level of only ? [only] : Object.keys(MODES)) {
+  for (const level of only ? [only] : Object.keys(MODES).filter(l => !MODES[l].gain)) {      // Zamanlı has no clock rounds
     const slot = slotSeconds(level) * 1000, cycle = slot + BREAK * 1000;
     let n = Math.floor(netNow() / cycle);
     if (netNow() < n * cycle + slot) n -= 1;
@@ -399,7 +400,7 @@ $('closeHistory').addEventListener('click', () => show('play'));
 
 // Only the words you didn't find are listed (her call, 2026-10-05): they slide in and the first few light up
 // on the small board one after another. A perfect round has nothing missed, so it lists what you found.
-const REVIEW_SHOWN = 7, REVIEW_STEP = 1100, SCORE_MAX = 10;      // the scoreboard never stays longer than 10 s      // 7 words light up; the scoreboard gets what's left of the break
+const REVIEW_SHOWN = 7, REVIEW_STEP = 1100;      // 7 words light up; the scoreboard gets what's left of the break
 function startReview() {
   const run = ++reviewRun;
   // The slideshow holds still while a word's description is open
@@ -430,14 +431,10 @@ function startReview() {
       describe(r.dataset.w);
     };
     await wait(700);
-    // Always the first 7 words, no more. In Canlı they are paced (1.1 to 2 s each) to leave the scoreboard
-    // a short stop before the next shared round.
-    const shown = words.slice(0, REVIEW_SHOWN);
-    const spare = online ? (round.next - netNow() - SCORE_MAX * 1000) / shown.length : 0;
-    const step = Math.max(REVIEW_STEP, Math.min(2000, spare));
-    for (const w of shown) {
+    // Always the first 7 words, no more
+    for (const w of words.slice(0, REVIEW_SHOWN)) {
       light(w, missedList ? 'miss' : 'ok');
-      await wait(step);
+      await wait(REVIEW_STEP);
     }
     light('', '');
   };
@@ -786,19 +783,40 @@ const NET = {
 };
 const BREAK = 14;          // seconds between rounds: ~8.5 s of missed words lighting up, then ~5 s of scoreboard
 const JOIN_MIN = 15;       // with less than this left in a round, wait for the next one
-const TIMED_SLOT = 120;    // Zamanlı rounds stretch, so online they get a fixed slot
 const myId = Math.random().toString(36).slice(2, 10);
 let online = false, menuOnline = false, round = null, client = null, clockOffset = 0, nextTimer;
 const peers = {};          // peers[level][id] = { name, round, score, found, solvedAt, at }
 
 const netNow = () => Date.now() + clockOffset;
-const slotSeconds = level => (MODES[level].gain ? TIMED_SLOT : MODES[level].seconds);
+const slotSeconds = level => MODES[level].seconds;
 const roundSeed = (level, n) => Math.imul(n * 4 + Object.keys(MODES).indexOf(level), 2654435761) >>> 0;
 function roundInfo(level) {
+  if (MODES[level].gain) return timedRound(level);
   const cycle = (slotSeconds(level) + BREAK) * 1000;
   const n = Math.floor(netNow() / cycle), start = n * cycle;
   const seed = roundSeed(level, n);
   return { n, start, playEnd: start + slotSeconds(level) * 1000, next: start + cycle, seed };
+}
+
+// Zamanlı is the one level that can't run on the shared clock: your time there is your own (30 s, longer with
+// every word), so a clock round left you waiting for everyone else. Instead everyone plays the same sequence
+// of boards at their own pace: board 0, 1, 2... of the current hour. The next board follows your scoreboard,
+// and the scoreboard compares you with whoever has played, or is playing, that same board.
+const TIMED_KEY = 'kelime-avi-timed';
+let timed = { hour: 0, i: 0 }, myPast = [];
+try { timed = JSON.parse(localStorage.getItem(TIMED_KEY)) || timed; } catch (e) { /* private mode */ }
+function timedRound(level) {
+  const hour = Math.floor(netNow() / 3600e3);
+  if (timed.hour !== hour) timed = { hour, i: 0 };
+  const n = hour * 1000 + timed.i;
+  return { n, start: netNow(), playEnd: Infinity, next: Infinity, seed: roundSeed(level, n) };
+}
+function timedDone() {
+  round.next = netNow() + BREAK * 1000;
+  myPast.push({ n: round.n, score, found: found.length, long: longestFound() });
+  myPast = myPast.slice(-12);
+  timed.i += 1;
+  try { localStorage.setItem(TIMED_KEY, JSON.stringify(timed)); } catch (e) { /* private mode */ }
 }
 
 // Phone clocks can be seconds apart; line them up against the web server's clock
@@ -836,6 +854,7 @@ function onMessage(topic, payload) {
     name: m.name.slice(0, 12), round: +m.round, score: +m.score || 0, found: +m.found || 0,
     solvedAt: typeof m.solvedAt === 'number' ? m.solvedAt : null, at: Date.now(),
     long: typeof m.long === 'string' ? m.long.slice(0, LONGEST) : '',
+    past: Array.isArray(m.past) ? m.past.slice(-12).map(r => ({ n: +r.n, score: +r.score || 0, found: +r.found || 0, long: typeof r.long === 'string' ? r.long.slice(0, LONGEST) : '' })) : [],
   };
   if (refreshQueued) return;
   refreshQueued = true;
@@ -844,7 +863,7 @@ function onMessage(topic, payload) {
 
 function announce() {
   if (!online || !client || !client.connected) return;
-  client.publish(NET.topic + '/' + mode, JSON.stringify({ id: myId, name: player, round: round.n, score, found: found.length, solvedAt, long: longestFound() }));
+  client.publish(NET.topic + '/' + mode, JSON.stringify({ id: myId, name: player, round: round.n, score, found: found.length, solvedAt, long: longestFound(), past: MODES[mode].gain ? myPast : undefined }));
 }
 setInterval(announce, 3000);
 
@@ -860,7 +879,10 @@ const longestFound = () => found.reduce((best, w) => (w.length > best.length ? w
 // This round's table: you plus everyone heard from in the same round.
 // Uzman ranks by who found the 10-letter word fastest; the other levels rank by the round's points.
 function standings() {
-  const rows = Object.values(peers[mode] || {}).filter(p => p.round === round.n)
+  // Zamanlı: someone who played this board earlier counts too, from the results they carry with them
+  const rows = Object.values(peers[mode] || {})
+    .map(p => (p.round === round.n ? p : (p.past || []).filter(r => r.n === round.n).map(r => ({ ...r, name: p.name, solvedAt: null }))[0]))
+    .filter(Boolean)
     .concat({ name: player, score, found: found.length, solvedAt, long: longestFound(), me: true });
   rows.sort(mode === 'idealist'
     ? (a, b) => (a.solvedAt === null) - (b.solvedAt === null) || (a.solvedAt || 0) - (b.solvedAt || 0) || b.score - a.score
@@ -886,10 +908,9 @@ function showScoreboard() {
   $('scoreboard').hidden = false;
   $('resDial').classList.remove('timeOnly');
   $('resCount').textContent = '';
-  scoreboardAt = performance.now();
   renderScoreboard();
 }
-let scoreboardAt = 0;
+
 function renderScoreboard() {
   const rows = standings();
   $('rank').innerHTML = scoreRows(rows);
@@ -936,14 +957,6 @@ function awaitNextRound() {
     const left = Math.ceil((next - netNow()) / 1000);
     if (left <= 0) return startOnlineRound(roundInfo(mode));
     $('lobbyCount').textContent = left;
-    // Your own time can end well before the shared round does (Zamanlı, hints). The scoreboard still only
-    // stays SCORE_MAX seconds; after that you wait for the next board on the waiting screen.
-    if (!$('results').hidden && !$('scoreboard').hidden && performance.now() - scoreboardAt > SCORE_MAX * 1000 && left > 2) {
-      $('lobbyTitle').innerHTML = levelTitle(mode);
-      show('lobby');
-      renderLobbyWords(mode);
-      return;
-    }
     if (!$('scoreboard').hidden) {
       $('resCount').textContent = left;
       $('resDial').style.setProperty('--p', 360 * Math.min(1, (next - netNow()) / (BREAK * 1000)) + 'deg');
