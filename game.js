@@ -393,7 +393,7 @@ $('closeHistory').addEventListener('click', () => show('play'));
 
 // Only the words you didn't find are listed (her call, 2026-10-05): they slide in and the first few light up
 // on the small board one after another. A perfect round has nothing missed, so it lists what you found.
-const REVIEW_SHOWN = 7, REVIEW_STEP = 1100, SCORE_SECONDS = 5;      // 7 words light up; the scoreboard gets what's left of the break
+const REVIEW_SHOWN = 7, REVIEW_STEP = 1100, SCORE_MAX = 10;      // the scoreboard never stays longer than 10 s      // 7 words light up; the scoreboard gets what's left of the break
 function startReview() {
   const run = ++reviewRun;
   // The slideshow holds still while a word's description is open
@@ -424,14 +424,14 @@ function startReview() {
       describe(r.dataset.w);
     };
     await wait(700);
-    // Solo lights up 7 words. In Canlı the words keep lighting up until SCORE_SECONDS before the next shared
-    // round, so the scoreboard is always a short stop, even if your own time ran out early (hints, Zamanlı).
-    const more = n => (online ? netNow() < round.next - (SCORE_SECONDS * 1000 + REVIEW_STEP) : n < REVIEW_SHOWN);
-    for (let n = 0; n === 0 || more(n); n++) {
-      const row = list.querySelector(`.row[data-w="${words[n % words.length]}"]`);
-      if (row && n >= REVIEW_SHOWN) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      light(words[n % words.length], missedList ? 'miss' : 'ok');
-      await wait(REVIEW_STEP);
+    // Always the first 7 words, no more. In Canlı they are paced (1.1 to 2 s each) to leave the scoreboard
+    // a short stop before the next shared round.
+    const shown = words.slice(0, REVIEW_SHOWN);
+    const spare = online ? (round.next - netNow() - SCORE_MAX * 1000) / shown.length : 0;
+    const step = Math.max(REVIEW_STEP, Math.min(2000, spare));
+    for (const w of shown) {
+      light(w, missedList ? 'miss' : 'ok');
+      await wait(step);
     }
     light('', '');
   };
@@ -869,8 +869,10 @@ function showScoreboard() {
   $('scoreboard').hidden = false;
   $('resDial').classList.remove('timeOnly');
   $('resCount').textContent = '';
+  scoreboardAt = performance.now();
   renderScoreboard();
 }
+let scoreboardAt = 0;
 function renderScoreboard() {
   const rows = standings();
   $('rank').innerHTML = scoreRows(rows);
@@ -917,6 +919,14 @@ function awaitNextRound() {
     const left = Math.ceil((next - netNow()) / 1000);
     if (left <= 0) return startOnlineRound(roundInfo(mode));
     $('lobbyCount').textContent = left;
+    // Your own time can end well before the shared round does (Zamanlı, hints). The scoreboard still only
+    // stays SCORE_MAX seconds; after that you wait for the next board on the waiting screen.
+    if (!$('results').hidden && !$('scoreboard').hidden && performance.now() - scoreboardAt > SCORE_MAX * 1000 && left > 2) {
+      $('lobbyTitle').innerHTML = levelTitle(mode);
+      show('lobby');
+      renderLobbyWords(mode);
+      return;
+    }
     if (!$('scoreboard').hidden) {
       $('resCount').textContent = left;
       $('resDial').style.setProperty('--p', 360 * Math.min(1, (next - netNow()) / (BREAK * 1000)) + 'deg');
