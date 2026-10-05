@@ -236,7 +236,7 @@ function show(screen) {
     void $(screen).offsetWidth;                       // restart the animation if the same screen re-enters
     $(screen).classList.add(back ? 'enterBack' : 'enter');
   }
-  if (screen === 'play') renderLifetime();
+  if (screen === 'play') { renderLifetime(); setTimeout(checkUpdate, 0); }
   currentScreen = screen;
   window.scrollTo(0, 0);
 }
@@ -1028,3 +1028,20 @@ lockPortrait();
 
 // Keeps a copy of the game on the phone so Solo opens without a connection
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => { /* no offline copy */ });
+
+// A home-screen app stays open in the background for days, so it would keep running an old version.
+// Whenever it comes back to the front, or returns to a menu, it checks the published version number
+// and reloads itself if there is a newer one. Never during a round or its results.
+const BUILD = (document.querySelector('script[src*="game.js"]').getAttribute('src').match(/v=(\d+)/) || [])[1];
+let updateCheckedAt = 0;
+async function checkUpdate() {
+  if (!BUILD || ['game', 'results', 'lobby'].includes(currentScreen) || Date.now() - updateCheckedAt < 20000) return;
+  updateCheckedAt = Date.now();
+  try {
+    const page = await (await fetch('index.html?fresh=' + Date.now(), { cache: 'no-store' })).text();
+    const latest = (page.match(/game\.js\?v=(\d+)/) || [])[1];
+    if (latest && +latest > +BUILD && !['game', 'results', 'lobby'].includes(currentScreen)) location.reload();
+  } catch (e) { /* offline: keep playing the copy we have */ }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpdate(); });
+checkUpdate();
