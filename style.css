@@ -423,3 +423,20 @@ h2 .ic { margin-right: .45em; }
 /* Tall headers (settings, last words, waiting): the carved name on top, the screen's own title as the second line */
 #settings .hdr, #history .hdr, #lobby .hdr { padding: 12px 16px 0; }
 #settings .hdr h2, #history .hdr h2, #lobby .hdr h2 { font-size: 17px; }
+
+/* ---- Steady headers (2026-10-05): nothing in the top bar moves when you change screens ----
+   The six brand headers: the carved name always starts at the same height, and the second line (greeting,
+   SOLO/CANLI, or a screen's own title row) always sits in the same 30px slot under it. */
+.homeTop, #play .homeTop, #settings .wood, #history .wood, #lobby .wood { height: calc(172px + var(--safe-top)); min-height: 0; justify-content: flex-start; padding: calc(44px + var(--safe-top)) 0 0; }
+.logo { height: 46px; line-height: 46px; }
+.tagline, #settings .hdr, #history .hdr, #lobby .hdr { height: 30px; margin: 8px 0 0; padding: 0 16px; }
+.tagline { line-height: 30px; }
+#settings .hdr, #history .hdr, #lobby .hdr { align-items: center; }
+/* Round and results: the same title row and the same panel box, so the bar doesn't jump when a round ends */
+#game .hdr, #results .hdr { height: 70px; padding: 20px 16px 14px; align-items: center; }
+#results .panel.resTop { padding: 15px 14px 16px; border-radius: 14px; }
+#results .dial.after { width: 78px; height: 78px; }
+@media (max-width: 359px) {
+  #results .panel.resTop { padding: 12px 10px; }
+  #results .dial.after { width: 64px; height: 64px; }
+}
