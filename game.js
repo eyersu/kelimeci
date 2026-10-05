@@ -319,7 +319,7 @@ function finish() {
   $('resDial').style.setProperty('--p', '360deg');
   $('resSolved').textContent = '';      // the time is already in your scoreboard row; repeating it under the countdown was redundant
   document.querySelector('.playerBar').hidden = false;
-  $('toHome').textContent = online ? 'Çık' : 'Ana menü';
+  $('toHome').hidden = online;      // in Canlı the X in the header is the way out
   $('review').hidden = false;
   $('scoreboard').hidden = true;
   show('results');
@@ -393,7 +393,7 @@ $('closeHistory').addEventListener('click', () => show('play'));
 
 // Only the words you didn't find are listed (her call, 2026-10-05): they slide in and the first few light up
 // on the small board one after another. A perfect round has nothing missed, so it lists what you found.
-const REVIEW_SHOWN = 7, REVIEW_STEP = 1100;      // 7 words light up; the scoreboard gets what's left of the break
+const REVIEW_SHOWN = 7, REVIEW_STEP = 1100, SCORE_SECONDS = 5;      // 7 words light up; the scoreboard gets what's left of the break
 function startReview() {
   const run = ++reviewRun;
   // The slideshow holds still while a word's description is open
@@ -424,8 +424,13 @@ function startReview() {
       describe(r.dataset.w);
     };
     await wait(700);
-    for (const w of words.slice(0, REVIEW_SHOWN)) {
-      light(w, missedList ? 'miss' : 'ok');
+    // Solo lights up 7 words. In Canlı the words keep lighting up until SCORE_SECONDS before the next shared
+    // round, so the scoreboard is always a short stop, even if your own time ran out early (hints, Zamanlı).
+    const more = n => (online ? netNow() < round.next - (SCORE_SECONDS * 1000 + REVIEW_STEP) : n < REVIEW_SHOWN);
+    for (let n = 0; n === 0 || more(n); n++) {
+      const row = list.querySelector(`.row[data-w="${words[n % words.length]}"]`);
+      if (row && n >= REVIEW_SHOWN) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      light(words[n % words.length], missedList ? 'miss' : 'ok');
       await wait(REVIEW_STEP);
     }
     light('', '');
@@ -938,7 +943,6 @@ $('modes').addEventListener('click', e => {
 $('again').addEventListener('click', () => start(newSeed()));
 $('toHome').addEventListener('click', () => { leaveOnline(); renderHome(); show('home'); });
 $('lobbyQuit').addEventListener('click', () => { leaveOnline(); renderHome(); show('home'); });
-$('leave').addEventListener('click', () => { leaveOnline(); renderHome(); show('home'); });
 $('resQuit').addEventListener('click', () => { leaveOnline(); renderHome(); show('home'); });
 $('offline').addEventListener('click', () => { menuOnline = false; renderHome(); show('home'); });
 $('online').addEventListener('click', () => { menuOnline = true; syncClock(); connect(); renderHome(); show('home'); });
