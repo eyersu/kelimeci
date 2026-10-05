@@ -771,8 +771,8 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=2', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=2', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=3', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=3', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }
@@ -822,14 +822,13 @@ show(player ? 'play' : 'name');
 // Portrait lock. Browsers can't lock rotation for a web page, so when a touch device goes
 // landscape the whole game is rotated back the other way (see style.css).
 function lockPortrait() {
-  const sideways = matchMedia('(pointer: coarse)').matches && innerWidth > innerHeight;
+  // The rotation itself is CSS; this only says which way the phone was turned
   let angle = screen.orientation && typeof screen.orientation.angle === 'number' ? screen.orientation.angle : (window.orientation || 0);
-  angle = (angle + 360) % 360;
-  document.documentElement.classList.toggle('turnL', sideways && angle !== 270);
-  document.documentElement.classList.toggle('turnR', sideways && angle === 270);
+  document.documentElement.classList.toggle('turnR', (angle + 360) % 360 === 270);
 }
 addEventListener('resize', lockPortrait);
 addEventListener('orientationchange', lockPortrait);
+if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change', lockPortrait);
 lockPortrait();
 
 // Keeps a copy of the game on the phone so Solo opens without a connection

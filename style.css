@@ -230,9 +230,15 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .defSrc { margin-top: 14px; font-size: 11px; color: #a08a66; }
 
 /* Portrait lock: when a phone is turned sideways the game is counter-rotated, so it stays exactly
-   as it was, upright along the phone's long side, with no separate landscape layout */
-html.turnL #app, html.turnR #app { position: absolute; top: 0; left: 0; margin: 0; max-width: none; width: 100vh; height: 100vw; transform-origin: top left; }
-html.turnL #app { transform: rotate(-90deg) translateX(-100%); }
-html.turnR #app { transform: rotate(90deg) translateY(-100%); }
-html.turnL .stage, html.turnR .stage { width: min(calc(100% - 24px), calc(100vw - 300px)); }
-html.turnL .mini .t, html.turnR .mini .t { font-size: clamp(17px, 6vh, 27px); }
+   as it was, upright along the phone's long side, with no separate landscape layout. Done in CSS so
+   it applies in the same frame as the turn (a script-added class arrived a frame late and flickered),
+   and sized with the dynamic viewport units so browser bars don't shift it. */
+html { background: #32241d; }
+@media (orientation: landscape) and (pointer: coarse) {
+  #app { position: fixed; top: 0; left: 0; margin: 0; max-width: none; width: 100vh; width: 100dvh; height: 100vw; height: 100dvw;
+    transform-origin: top left; transform: rotate(-90deg) translateX(-100%); }
+  html.turnR #app { transform: rotate(90deg) translateY(-100%); }
+  .stage { width: min(calc(100% - 24px), calc(100vw - 300px)); width: min(calc(100% - 24px), calc(100dvw - 300px)); }
+  .mini .t { font-size: clamp(17px, 6vh, 27px); }
+  .screen.enter, .screen.enterBack { animation: none; }
+}

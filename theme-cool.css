@@ -74,3 +74,4 @@ body { background: #0a111d; }
 .defMeta, .defList li em, .defSrc { color: #7f92b0; }
 .defList li::marker { color: #4cc9f0; }
 .defList.plain { color: #7f92b0; }
+html { background: #0a111d; }
