@@ -200,10 +200,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .board.deal .t:nth-child(n+5) { animation-duration: .34s; } .board.deal .t:nth-child(n+9) { animation-duration: .38s; } .board.deal .t:nth-child(n+13) { animation-duration: .42s; }
 .board .t.on { animation: pick .14s ease-out; }
 @keyframes okPop { 0% { transform: scale(.94); } 55% { transform: scale(1.06); } }
-@keyframes badShake { 20% { transform: translateX(-4px); } 50% { transform: translateX(4px); } 80% { transform: translateX(-2px); } }
 @keyframes dupFade { from { opacity: .55; } }
 .board .t.ok { animation: okPop .28s ease-out; }
-.board .t.bad { animation: badShake .26s ease-out; }
 .board .t.dup { animation: dupFade .25s ease-out; }
 @keyframes popIn { from { opacity: 0; transform: translateX(-50%) translateY(6px) scale(.92); } }
 .pop { animation: popIn .14s ease-out; }
