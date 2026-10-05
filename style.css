@@ -145,7 +145,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .wordList.leaving .row, .wordList.leaving .sec { animation: rowOut .28s ease-in both; animation-delay: calc(var(--i, 0) * 25ms); }
 .row { display: flex; align-items: center; gap: 8px; height: 30px; margin-bottom: 3px; border-radius: 6px; overflow: hidden; background: rgba(0,0,0,.28); font-size: 13px; font-weight: 700; letter-spacing: .04em; cursor: pointer; }
 .row::before { content: ""; flex: none; width: 22px; align-self: stretch; display: grid; place-items: center; color: #fff; font-size: 16px; background: #3f9d48; }
-.row.missed::before { background: #ec8112; }
+.row.missed::before { background: #8f8982; }
 .row.cur { color: #ffd766; background: rgba(0,0,0,.45); }
 .row.cur::before { content: "•"; }
 .row i { margin-left: auto; padding-right: 7px; font-style: normal; color: #ffd766; }
@@ -276,3 +276,6 @@ html { background: #32241d; }
 /* The flying tick for the 10-letter word: same motion as the bonus star, but a gold rounded square */
 .checkFx { width: 76px; height: 76px; margin: -38px 0 0 -38px; border-radius: 20px; background: #f2b824; box-shadow: inset 0 2px 0 rgba(255,255,255,.4), 0 4px 10px rgba(0,0,0,.45); }
 .checkFx span { font-size: 44px; font-weight: 800; color: #5a3a00; line-height: 1; }
+
+/* Words you didn't find are shown in gray, on the small board and in the list markers */
+.mini .t.miss { color: #fff; background: linear-gradient(#a9a39b, #8f8982); border-color: #6d6760; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.35); }

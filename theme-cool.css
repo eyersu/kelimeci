@@ -49,7 +49,7 @@ body { background: #0a111d; }
 .row { background: #17233a; }
 .row.cur { background: #1d2d4a; color: #4cc9f0; }
 .row::before { background: #3ddc97; color: #06281b; }
-.row.missed::before { background: #8b9cf7; }
+.row.missed::before { background: #56688a; }
 .row i { color: #ffd166; }
 .mini .t { box-shadow: none; }
 .mini .t.on { background: #8b9cf7; border-color: #8b9cf7; color: #0b1030; }
@@ -81,3 +81,4 @@ html { background: #0a111d; }
 .pop.gold { background: #ffd166; color: #2b2000; }
 .hdr > span.tenMark { color: #56688a; box-shadow: inset 0 0 0 1px #24344f; }
 .hdr > span.tenMark.on { color: #2b2000; background: #ffd166; box-shadow: none; }
+.mini .t.miss { background: #56688a; border-color: #56688a; color: #e6edf7; }

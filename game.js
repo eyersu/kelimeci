@@ -336,7 +336,7 @@ $('closeHistory').addEventListener('click', () => show('play'));
 
 // Like the original: your found words slide in and the first few light up on the small board one
 // after another, then that list slides away and the words you missed do the same.
-const REVIEW_SHOWN = 5, REVIEW_STEP = 1100;
+const REVIEW_SHOWN = 7, REVIEW_STEP = 1100;      // 7 words from each list; the scoreboard gets what's left of the break
 function startReview() {
   const run = ++reviewRun;
   // The slideshow holds still while a word's description is open
@@ -363,12 +363,12 @@ function startReview() {
     list.onclick = e => {
       const r = e.target.closest('.row');
       if (!r) return;
-      light(r.dataset.w, missedList ? 'on' : 'ok');
+      light(r.dataset.w, missedList ? 'miss' : 'ok');
       describe(r.dataset.w);
     };
     await wait(700);
     for (const w of words.slice(0, REVIEW_SHOWN)) {
-      light(w, missedList ? 'on' : 'ok');
+      light(w, missedList ? 'miss' : 'ok');
       await wait(REVIEW_STEP);
     }
     light('', '');
@@ -869,8 +869,8 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=8', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=8', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=9', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=9', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }

@@ -49,7 +49,7 @@ body { background: #e9e5de; color: #1f1b16; }
 .row { background: #fff; color: #1f1b16; box-shadow: 0 0 0 1.5px #e7e1d6; border-radius: 10px; margin-bottom: 5px; }
 .row.cur { background: #fff1e6; color: #d9530a; }
 .row::before { background: #1fae5b; }
-.row.missed::before { background: #ff6b1a; }
+.row.missed::before { background: #b9b2a6; }
 .row i { color: #f0a800; }
 .mini .t { border-radius: 8px; box-shadow: 0 2px 0 #dcd4c6; }
 .mini .t.on { box-shadow: 0 2px 0 #d9530a; }
@@ -86,3 +86,4 @@ html { background: #e9e5de; }
 .pop.gold { background: #f5b400; color: #3a2a00; }
 .hdr > span.tenMark { color: #a79f92; box-shadow: inset 0 0 0 2px #e1dacd; }
 .hdr > span.tenMark.on { color: #3a2a00; background: #f5b400; box-shadow: none; }
+.mini .t.miss { background: #b9b2a6; color: #fff; box-shadow: 0 2px 0 #9d968a; }
