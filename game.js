@@ -308,7 +308,7 @@ function finish() {
   $('resMeter').style.width = (100 * score / maxScore) + '%';
   // Solo has no next round to count down to: the ring is hidden, except in Uzman where it holds your time
   const timeOnly = !online && mode === 'idealist' && solvedAt !== null;
-  $('resDial').style.visibility = online || timeOnly ? 'visible' : 'hidden';
+  $('resDial').style.visibility = timeOnly ? 'visible' : 'hidden';      // in Canlı the countdown only appears with the scoreboard, not over the word lists
   $('resDial').classList.toggle('timeOnly', timeOnly);
   if (!online) { $('resCount').textContent = timeOnly ? formatTime(solvedAt) : ''; $('resDial').style.setProperty('--p', '360deg'); }
   $('resSolved').textContent = online && solvedAt !== null ? formatTime(solvedAt) : '';
@@ -836,6 +836,7 @@ function showScoreboard() {
   $('resTitle').textContent = MODES[mode].name + ' · TUR SONUÇLARI';
   $('review').hidden = true;
   $('scoreboard').hidden = false;
+  $('resDial').style.visibility = 'visible';
   renderScoreboard();
 }
 function renderScoreboard() {
