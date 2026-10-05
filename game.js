@@ -616,11 +616,9 @@ const activePeers = level => Object.values(peers[level] || {}).filter(p => Date.
 function standings() {
   const rows = Object.values(peers[mode] || {}).filter(p => p.round === round.n)
     .concat({ name: player, score, found: found.length, solvedAt, me: true });
-  const uzman = mode === 'idealist';
-  rows.sort((a, b) => uzman
-    ? (a.solvedAt === null) - (b.solvedAt === null) || (a.solvedAt - b.solvedAt) || b.score - a.score
-    : b.score - a.score);
-  return rows.map(p => ({ ...p, value: uzman && p.solvedAt !== null ? formatTime(p.solvedAt) : p.score }));
+  // Every level ranks by points (her rule); in Uzman the faster find only breaks a tie
+  rows.sort((a, b) => b.score - a.score || (a.solvedAt === null) - (b.solvedAt === null) || (a.solvedAt || 0) - (b.solvedAt || 0));
+  return rows.map(p => ({ ...p, value: p.score }));
 }
 
 const rankHtml = rows => rows.map((p, i) => `<div class="${p.me ? 'me' : ''}"><i>${i + 1}</i><span>${upper(p.name)}</span><b>${p.value}</b></div>`).join('');
