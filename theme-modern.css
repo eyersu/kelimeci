@@ -80,6 +80,6 @@ body { background: #e9e5de; color: #1f1b16; }
 .defList.plain { color: #8a8378; }
 html { background: #e9e5de; }
 .histNote, .histEmpty, #histList .row small { color: #8a8378; }
-.dial.low { background: conic-gradient(#e0533f var(--p, 360deg), #f6d5cf 0); box-shadow: none; }
-.dial.low span { background: #fff0ed; }
-.dial.low b { color: #d23c28; }
+.dial.low span { background: #e0533f; }
+.dial.low b { color: #fff; }
+.dial.low small { color: #ffe1dc; }

@@ -28,7 +28,7 @@ body { background: #0a111d; }
 .dial { background: conic-gradient(#4cc9f0 var(--p, 360deg), #24344f 0); box-shadow: none; }
 .dial span { background: #0e1726; color: #e6edf7; }
 .dial small { color: #7f92b0; }
-.dial.low b { color: #ff8fa3; }
+.dial.low b { color: #fff; }
 .dial.plus b { color: #3ddc97; }
 .score small { color: #7f92b0; }
 .bar { background: #24344f; }
@@ -76,5 +76,5 @@ body { background: #0a111d; }
 .defList.plain { color: #7f92b0; }
 html { background: #0a111d; }
 .histNote, .histEmpty, #histList .row small { color: #7f92b0; }
-.dial.low { background: conic-gradient(#ff8fa3 var(--p, 360deg), #3a1f2e 0); box-shadow: none; }
-.dial.low span { background: #2a1722; }
+.dial.low span { background: #d1435b; }
+.dial.low small { color: #ffd6dd; }

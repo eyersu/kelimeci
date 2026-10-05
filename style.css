@@ -85,10 +85,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .dial b { font-size: 21px; font-weight: 800; line-height: 1; }
 .dial small { font-size: 8px; font-weight: 700; line-height: 1; margin-top: 1px; color: #8a6a3a; }
 .dial small:empty { display: none; }
-.dial.low b { color: #c0392b; }
-/* Last 10 seconds: the whole clock goes red, not only the number */
-.dial.low { background: conic-gradient(#e0483a var(--p, 360deg), #5a1c15 0); box-shadow: 0 0 0 1px #7a2a22, 0 2px 5px rgba(0,0,0,.45), 0 0 12px rgba(224,72,58,.55); }
-.dial.low span { background: #ffe0da; }
+/* Last 10 seconds: the circle behind the countdown turns red; the number itself doesn't change to red */
+.dial.low span { background: linear-gradient(#e2473a, #c4301f); }
+.dial.low b { color: #fff; }
+.dial.low small { color: #ffd9d3; }
 .dial.plus b { color: #2f8f3a; }
 .score { text-align: right; }
 .score b { display: inline-block; margin-top: 9px; font-size: 15px; font-variant-numeric: tabular-nums; }
