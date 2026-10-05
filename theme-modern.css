@@ -87,3 +87,13 @@ html { background: #e9e5de; }
 .hdr > span.tenMark { color: #a79f92; box-shadow: inset 0 0 0 2px #e1dacd; }
 .hdr > span.tenMark.on { color: #3a2a00; background: #f5b400; box-shadow: none; }
 .mini .t.miss { background: #b9b2a6; color: #fff; box-shadow: 0 2px 0 #9d968a; }
+.total { background: #fff; box-shadow: 0 0 0 1.5px #e7e1d6; border-radius: 16px; }
+.total small, .onlineNow, .rank.big div > span small, .rank.big .head > * { color: #8a8378; }
+.total > b, .rank.big div > em { color: #d9530a; }
+.resTop .nums { color: #1f1b16; }
+.resTop .kind { color: #8a8378; }
+.resTop .kindIcon svg [fill] { fill: #8a8378; }
+.dial.after { background: conic-gradient(#ff6b1a var(--p, 360deg), #e7e1d6 0); }
+.dial.after span { background: #fff; }
+.dial.after b { color: #1f1b16; }
+.dial.after small { color: #8a8378; }

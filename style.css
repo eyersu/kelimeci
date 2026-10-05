@@ -279,3 +279,45 @@ html { background: #32241d; }
 
 /* Words you didn't find are shown in gray, on the small board and in the list markers */
 .mini .t.miss { color: #fff; background: linear-gradient(#a9a39b, #8f8982); border-color: #6d6760; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.35); }
+
+/* Lifetime total on the Canlı / Solo screen */
+.total { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-radius: 12px; background: rgba(0,0,0,.28); box-shadow: inset 0 1px 3px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.08); }
+.total .lbl { font-size: 10px; }
+.total small { display: block; margin-top: 2px; font-size: 11.5px; color: var(--muted); }
+.total > b { font-size: 24px; color: #ffc061; font-variant-numeric: tabular-nums; }
+
+/* Results header, after the original: the play mode (CANLI or SOLO) with its icon on the left, a
+   countdown in the middle that looks different from the clock used during play, and the score on
+   the right. Nothing else. */
+.resTop { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; column-gap: 14px; padding: 12px 14px; text-align: center; }
+/* Mode name and icon side by side, the same height, in the quiet label colour so they don't read as a button */
+.resTop .kind { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 700; letter-spacing: .1em; line-height: 1; color: var(--tan); }
+.resTop .kindIcon { display: block; height: 15px; }
+.resTop .kindIcon svg { display: block; height: 100%; width: auto; }
+.resTop .kindIcon svg [fill] { fill: var(--tan); }
+/* Score as in the original: label, then both numbers and the slash in one size, weight and colour,
+   then a bar exactly as wide as the numbers */
+.resTop .lbl { font-size: 10px; line-height: 12px; letter-spacing: .12em; }
+.resTop .fit { display: inline-block; }
+.resTop .nums { font-size: 20px; font-weight: 600; line-height: 1; color: #fff; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.resTop .bar { height: 4px; margin: 7px 0 0; }
+/* The after-round countdown: a slim brass ring that empties around a plain wood-brown face */
+.dial.after { width: 68px; height: 68px; padding: 3px; background: conic-gradient(#e9cf8b var(--p, 360deg), rgba(0,0,0,.35) 0); box-shadow: none; }
+.dial.after span { background: #7e4a1e; box-shadow: none; }
+.dial.after b { font-size: 28px; font-weight: 700; color: #fff3df; }
+.dial.after small { margin-top: 3px; font-size: 10px; font-weight: 700; color: var(--tan); }
+.dial.after.timeOnly b { font-size: 15px; }
+
+/* Round scoreboard rows: name with "% of words · longest word" under it, this round, running total.
+   Fixed row heights and column widths so everything lines up under the headings. */
+.rank.big .head, .rank.big div { grid-template-columns: 18px minmax(0, 1fr) auto; column-gap: 12px; padding: 0 16px; align-items: center; }
+.rank.big .head { height: 34px; font-size: 9px; font-weight: 700; letter-spacing: .1em; color: var(--tan); animation: none; }
+.rank.big .head > * { font-size: 9px; color: var(--tan); }
+.rank.big div:not(.head) { height: 62px; }
+.rank.big div > span { display: block; line-height: 1.15; }
+.rank.big div > span small { display: block; margin-top: 4px; font-size: 11.5px; font-weight: 500; letter-spacing: .02em; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rank.big div > em { font-style: normal; text-align: right; font-size: 18px; font-weight: 700; color: #ffc061; font-variant-numeric: tabular-nums; }
+.rank.big div > b { text-align: right; font-size: 16px; }
+.rank.big div.me > span small { color: var(--tan); }
+#resTitle { font-size: 16px; letter-spacing: .1em; white-space: nowrap; }
+#results .hdr > span { width: 8px; }

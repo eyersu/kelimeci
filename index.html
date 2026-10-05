@@ -7,7 +7,7 @@
 <title>Kelimeci</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=58">
+<link rel="stylesheet" href="style.css?v=66">
 <script>
   // The colour theme is the player's choice (saved on the device); ?theme= forces one for previews
   (function () {
@@ -45,6 +45,10 @@
       <p class="tagline">MERHABA, <span id="hello"></span></p>
     </header>
     <div class="body">
+      <div class="total" id="lifetime">
+        <div><div class="lbl">TOPLAM PUAN</div><small id="lifeNote"></small></div>
+        <b id="lifePoints">0</b>
+      </div>
       <div class="modes">
         <button class="mode" id="online">
           <svg viewBox="0 0 80 80"><circle fill="#fff" cx="29" cy="40" r="21"/><circle fill="#fff" opacity=".65" cx="51" cy="40" r="21"/></svg>
@@ -136,18 +140,26 @@
   <section id="results" class="screen" hidden>
     <header class="wood">
       <div class="hdr"><span></span><h2 id="resTitle"></h2><span></span></div>
+      <div class="panel resTop" id="resPanel">
+        <div class="kind"><span class="kindIcon" id="resKindIcon"></span><span id="resKind"></span></div>
+        <div class="dial after" id="resDial"><span><b id="resCount"></b><small id="resSolved"></small></span></div>
+        <div class="cell">
+          <div class="fit">
+            <div class="nums"><span id="resScore">0</span> / <span id="resScoreMax"></span></div>
+            <div class="bar"><i id="resMeter"></i></div>
+          </div>
+        </div>
+      </div>
     </header>
     <div class="review" id="review">
       <div class="wordList" id="wordList"></div>
       <div class="side">
         <div class="board mini" id="miniBoard"></div>
-        <div class="nextIn" id="nextIn" hidden></div>
         <button class="btn primary" id="again">Yeni tur</button>
         <button class="btn" id="toHome">Ana menü</button>
       </div>
     </div>
     <div class="scoreboard" id="scoreboard" hidden>
-      <div class="nextIn" id="nextIn2"></div>
       <div class="rank big" id="rank"></div>
       <button class="btn" id="leave">Çık</button>
     </div>
@@ -168,7 +180,7 @@
   </div>
 
 </main>
-<script src="words.js?v=58"></script>
-<script src="game.js?v=58"></script>
+<script src="words.js?v=66"></script>
+<script src="game.js?v=66"></script>
 </body>
 </html>

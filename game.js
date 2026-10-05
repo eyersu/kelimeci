@@ -233,6 +233,7 @@ function show(screen) {
     void $(screen).offsetWidth;                       // restart the animation if the same screen re-enters
     $(screen).classList.add(back ? 'enterBack' : 'enter');
   }
+  if (screen === 'play') renderLifetime();
   currentScreen = screen;
   window.scrollTo(0, 0);
 }
@@ -297,11 +298,20 @@ function finish() {
   remember();
   $('resTitle').textContent = MODES[mode].name + ' · SONUÇ';
   $('pbName').textContent = upper(player);
-  $('pbScore').innerHTML =
-    (mode === 'idealist' ? `<i>${solvedAt === null ? '—' : formatTime(solvedAt)}</i>` : '') +
-    `<i>${score} <small>/ ${maxScore} puan</small></i>`;
+  $('pbScore').innerHTML = `<i>${score} <small>/ ${maxScore} puan</small></i><i>${dots(loadStats().points)} <small>toplam</small></i>`;
   $('again').hidden = online;
-  $('nextIn').hidden = !online;
+  // Status panel up top: play mode, countdown, score
+  $('resKind').textContent = online ? 'CANLI' : 'SOLO';
+  $('resKindIcon').innerHTML = online ? KIND_ICON.canli : KIND_ICON.solo;
+  $('resScore').textContent = score;
+  $('resScoreMax').textContent = maxScore;
+  $('resMeter').style.width = (100 * score / maxScore) + '%';
+  // Solo has no next round to count down to: the ring is hidden, except in Uzman where it holds your time
+  const timeOnly = !online && mode === 'idealist' && solvedAt !== null;
+  $('resDial').style.visibility = online || timeOnly ? 'visible' : 'hidden';
+  $('resDial').classList.toggle('timeOnly', timeOnly);
+  if (!online) { $('resCount').textContent = timeOnly ? formatTime(solvedAt) : ''; $('resDial').style.setProperty('--p', '360deg'); }
+  $('resSolved').textContent = online && solvedAt !== null ? formatTime(solvedAt) : '';
   $('toHome').textContent = online ? 'Çık' : 'Ana menü';
   $('review').hidden = false;
   $('scoreboard').hidden = true;
@@ -320,8 +330,25 @@ function loadHistory() {
 function remember() {
   const list = loadHistory();
   list.unshift({ w: secret, hit: found.some(w => w.length === LONGEST), level: mode });
-  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX))); } catch (e) { /* private mode */ }
+  const stats = loadStats();
+  stats.points += score; stats.rounds += 1; stats.tens += found.some(w => w.length === LONGEST) ? 1 : 0;
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX)));
+    localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+  } catch (e) { /* private mode */ }
 }
+// Lifetime totals, kept on the device: every point scored, rounds finished, 10-letter words found
+const STATS_KEY = 'kelime-avi-stats';
+function loadStats() {
+  try { return Object.assign({ points: 0, rounds: 0, tens: 0 }, JSON.parse(localStorage.getItem(STATS_KEY))); } catch (e) { return { points: 0, rounds: 0, tens: 0 }; }
+}
+const dots = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');      // 12480 -> 12.480
+function renderLifetime() {
+  const s = loadStats();
+  $('lifePoints').textContent = dots(s.points);
+  $('lifeNote').textContent = s.rounds ? `${dots(s.rounds)} tur · ${dots(s.tens)} kez 10 harfli kelime` : 'İlk turunu oyna, puanların burada birikir';
+}
+
 function renderHistory() {
   const list = loadHistory();
   $('histList').innerHTML = list.length
@@ -330,6 +357,7 @@ function renderHistory() {
 }
 $('histList').addEventListener('click', e => { const r = e.target.closest('.row'); if (r) describe(r.dataset.w); });
 $('openHistory').addEventListener('click', () => { renderHistory(); show('history'); });
+renderLifetime();
 $('closeHistory').addEventListener('click', () => show('play'));
 
 /* ---------- Post-game review ---------- */
@@ -759,6 +787,7 @@ function onMessage(topic, payload) {
   (peers[level] = peers[level] || {})[m.id] = {
     name: m.name.slice(0, 12), round: +m.round, score: +m.score || 0, found: +m.found || 0,
     solvedAt: typeof m.solvedAt === 'number' ? m.solvedAt : null, at: Date.now(),
+    long: typeof m.long === 'string' ? m.long.slice(0, LONGEST) : '',
   };
   if (refreshQueued) return;
   refreshQueued = true;
@@ -767,22 +796,40 @@ function onMessage(topic, payload) {
 
 function announce() {
   if (!online || !client || !client.connected) return;
-  client.publish(NET.topic + '/' + mode, JSON.stringify({ id: myId, name: player, round: round.n, score, found: found.length, solvedAt }));
+  client.publish(NET.topic + '/' + mode, JSON.stringify({ id: myId, name: player, round: round.n, score, found: found.length, solvedAt, long: longestFound() }));
 }
 setInterval(announce, 3000);
 
 const activePeers = level => Object.values(peers[level] || {}).filter(p => Date.now() - p.at < 9000);
 
 // This round's table: you plus everyone heard from in the same round
+const KIND_ICON = {
+  canli: '<svg viewBox="6 17 68 46"><circle fill="#fff" cx="29" cy="40" r="21"/><circle fill="#fff" opacity=".65" cx="51" cy="40" r="21"/></svg>',
+  solo: '<svg viewBox="17 17 46 46"><circle fill="#fff" cx="40" cy="40" r="21"/></svg>',
+};
+const longestFound = () => found.reduce((best, w) => (w.length > best.length ? w : best), '');
+
+// This round's table: you plus everyone heard from in the same round.
+// Uzman ranks by who found the 10-letter word fastest; the other levels rank by the round's points.
 function standings() {
   const rows = Object.values(peers[mode] || {}).filter(p => p.round === round.n)
-    .concat({ name: player, score, found: found.length, solvedAt, me: true });
-  // Every level ranks by points (her rule); in Uzman the faster find only breaks a tie
-  rows.sort((a, b) => b.score - a.score || (a.solvedAt === null) - (b.solvedAt === null) || (a.solvedAt || 0) - (b.solvedAt || 0));
-  return rows.map(p => ({ ...p, value: p.score }));
+    .concat({ name: player, score, found: found.length, solvedAt, long: longestFound(), me: true });
+  rows.sort(mode === 'idealist'
+    ? (a, b) => (a.solvedAt === null) - (b.solvedAt === null) || (a.solvedAt || 0) - (b.solvedAt || 0) || b.score - a.score
+    : (a, b) => b.score - a.score);
+  return rows;
 }
-
 const rankHtml = rows => rows.map((p, i) => `<div class="${p.me ? 'me' : ''}"><i>${i + 1}</i><span>${upper(p.name)}</span><b>${p.value}</b></div>`).join('');
+
+// One scoreboard row, as in the original: rank, name over "% of the board's words · longest word found",
+// and one value on the right. In Uzman that value is the time to the 10-letter word and no points are shown.
+const rowValue = p => (mode === 'idealist' ? (p.solvedAt === null ? '—' : formatTime(p.solvedAt)) : p.score);
+function scoreRows(rows) {
+  const words = board ? board.words.length : 1;
+  const head = `<div class="head"><i></i><span>OYUNCU</span><em>${mode === 'idealist' ? 'SÜRE' : 'PUAN'}</em></div>`;
+  return head + rows.map((p, i) =>
+    `<div class="${p.me ? 'me' : ''}"><i>${i + 1}</i><span>${upper(p.name)}<small>%${Math.round(100 * p.found / words)}${p.long ? ' · ' + upper(p.long) : ''}</small></span><em>${rowValue(p)}</em></div>`).join('');
+}
 
 // After the words have played, the round's ranking takes over the screen until the next round
 function showScoreboard() {
@@ -793,8 +840,9 @@ function showScoreboard() {
 }
 function renderScoreboard() {
   const rows = standings();
-  $('rank').innerHTML = rankHtml(rows);
+  $('rank').innerHTML = scoreRows(rows);
   $('pbName').textContent = (rows.findIndex(p => p.me) + 1) + ' · ' + upper(player);
+  $('pbScore').innerHTML = `<i>${rowValue(rows.find(p => p.me))}${mode === 'idealist' ? '' : ' <small>puan</small>'}</i>`;
 }
 
 function refreshOnline() {
@@ -836,8 +884,8 @@ function awaitNextRound() {
     if (!online) return clearInterval(nextTimer);
     const left = Math.ceil((next - netNow()) / 1000);
     if (left <= 0) return startOnlineRound(roundInfo(mode));
-    $('lobbyCount').textContent = left;
-    $('nextIn').textContent = $('nextIn2').textContent = `Yeni tur ${left} sn sonra`;
+    $('lobbyCount').textContent = $('resCount').textContent = left;
+    $('resDial').style.setProperty('--p', 360 * Math.min(1, (next - netNow()) / (BREAK * 1000)) + 'deg');
   };
   update();
   nextTimer = setInterval(update, 250);
@@ -869,8 +917,8 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=9', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=9', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=14', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=14', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }
