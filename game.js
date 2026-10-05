@@ -921,8 +921,8 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=14', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=14', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  acik: { name: 'Açık', desc: 'Aydınlık ve sade', css: 'theme-modern.css?v=15', bar: '#f6f3ee', sw: ['#f6f3ee', '#ffffff', '#ff6b1a'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=15', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }

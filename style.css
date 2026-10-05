@@ -144,10 +144,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .row, .sec { animation: rowIn .32s cubic-bezier(.2,.8,.3,1) both; animation-delay: calc(var(--i, 0) * 45ms); }
 .wordList.leaving .row, .wordList.leaving .sec { animation: rowOut .28s ease-in both; animation-delay: calc(var(--i, 0) * 25ms); }
 .row { display: flex; align-items: center; gap: 8px; height: 30px; margin-bottom: 3px; border-radius: 6px; overflow: hidden; background: rgba(0,0,0,.28); font-size: 13px; font-weight: 700; letter-spacing: .04em; cursor: pointer; }
-.row::before { content: ""; flex: none; width: 22px; align-self: stretch; display: grid; place-items: center; color: #fff; font-size: 16px; background: #3f9d48; }
+/* A small colour dot beside each word: green if you found it, gray if you didn't */
+.row::before { content: ""; flex: none; width: 10px; height: 10px; margin-left: 13px; border-radius: 50%; background: #4fb85a; }
 .row.missed::before { background: #8f8982; }
 .row.cur { color: #ffd766; background: rgba(0,0,0,.45); }
-.row.cur::before { content: "•"; }
+.row.cur::before { box-shadow: 0 0 0 4px rgba(255,216,102,.28); }
 .row i { margin-left: auto; padding-right: 7px; font-style: normal; color: #ffd766; }
 .side { display: flex; flex-direction: column; gap: 9px; }
 .board.mini { gap: 3px; }
@@ -257,7 +258,8 @@ html { background: #32241d; }
 /* Last 25 hidden words */
 .histNote { margin: 0; font-size: 13px; color: var(--muted); }
 #histList .row { height: 40px; font-size: 16px; margin-bottom: 4px; animation: none; }
-#histList .row::before { width: 26px; }
+#histList .row { gap: 12px; }
+#histList .row::before { width: 11px; height: 11px; margin-left: 15px; }
 #histList .row small { margin-left: auto; padding-right: 12px; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
 .histEmpty { padding: 30px 0; text-align: center; font-size: 14px; color: var(--muted); }
 
@@ -266,7 +268,7 @@ html { background: #32241d; }
 .wordList .sec { margin: 16px 0 8px; }
 .wordList .sec:first-child { margin-top: 2px; }
 .wordList .row { height: 42px; gap: 11px; margin-bottom: 6px; border-radius: 8px; font-size: clamp(15px, 4.7vw, 20px); font-weight: 400; letter-spacing: .02em; white-space: nowrap; }
-.wordList .row::before { width: 22px; font-size: 15px; }
+.wordList .row::before { width: 10px; height: 10px; margin-left: 13px; }
 .wordList .row i { padding-right: 8px; font-size: 13px; }
 
 /* Top-left marker for the 10-letter word: a faint outlined square until it is found, then a gold square with a tick */

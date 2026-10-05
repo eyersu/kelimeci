@@ -48,7 +48,7 @@ body { background: #0a111d; }
 .slots i { background: #17233a; box-shadow: none; border: 1px solid #24344f; color: #4cc9f0; }
 .row { background: #17233a; }
 .row.cur { background: #1d2d4a; color: #4cc9f0; }
-.row::before { background: #3ddc97; color: #06281b; }
+.row::before { background: #3ddc97; }
 .row.missed::before { background: #56688a; }
 .row i { color: #ffd166; }
 .mini .t { box-shadow: none; }
