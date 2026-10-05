@@ -524,7 +524,7 @@ function submit(word, tiles) {
     // The found word fills the ten boxes in gold for a moment before the row clears (or starts on the next word)
     hintGold = word;
     clearTimeout(goldTimer);
-    goldTimer = setTimeout(() => { hintGold = null; if (playing) renderHint(); }, 1300);
+    goldTimer = setTimeout(() => { hintGold = null; if (playing) renderHint(); }, 2600);      // as long as the green tiles
     renderHint();
   }
   renderStatus();
@@ -533,7 +533,7 @@ function submit(word, tiles) {
   // The long word and the hidden bonus word get the same green flash, held longer, plus a celebration
   if (word.length === LONGEST) {
     flash(word, tiles, 'ok', 2600, true);
-    $('pop').classList.add('gold');
+    setPop('', '');      // the word is spelled out in gold in the hint row, so no label over the grid as well
     FX.fireworks();
     starBurst();
     if (!tenLanded) checkFly();
@@ -620,14 +620,19 @@ const STAR_POINTS = (() => {
 const starSvg = `<svg viewBox="0 0 100 100"><polygon fill="#ffd84f" stroke="#e0a516" stroke-width="2.5" stroke-linejoin="round" points="${STAR_POINTS}"/></svg>`;
 
 // A burst of gold stars from the word label, for the 10-letter word
+// Where the word label would sit: top centre of the grid (the 10-letter word no longer shows that label)
+function labelSpot() {
+  const b = $('board').getBoundingClientRect();
+  return { left: b.left, width: b.width, top: b.top - 26, height: 44 };
+}
 function starBurst() {
-  const from = $('pop').getBoundingClientRect();
+  const from = labelSpot();
   FX.stars(from.left + from.width / 2, from.top + from.height / 2);
 }
 
 // The gold tick pops over the grid like the bonus star, then flies up into its square at the top left
 function checkFly() {
-  const from = $('pop').getBoundingClientRect(), to = $('tenMark').getBoundingClientRect();
+  const from = labelSpot(), to = $('tenMark').getBoundingClientRect();
   const x = from.left + from.width / 2, y = from.top + 78;
   const dx = to.left + to.width / 2 - x, dy = to.top + to.height / 2 - y;
   const el = document.createElement('div');
