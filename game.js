@@ -276,7 +276,7 @@ function start(seed) {
     ticker = requestAnimationFrame(tick);
     if (online) {
       // Everyone's clock for a shared round comes from the same schedule, not from when they joined
-      const left = (round.playEnd - netNow()) / 1000;
+      const left = (round.playEnd - netNow()) / 1000 - penalty;      // hints cost you time off the shared clock
       timeLeft = MODES[mode].gain ? Math.min(timeLeft - (now - last) / 1000, left) : left;
     } else {
       timeLeft -= (now - last) / 1000;
@@ -480,8 +480,8 @@ function submit(word, tiles) {
     setTimeout(() => $('dial').classList.remove('plus'), 400);
   }
   // In İdealist the long word stops your clock, but the round carries on
-  if (mode === 'idealist' && word.length === LONGEST) {
-    if (solvedAt === null) solvedAt = elapsedNow();
+  if (word.length === LONGEST) {
+    if (mode === 'idealist' && solvedAt === null) solvedAt = elapsedNow();
     // Some boards hide more than one 10-letter word: the hint then starts over on the next one
     hintWord = board.words.find(w => w.length === LONGEST && !found.includes(w)) || null;
     hints = 0;
@@ -506,11 +506,11 @@ function submit(word, tiles) {
   if (found.length === board.words.length) setTimeout(finish, 900);
 }
 
-/* ---------- Hint (İdealist) ---------- */
+/* ---------- Hint ---------- */
 
 // Each hint reveals the next letter of the hidden word and costs time
 function useHint() {
-  if (!playing || mode !== 'idealist' || !hintWord || hints >= LONGEST - 1) return;
+  if (!playing || !hintWord || hints >= LONGEST - 1) return;
   hints++;
   penalty += HINT_PENALTY;
   timeLeft -= HINT_PENALTY;
@@ -535,7 +535,7 @@ function pathFor(word) {
 // The button stays quiet, with no letter slots, until the first hint is asked for
 function renderHint() {
   const solved = solvedAt !== null;
-  $('hintRow').hidden = mode !== 'idealist' || !hintWord;      // gone once every 10-letter word is found
+  $('hintRow').hidden = !hintWord;      // every level has the hint; it goes once every 10-letter word is found
   $('hintRow').classList.toggle('used', hints > 0);
   $('hintSlots').hidden = hints === 0;
   $('hintSlots').innerHTML = [...(hintWord || '')].map((l, i) => `<i>${i < hints ? upper(l) : ''}</i>`).join('');
