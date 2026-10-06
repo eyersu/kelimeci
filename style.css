@@ -558,3 +558,6 @@ h2 .hardBadge svg { width: 62%; height: 62%; }
 .hdr h2 { display: flex; align-items: center; justify-content: center; }
 .hdr h2 .ic { vertical-align: 0; flex: none; }
 h2 .hardBadge { display: grid; flex: none; vertical-align: 0; }
+
+/* Results title carries the level icon and the badge too, so it is set a little smaller to fit on one line */
+#resTitle { font-size: clamp(12px, 4.1vw, 16px); letter-spacing: .07em; white-space: nowrap; }

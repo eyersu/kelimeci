@@ -236,7 +236,8 @@ function elapsedNow() {
 }
 
 // A level's name with its bar icon in front, for screen titles
-const levelTitle = id => `<svg class="ic" viewBox="0 0 80 80" aria-hidden="true">${MODES[id].icon}</svg>${MODES[id].name}${hardBoards ? HARD_BADGE : ''}`;
+// A title row: the level's icon, its name (plus an optional " · SONUÇ" kind of tail) and the red badge when Zor tahtalar is on
+const levelTitle = (id, tail = '') => `<svg class="ic" viewBox="0 0 80 80" aria-hidden="true">${MODES[id].icon}</svg>${MODES[id].name}${tail}${hardBoards ? HARD_BADGE : ''}`;
 
 function wordPoints(w) { return MODES[mode].flat ? 1 : POINTS[w.length] + (isBonus(w) ? BONUS_POINTS : 0); }
 
@@ -322,7 +323,7 @@ function finish() {
 
   remember();
   if (online && MODES[mode].gain) timedDone();
-  $('resTitle').textContent = MODES[mode].name + ' · SONUÇ';
+  $('resTitle').innerHTML = levelTitle(mode, ' · SONUÇ');
   $('pbName').textContent = upper(player);
   $('pbScore').innerHTML = `<i>${score} <small>/ ${maxScore} puan</small></i><i>${dots(loadStats().points)} <small>toplam</small></i>`;
   $('again').hidden = online;
@@ -952,7 +953,7 @@ function scoreRows(rows) {
 
 // After the words have played, the round's ranking takes over the screen until the next round
 function showScoreboard() {
-  $('resTitle').textContent = MODES[mode].name + ' · TUR SONUÇLARI';
+  $('resTitle').innerHTML = levelTitle(mode, ' · TUR SONUÇLARI');
   $('review').hidden = true;
   $('scoreboard').hidden = false;
   $('resDial').classList.remove('timeOnly');
