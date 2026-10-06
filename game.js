@@ -453,7 +453,7 @@ function startReview() {
 const definitions = {};       // word -> { meta, meanings } or { note }
 async function lookUp(word) {
   if (definitions[word]) return definitions[word];
-  for (const [set, text] of [[COUNTRIES, 'Bir ülke adı.'], [CITIES, 'Bir şehir adı.'], [NAMES, 'Bir kişi adı.']]) {
+  for (const [set, text] of [[COUNTRIES, 'Bir ülke adı.'], [CITIES, 'Bir yer adı (şehir, ada ya da bölge).'], [NAMES, 'Bir kişi adı.']]) {
     if (set.has(word)) return (definitions[word] = { meta: 'özel isim', meanings: [['', text]], own: true });
   }
   try {
