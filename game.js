@@ -1105,8 +1105,10 @@ if (screen.orientation && screen.orientation.addEventListener) screen.orientatio
 lockPortrait();
 
 // Tablets: fill the screen by enlarging the phone layout (see the end of style.css). The game is laid out
-// about 430 wide and at least 780 tall, then scaled by --s to the tablet's upright size.
-const TABLET_MIN = 600, DESIGN_W = 430, DESIGN_H = 780;
+// about 430 wide and at least 812 tall (a tall phone, so every screen has the room it has on a phone), then
+// scaled by --s to the tablet's upright size. The game's own width and height are set in pixels from the
+// same measurement as the scale, so the scaled game is exactly the visible screen and nothing hangs off it.
+const TABLET_MIN = 600, DESIGN_W = 430, DESIGN_H = 812;
 function fitTablet() {
   const w = Math.min(innerWidth, innerHeight), h = Math.max(innerWidth, innerHeight);
   const touch = matchMedia('(pointer: coarse)').matches || /[?&]tablet=1/.test(location.search);
@@ -1115,11 +1117,14 @@ function fitTablet() {
   const s = Math.max(1, Math.min(w / DESIGN_W, h / DESIGN_H));
   root.classList.add('tablet');
   root.style.setProperty('--s', s.toFixed(4));
-  root.style.setProperty('--app-h', (h / s).toFixed(1) + 'px');
+  root.style.setProperty('--app-w', (w / s).toFixed(2) + 'px');
+  root.style.setProperty('--app-h', (h / s).toFixed(2) + 'px');
 }
 addEventListener('resize', fitTablet);
 addEventListener('orientationchange', fitTablet);
+if (window.visualViewport) visualViewport.addEventListener('resize', fitTablet);
 fitTablet();
+setTimeout(fitTablet, 400);      // some tablets report their final size a moment after opening
 
 // Keep the screen awake while the game is open and in front (phones dim after a few idle seconds, and a
 // round has plenty of those). The lock is dropped by the phone whenever the app goes to the background, so
