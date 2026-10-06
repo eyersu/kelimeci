@@ -545,3 +545,16 @@ h2 .hardBadge { display: inline-grid; width: 1.05em; height: 1.05em; margin-left
 h2 .hardBadge svg { width: 62%; height: 62%; }
 /* the three switches sit close together */
 #settingsForm .toggle { padding-top: 11px; padding-bottom: 11px; }
+
+/* Settings: theme on one row, picked by its colours */
+.chips { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 11px 14px; border-radius: 12px; background: rgba(0,0,0,.28); box-shadow: inset 0 1px 3px rgba(0,0,0,.55), 0 1px 0 rgba(255,255,255,.08); }
+.chips b { font-size: 16px; }
+.chips span { display: flex; gap: 12px; }
+.chips button { width: 38px; height: 38px; padding: 0; border-radius: 50%; border: 0; overflow: hidden; display: flex; box-shadow: 0 0 0 2px rgba(0,0,0,.4); }
+.chips button i { flex: 1; height: 100%; }
+.chips button.on { box-shadow: 0 0 0 2px #2a1d16, 0 0 0 4.5px #f9a53c; }
+
+/* Title rows: the level icon, the name and the "zor" badge sit on one centre line */
+.hdr h2 { display: flex; align-items: center; justify-content: center; }
+.hdr h2 .ic { vertical-align: 0; flex: none; }
+h2 .hardBadge { display: grid; flex: none; vertical-align: 0; }

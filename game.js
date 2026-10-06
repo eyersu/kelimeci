@@ -1040,7 +1040,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=24', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=25', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }
@@ -1080,10 +1080,11 @@ $('hintOrder').addEventListener('click', () => {
   renderHintOrder();
 });
 function renderThemes() {
-  $('themes').innerHTML = Object.entries(THEMES).map(([id, t]) =>
-    `<button type="button" class="themeOpt ${id === theme ? 'on' : ''}" data-theme="${id}"><span class="sw">${t.sw.map(c => `<i style="background:${c}"></i>`).join('')}</span><span><b>${t.name}</b><small>${t.desc}</small></span><span class="tick">✓</span></button>`).join('');
+  // One row: "Tema" and a round swatch per theme, with a ring on the chosen one
+  $('themes').innerHTML = '<b>Tema</b><span>' + Object.entries(THEMES).map(([id, t]) =>
+    `<button type="button" class="${id === theme ? 'on' : ''}" data-theme="${id}" aria-label="${t.name}" aria-pressed="${id === theme}">${t.sw.map(c => `<i style="background:${c}"></i>`).join('')}</button>`).join('') + '</span>';
 }
-$('themes').addEventListener('click', e => { const b = e.target.closest('.themeOpt'); if (b) applyTheme(b.dataset.theme); });
+$('themes').addEventListener('click', e => { const b = e.target.closest('button[data-theme]'); if (b) applyTheme(b.dataset.theme); });
 $('openSettings').addEventListener('click', () => { $('nameEdit').value = player; renderThemes(); renderHintOrder(); show('settings'); });
 $('closeSettings').addEventListener('click', () => show('play'));
 $('settingsForm').addEventListener('submit', e => {
