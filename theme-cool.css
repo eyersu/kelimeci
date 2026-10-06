@@ -123,3 +123,6 @@ html { background: #0a111d; }
 .chips { background: #17233a; color: #e6edf7; border: 1px solid #24344f; box-shadow: none; border-radius: 10px; }
 .chips button { box-shadow: 0 0 0 2px #24344f; }
 .chips button.on { box-shadow: 0 0 0 2px #17233a, 0 0 0 4.5px #4cc9f0; }
+.dial.hard span { background: #d1435b; }
+.dial.hard small { color: #ffd6dd; }
+.dial.hard.hit span { background: #f0718a; }

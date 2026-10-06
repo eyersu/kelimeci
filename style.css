@@ -564,3 +564,11 @@ h2 .hardBadge { display: grid; flex: none; vertical-align: 0; }
 
 /* Settings: every row the same distance apart */
 #settingsForm .chips, #settingsForm .toggle, #settingsForm .toggle.sub, #settingsForm .btn { margin-top: 0; }
+
+/* The round clock is red for the whole round when "Oyunu zorlaştır" is on. A hint still flashes: brighter, with its "−3 sn" tag. */
+.dial.hard span { background: linear-gradient(#e2473a, #c4301f); }
+.dial.hard b { color: #fff; }
+.dial.hard small { color: #ffd9d3; }
+.dial.hard.plus b { color: #d6ffd9; }
+.dial.hard.hit span { background: linear-gradient(#ff7a6b, #e2473a); }
+.dial.hard .hitTag { background: #7e1a10; }
