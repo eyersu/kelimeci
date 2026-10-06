@@ -572,3 +572,6 @@ h2 .hardBadge { display: grid; flex: none; vertical-align: 0; }
 .dial.hard.plus b { color: #d6ffd9; }
 .dial.hard.hit span { background: linear-gradient(#ff7a6b, #e2473a); }
 .dial.hard .hitTag { background: #7e1a10; }
+
+/* ...and so is the score bar, in the round and on the results screen */
+html.hardOn .bar i { background: linear-gradient(#e2473a, #c4301f); }

@@ -126,3 +126,4 @@ html { background: #0a111d; }
 .dial.hard span { background: #d1435b; }
 .dial.hard small { color: #ffd6dd; }
 .dial.hard.hit span { background: #f0718a; }
+html.hardOn .bar i { background: #d1435b; }
