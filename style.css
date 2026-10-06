@@ -505,7 +505,7 @@ html.tablet #app { position: fixed; top: 0; left: 0; margin: 0; max-width: none;
 /* A tablet's screen is much wider for its height than a phone's. Left alone, anything sized by width (the
    square level tiles above all) grows until it no longer fits. So the content keeps a phone's proportions:
    one centred column no wider than 480, with the wood bars still running edge to edge behind it. */
-html.tablet .screen > :not(.wood):not(.playerBar):not(.stage):not(.hint):not(.hintNote) { align-self: center; width: min(100%, 480px); }
+html.tablet .screen > :not(.wood):not(.playerBar):not(.stage):not(.hint):not(.hintNote):not(.review) { align-self: center; width: min(100%, 480px); }
 html.tablet .playerBar { padding-left: max(16px, calc((100% - 480px) / 2 + 16px)); padding-right: max(16px, calc((100% - 480px) / 2 + 16px)); }
 
 /* ---- Tablet round and results (2026-10-06): the top console fits the screen and the grid is as big as it can be ----
@@ -529,3 +529,8 @@ html.tablet #game .hintBtn { width: 34px; height: 34px; border-radius: 8px; }
 html.tablet #game .hintBtn svg { width: 19px; height: 19px; }
 html.tablet #game .slots i { height: 34px; font-size: 18px; border-radius: 6px; }
 html.tablet #game .hintNote { width: var(--grid); margin: 8px auto 0; font-size: 11px; }
+/* Tablet results: the word list and the small board use the whole width, with a clear gap between them */
+html.tablet .screen > .review { width: 100%; grid-template-columns: minmax(0, .82fr) minmax(0, 1fr); gap: 28px; padding: 16px 16px 0; }
+html.tablet .mini .t { font-size: 36px; border-radius: 8px; }
+html.tablet .board.mini { gap: 4px; }
+html.tablet .side { gap: 12px; }
