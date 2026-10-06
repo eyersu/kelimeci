@@ -616,7 +616,6 @@ html.hardOn .dial.after small { color: #d8cfc6; }
 .tenWord::before { content: ""; flex: none; width: 10px; height: 10px; border-radius: 50%; background: #8f8982; }
 .tenWord.got { color: #ffd766; }
 .tenWord.got::before { background: #f2b824; }
-.tenWord::after { content: "›"; margin-left: auto; font-size: 18px; font-weight: 500; color: var(--muted); }
 /* Scoreboard: a player's longest word is tappable for its meaning */
 .rank.big u { text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
 html.tablet .tenWord { font-size: 18px; height: 46px; }

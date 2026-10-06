@@ -136,4 +136,3 @@ html.hardOn .dial.after span { background: #05080f; }
 .tenWord { background: #17233a; color: #e6edf7; }
 .tenWord::before { background: #56688a; }
 .tenWord.got { color: #ffd166; } .tenWord.got::before { background: #ffd166; }
-.tenWord::after { color: #7f92b0; }
