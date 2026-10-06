@@ -11,12 +11,20 @@ const HINT_PENALTY = 3;
 const bars = n => [[14, 22], [34, 36], [54, 50]].map(([x, h], k) =>
   `<rect fill="#fff" x="${x}" y="${66 - h}" width="13" height="${h}" rx="3" opacity="${k < n ? 1 : 0.32}"/>`).join('');
 
+// Level icons: white glyphs with a fainter "ghost" layer
+const ICON = {
+  dots: [0, 1, 2].map(r => [0, 1, 2].map(c => `<circle fill="#fff" cx="${22 + c * 18}" cy="${24 + r * 18}" r="6.5" opacity="${(r + c) % 2 ? 0.45 : 1}"/>`).join('')).join(''),
+  longer: '<rect fill="#fff" opacity=".45" x="14" y="20" width="22" height="11" rx="5.5"/><rect fill="#fff" opacity=".7" x="14" y="36" width="37" height="11" rx="5.5"/><rect fill="#fff" x="14" y="52" width="52" height="11" rx="5.5"/>',
+  target: '<circle cx="40" cy="41" r="25" fill="none" stroke="#fff" stroke-width="6" opacity=".45"/><circle cx="40" cy="41" r="14" fill="none" stroke="#fff" stroke-width="6" opacity=".7"/><circle fill="#fff" cx="40" cy="41" r="5.5"/>',
+};
 // Shown as three difficulty levels plus a timed mode. The ids are the original game's mode names.
 const MODES = {
-  rasyonel: { name: 'KOLAY', desc: 'Her kelime 1 puan', seconds: 90, flat: true, icon: bars(1) },
-  klasik: { name: 'ORTA', desc: 'Uzun kelime, çok puan', seconds: 90, icon: bars(2) },
-  idealist: { name: 'UZMAN', desc: '10 harfli kelimeyi bul', seconds: 120, icon: bars(3) },
-  marjinal: { name: 'ZAMANLI', desc: 'Kelime buldukça süre kazan', seconds: 30, gain: true,
+  // Named by what counts in each one (her choice, 2026-10-06): every word equal, longer words worth more,
+  // one target word, and against the clock.
+  rasyonel: { name: 'EŞİT', desc: 'Her kelime 1 puan', seconds: 90, flat: true, icon: ICON.dots },
+  klasik: { name: 'ARTAN', desc: 'Uzun kelime, çok puan', seconds: 90, icon: ICON.longer },
+  idealist: { name: 'HEDEF', desc: '10 harfli kelimeyi bul', seconds: 120, icon: ICON.target },
+  marjinal: { name: 'HIZLI', desc: 'Kelime buldukça süre kazan', seconds: 30, gain: true,
     icon: '<circle fill="#fff" cx="34" cy="48" r="22"/><rect fill="#fff" x="28" y="15" width="12" height="9" rx="2"/><path d="M34 35v13l8 6" fill="none" stroke="#ec8112" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M65 14v12M59 20h12" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>' },
 };
 
