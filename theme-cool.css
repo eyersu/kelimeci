@@ -117,16 +117,15 @@ html { background: #0a111d; }
 .slots i.gold { color: #2b2000; background: #ffd166; box-shadow: none; }
 .t[data-hint] { outline-color: #ffd166; }
 .hintNote { color: #7f92b0; }
-.hardBadge { background: #d1435b; box-shadow: none; }
 .mode .hardBadge { box-shadow: none; }
 .mode .hardBadge svg polygon { fill: #fff; }
 .chips { background: #17233a; color: #e6edf7; border: 1px solid #24344f; box-shadow: none; border-radius: 10px; }
 .chips button { box-shadow: 0 0 0 2px #24344f; }
 .chips button.on { box-shadow: 0 0 0 2px #17233a, 0 0 0 4.5px #4cc9f0; }
-.dial.hard span { background: #d1435b; }
-.dial.hard small { color: #ffd6dd; }
-.dial.hard.hit span { background: #f0718a; }
-html.hardOn .bar i { background: #d1435b; }
-html.hardOn .dial.after { background: conic-gradient(#f0718a var(--p, 360deg), #4a2434 0); }
-html.hardOn .dial.after span { background: #3a1f2e; }
-html.hardOn .lobbyCount { color: #f0718a; }
+.hardBadge { background: #c4622f; box-shadow: none; }
+.dial.hard span { background: #b5532a; }
+.dial.hard.low span, .dial.hard.hit span { background: #d1435b; }
+html.hardOn .bar i { background: #e58a5f; }
+html.hardOn .dial.after { background: conic-gradient(#e58a5f var(--p, 360deg), #4a2a1c 0); }
+html.hardOn .dial.after span { background: #5e2a12; }
+html.hardOn .lobbyCount { color: #e58a5f; }
