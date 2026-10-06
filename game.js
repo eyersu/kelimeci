@@ -21,7 +21,7 @@ const MODES = {
 };
 
 // Filler letters, weighted by how often each appears in Turkish text
-const FILLER = 'aaaaaaaaaaaaeeeeeeeeeiiiiiiiiinnnnnnnnrrrrrrrllllllııııııkkkkkdddddmmmmyyyuuutttsssbbbooüüşşzzgçhğvcöpf';
+const FILLER = 'aaaaaaaaaaaaeeeeeeeeeiiiiiiiiinnnnnnnnrrrrrrrllllllııııııkkkkkdddddmmmmyyyuuutttsssbbbooüüşşzzgçhğvcöpfjj';      // two j's: a J tile on about 1 board in 6 (it used to appear only inside the hidden word)
 
 const upper = s => s.toLocaleUpperCase('tr-TR');
 const $ = id => document.getElementById(id);
