@@ -100,9 +100,9 @@ function solve(letters) {
 // Same seed -> same board for every player
 const VERB_SHARE = 0.1, isVerb = w => /m[ae]k$/.test(w);
 const SEED_VERBS = SEED_WORDS.filter(isVerb), SEED_OTHERS = SEED_WORDS.filter(w => !isVerb(w));
-// "Zor tahtalar" (a switch in settings): the hidden word comes from HARD_SEEDS instead, 10-letter words that are
-// less everyday but still in use (see tools/build_words.py). Off by default.
-const HARD_VERBS = HARD_SEEDS.filter(isVerb), HARD_OTHERS = HARD_SEEDS.filter(w => !isVerb(w));
+// "Zor tahtalar" (a switch in settings): the hidden word comes from HARD_SEEDS instead, specialty and older
+// 10-letter words (see tools/build_words.py). Every word still counts; nothing is refused. Off by default.
+const HARD_MAX_WORDS = 55;      // and the board is a lean one: no more than this many words to find (a usual board has about 75)
 const HARD_KEY = 'kelime-avi-hard';
 let hardBoards = false;
 try { hardBoards = localStorage.getItem(HARD_KEY) === '1'; } catch (e) { /* private mode */ }
@@ -112,7 +112,7 @@ function makeBoard(seed, hard = hardBoards) {
     const rng = rngFrom(seed + attempt * 7919);
     // Verbs make up 3 in 10 of the 10-letter words and also pass the board test more easily, so hidden words
     // used to come up as verbs about half the time. Now roughly 1 board in 8 is built on a verb.
-    const pool = rng() < VERB_SHARE ? (hard ? HARD_VERBS : SEED_VERBS) : (hard ? HARD_OTHERS : SEED_OTHERS);
+    const pool = hard ? HARD_SEEDS : rng() < VERB_SHARE ? SEED_VERBS : SEED_OTHERS;
     const secret = pool[Math.floor(rng() * pool.length)];
     const path = randomPath(rng, LONGEST);
     if (!path) continue;
@@ -120,7 +120,7 @@ function makeBoard(seed, hard = hardBoards) {
     path.forEach((cell, i) => { letters[cell] = secret[i]; });
     for (let i = 0; i < letters.length; i++) if (!letters[i]) letters[i] = FILLER[Math.floor(rng() * FILLER.length)];
     const words = solve(letters).sort((a, b) => b.length - a.length || a.localeCompare(b, 'tr'));
-    if (words.length < MIN_BOARD_WORDS) continue;
+    if (words.length < MIN_BOARD_WORDS || (hard && words.length > HARD_MAX_WORDS)) continue;
     const clued = shuffled(words.filter(w => CLUES[w] && w.length >= 4 && w.length < LONGEST), rng);
     const bonus = clued[0] || null;
     const shown = bonus ? shuffled([...bonus].map((_, i) => i), rng).slice(0, Math.floor(bonus.length / 2)) : [];
