@@ -133,3 +133,7 @@ html.hardOn .dial.after span { background: #05080f; }
 .idleCard { background: #17233a; color: #e6edf7; box-shadow: 0 0 0 1px #24344f; }
 .idleCard .pz { background: #24344f; } .idleCard .pz svg { fill: #4cc9f0; }
 .idleCard p, .idleCard #idleQuit { color: #7f92b0; }
+.tenWord { background: #17233a; color: #e6edf7; }
+.tenWord::before { background: #56688a; }
+.tenWord.got { color: #ffd166; } .tenWord.got::before { background: #ffd166; }
+.tenWord::after { color: #7f92b0; }

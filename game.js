@@ -486,6 +486,16 @@ function startReview() {
     for (let n = 0; n < tiles.length; n++) tiles[n].className = 't' + (cells.includes(n) ? ' ' + cls : '');
     list.querySelectorAll('.row').forEach(r => r.classList.toggle('cur', r.dataset.w === word));
   };
+  // The 10-letter word (or words) sits under the small board whether you found it or not; tapping it lights
+  // it up on the board and opens its meaning.
+  $('tens').innerHTML = '<span class="lbl">10 HARFLİ KELİME</span>' + board.words.filter(w => w.length === LONGEST).map(w =>
+    `<button type="button" class="tenWord ${found.includes(w) ? 'got' : ''}" data-w="${w}">${upper(w)}</button>`).join('');
+  $('tens').onclick = e => {
+    const b = e.target.closest('.tenWord');
+    if (!b) return;
+    light(b.dataset.w, 'ok');
+    describe(b.dataset.w);
+  };
   const phase = async (title, words, missedList) => {
     list.className = 'wordList';
     list.scrollTop = 0;
@@ -1001,8 +1011,11 @@ function scoreRows(rows) {
   const words = board ? board.words.length : 1;
   const head = `<div class="head"><i></i><span>OYUNCU</span><em>${mode === 'idealist' ? 'SÜRE' : 'PUAN'}</em></div>`;
   return head + rows.map((p, i) =>
-    `<div class="${p.me ? 'me' : ''}"><i>${i + 1}</i><span>${upper(p.name)}<small>%${Math.round(100 * p.found / words)}${p.long ? ' · ' + upper(p.long) : ''}</small></span><em>${rowValue(p)}</em></div>`).join('');
+    `<div class="${p.me ? 'me' : ''}"><i>${i + 1}</i><span>${upper(p.name)}<small>%${Math.round(100 * p.found / words)}${p.long ? ' · <u data-w="' + p.long + '">' + upper(p.long) + '</u>' : ''}</small></span><em>${rowValue(p)}</em></div>`).join('');
 }
+
+// Tapping a player's longest word on the scoreboard opens its meaning
+$('rank').addEventListener('click', e => { const u = e.target.closest('[data-w]'); if (u && WORDS.has(u.dataset.w)) describe(u.dataset.w); });
 
 // After the words have played, the round's ranking takes over the screen until the next round
 function showScoreboard() {
@@ -1095,7 +1108,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=31', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=32', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }

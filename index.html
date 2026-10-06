@@ -7,14 +7,14 @@
 <title>Kelimeci</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=137">
+<link rel="stylesheet" href="style.css?v=140">
 <script>
   // The colour theme is the player's choice (saved on the device); ?theme= forces one for previews
   (function () {
     var files = { koyu: 'theme-cool.css', cool: 'theme-cool.css' };
     var pick = new URLSearchParams(location.search).get('theme');
     if (!pick) { try { pick = localStorage.getItem('kelime-avi-theme'); } catch (e) {} }
-    document.write('<link id="themeCss" rel="stylesheet"' + (files[pick] ? ' href="' + files[pick] + '?v=31"' : '') + '>');
+    document.write('<link id="themeCss" rel="stylesheet"' + (files[pick] ? ' href="' + files[pick] + '?v=32"' : '') + '>');
   })();
 </script>
 <link rel="manifest" href="manifest.webmanifest">
@@ -165,6 +165,7 @@
       <div class="wordList" id="wordList"></div>
       <div class="side">
         <div class="board mini" id="miniBoard"></div>
+        <div class="tens" id="tens"></div>
         <button class="btn primary" id="again">Yeni tur</button>
         <button class="btn" id="toHome">Ana menü</button>
       </div>
@@ -199,7 +200,7 @@
   </div>
 
 </main>
-<script src="words.js?v=137"></script>
-<script src="game.js?v=137"></script>
+<script src="words.js?v=140"></script>
+<script src="game.js?v=140"></script>
 </body>
 </html>
