@@ -561,3 +561,6 @@ h2 .hardBadge { display: grid; flex: none; vertical-align: 0; }
 
 /* Results title carries the level icon and the badge too, so it is set a little smaller to fit on one line */
 #resTitle { font-size: clamp(12px, 4.1vw, 16px); letter-spacing: .07em; white-space: nowrap; }
+
+/* Settings: every row the same distance apart */
+#settingsForm .chips, #settingsForm .toggle, #settingsForm .toggle.sub, #settingsForm .btn { margin-top: 0; }
