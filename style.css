@@ -497,9 +497,6 @@ h2 .ic { margin-right: .45em; }
    enlarging). The game is laid out at phone-like proportions and then scaled, so every size grows together. */
 html.tablet body { background: #32241d; }
 html.tablet #app { position: fixed; top: 0; left: 0; margin: 0; max-width: none; width: var(--app-w); height: var(--app-h); transform-origin: top left; transform: scale(var(--s)); }
-/* On a tablet the grid is limited by height, so everything above and below it has to be counted: the header,
-   the hint row and its note, the notch and home-bar gaps, and a little spare so the note is never cut off */
-html.tablet .stage { width: min(calc(100% - 24px), calc(var(--app-h) - 377px - var(--safe-top) - var(--safe-bottom))); }
 @media (orientation: landscape) and (pointer: coarse) {
   /* held sideways it stays locked upright, exactly as on phones, at the same enlarged size */
   html.tablet #app { width: var(--app-w); height: var(--app-h); transform: rotate(-90deg) translateX(calc(-100% * var(--s))) scale(var(--s)); }
@@ -508,8 +505,27 @@ html.tablet .stage { width: min(calc(100% - 24px), calc(var(--app-h) - 377px - v
 /* A tablet's screen is much wider for its height than a phone's. Left alone, anything sized by width (the
    square level tiles above all) grows until it no longer fits. So the content keeps a phone's proportions:
    one centred column no wider than 480, with the wood bars still running edge to edge behind it. */
-html.tablet .screen > :not(.wood):not(.playerBar):not(.stage) { align-self: center; width: min(100%, 480px); }
-html.tablet .screen > .hint, html.tablet .screen > .hintNote { width: min(calc(100% - 24px), 456px); margin-left: 0; margin-right: 0; }
-html.tablet .wood > * { width: min(100%, 480px); margin-left: auto; margin-right: auto; }
-html.tablet .wood > .panel { width: min(calc(100% - 16px), 464px); }
+html.tablet .screen > :not(.wood):not(.playerBar):not(.stage):not(.hint):not(.hintNote) { align-self: center; width: min(100%, 480px); }
 html.tablet .playerBar { padding-left: max(16px, calc((100% - 480px) / 2 + 16px)); padding-right: max(16px, calc((100% - 480px) / 2 + 16px)); }
+
+/* ---- Tablet round and results (2026-10-06): the top console fits the screen and the grid is as big as it can be ----
+   The notch/home-bar gaps are real pixels, so inside the enlarged game they are divided back down; otherwise
+   the top bar kept a phone-sized empty strip that was then enlarged too. */
+html.tablet { --safe-top: calc(env(safe-area-inset-top) / var(--s)); --safe-bottom: calc(env(safe-area-inset-bottom) / var(--s)); }
+@media (orientation: landscape) and (pointer: coarse) {
+  html.tablet { --safe-top: calc(env(safe-area-inset-left) / var(--s)); --safe-bottom: calc(env(safe-area-inset-right) / var(--s)); }
+  html.tablet.turnR { --safe-top: calc(env(safe-area-inset-right) / var(--s)); --safe-bottom: calc(env(safe-area-inset-left) / var(--s)); }
+}
+/* Console: a shorter title row, and the panel runs the width of the screen as it does on a phone */
+html.tablet #game .hdr, html.tablet #results .hdr { height: 52px; padding: 10px 16px 6px; }
+html.tablet #game .wood, html.tablet #results .wood { padding-bottom: 10px; }
+html.tablet #game .panel, html.tablet #results .panel.resTop { margin: 0 12px; }
+/* Grid: everything else on the screen is counted (console 171, gaps, the smaller hint row and its note, bottom
+   edge) and the grid takes all that is left, or the full width, whichever is smaller. The hint row is as wide as the grid. */
+html.tablet #game { --grid: min(calc(100% - 24px), calc(var(--app-h) - 276px - var(--safe-top) - var(--safe-bottom))); padding-bottom: calc(12px + var(--safe-bottom)); }
+html.tablet #game .stage { width: var(--grid); margin-top: 16px; }
+html.tablet #game .hint { width: var(--grid); min-height: 34px; margin: 14px auto 0; gap: 8px; }
+html.tablet #game .hintBtn { width: 34px; height: 34px; border-radius: 8px; }
+html.tablet #game .hintBtn svg { width: 19px; height: 19px; }
+html.tablet #game .slots i { height: 34px; font-size: 18px; border-radius: 6px; }
+html.tablet #game .hintNote { width: var(--grid); margin: 8px auto 0; font-size: 11px; }
