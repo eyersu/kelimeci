@@ -575,3 +575,8 @@ h2 .hardBadge { display: grid; flex: none; vertical-align: 0; }
 
 /* ...and so is the score bar, in the round and on the results screen */
 html.hardOn .bar i { background: linear-gradient(#e2473a, #c4301f); }
+/* ...and the countdowns after a round: the ring on the results screen and the big number on the waiting screen */
+html.hardOn .dial.after { background: conic-gradient(#ff5a4a var(--p, 360deg), #7a2a22 0); }
+html.hardOn .dial.after span { background: #8f2a1e; }
+html.hardOn .dial.after small { color: #ffd9d3; }
+html.hardOn .lobbyCount { color: #ff6a5c; }

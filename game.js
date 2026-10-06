@@ -106,6 +106,7 @@ const HARD_MAX_WORDS = 55;      // and the board is a lean one: no more than thi
 const HARD_KEY = 'kelime-avi-hard';
 let hardBoards = false;
 try { hardBoards = localStorage.getItem(HARD_KEY) === '1'; } catch (e) { /* private mode */ }
+document.documentElement.classList.toggle('hardOn', hardBoards);      // red clock, bars and countdowns everywhere
 const HARD_BADGE = '<span class="hardBadge" aria-label="Zor tahta"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="13.5,2 5,13.5 11,13.5 9.5,22 19,10 12.5,10"/></svg></span>';
 function makeBoard(seed, hard = hardBoards) {
   for (let attempt = 0; ; attempt++) {
@@ -1044,7 +1045,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=27', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=28', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }
@@ -1068,6 +1069,7 @@ function renderHintOrder() {
 }
 $('hardToggle').addEventListener('click', () => {
   hardBoards = !hardBoards;
+  document.documentElement.classList.toggle('hardOn', hardBoards);
   try { localStorage.setItem(HARD_KEY, hardBoards ? '1' : '0'); } catch (err) { /* not remembered in private mode */ }
   for (const level of Object.keys(peers)) peers[level] = {};      // players seen so far were in the other pool
   myPast = [];
