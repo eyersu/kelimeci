@@ -627,3 +627,6 @@ html.tablet .side { gap: 16px; }
 /* "Yeni tur" and "Ana menü" sit at the bottom of the column, just above the player bar */
 .side { padding-bottom: 14px; }
 .side #again { margin-top: auto; }
+
+/* Scoreboard rows slide in once, when the list first appears, not on every score update */
+.rank.big.still div { animation: none; }

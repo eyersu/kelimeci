@@ -1025,12 +1025,17 @@ function showScoreboard() {
   $('scoreboard').hidden = false;
   $('resDial').classList.remove('timeOnly');
   $('resCount').textContent = '';
+  shownRows = null;
   renderScoreboard();
 }
 
+let shownRows = null;      // what the scoreboard currently shows; null until it has been drawn for this round
 function renderScoreboard() {
   const rows = standings();
-  $('rank').innerHTML = scoreRows(rows);
+  // The list is redrawn every time another player's score arrives. Only the first drawing slides in; after
+  // that the rows are swapped in place, and not touched at all if nothing changed.
+  const html = scoreRows(rows);
+  if (html !== shownRows) { $('rank').classList.toggle('still', shownRows !== null); $('rank').innerHTML = html; shownRows = html; }
   $('pbName').textContent = (rows.findIndex(p => p.me) + 1) + ' · ' + upper(player);
   $('pbScore').innerHTML = `<i>${rowValue(rows.find(p => p.me))}${mode === 'idealist' ? '' : ' <small>puan</small>'}</i>`;
   // The bar at the bottom repeats your own row, so it only shows when the list is too long to see every row at once
