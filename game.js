@@ -486,10 +486,11 @@ function startReview() {
     for (let n = 0; n < tiles.length; n++) tiles[n].className = 't' + (cells.includes(n) ? ' ' + cls : '');
     list.querySelectorAll('.row').forEach(r => r.classList.toggle('cur', r.dataset.w === word));
   };
-  // The 10-letter word (or words) sits under the small board whether you found it or not; tapping it lights
-  // it up on the board and opens its meaning.
-  $('tens').innerHTML = '<span class="lbl">10 HARFLİ KELİME</span>' + board.words.filter(w => w.length === LONGEST).map(w =>
-    `<button type="button" class="tenWord ${found.includes(w) ? 'got' : ''}" data-w="${w}">${upper(w)}</button>`).join('');
+  // A 10-letter word you found sits under the small board, so its meaning can still be opened (the list only
+  // shows what you missed, so a missed one is already there and isn't repeated here).
+  const gotTens = board.words.filter(w => w.length === LONGEST && found.includes(w));
+  $('tens').innerHTML = gotTens.length ? '<span class="lbl">10 HARFLİ KELİME</span>' + gotTens.map(w =>
+    `<button type="button" class="tenWord got" data-w="${w}">${upper(w)}</button>`).join('') : '';
   $('tens').onclick = e => {
     const b = e.target.closest('.tenWord');
     if (!b) return;
