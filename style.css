@@ -497,7 +497,9 @@ h2 .ic { margin-right: .45em; }
    enlarging). The game is laid out at phone-like proportions and then scaled, so every size grows together. */
 html.tablet body { background: #32241d; }
 html.tablet #app { position: fixed; top: 0; left: 0; margin: 0; max-width: none; width: calc(100vw / var(--s)); height: calc(100dvh / var(--s)); transform-origin: top left; transform: scale(var(--s)); }
-html.tablet .stage { width: min(calc(100% - 24px), calc(var(--app-h) - 345px)); }
+/* On a tablet the grid is limited by height, so everything above and below it has to be counted: the header,
+   the hint row and its note, the notch and home-bar gaps, and a little spare so the note is never cut off */
+html.tablet .stage { width: min(calc(100% - 24px), calc(var(--app-h) - 380px - var(--safe-top) - var(--safe-bottom))); }
 @media (orientation: landscape) and (pointer: coarse) {
   /* held sideways it stays locked upright, exactly as on phones, at the same enlarged size */
   html.tablet #app { width: calc(100dvh / var(--s)); height: calc(100dvw / var(--s)); transform: rotate(-90deg) translateX(calc(-100% * var(--s))) scale(var(--s)); }
