@@ -565,16 +565,18 @@ h2 .hardBadge { display: grid; flex: none; vertical-align: 0; }
 /* Settings: every row the same distance apart */
 #settingsForm .chips, #settingsForm .toggle, #settingsForm .toggle.sub, #settingsForm .btn { margin-top: 0; }
 
-/* "Oyunu zorlaştır" has its own colour, copper (bakır): the badge, the round clock, the score bar and the
-   countdowns after a round. Red keeps its two meanings on top of it: the last 10 seconds, and a hint's "−3 sn". */
-.hardBadge { background: #b5532a; }
-.dial.hard span { background: linear-gradient(#c4622f, #8a3a18); }
+/* "Oyunu zorlaştır" has its own colour, black: the badge, the round clock, the score bar and the countdown
+   ring after a round. Black on the dark panels needs a light edge to be seen, so each piece has a fine pale
+   outline. Red keeps its two meanings on top of it: the last 10 seconds, and a hint's "−3 sn". */
+.hardBadge { background: #14110f; box-shadow: inset 0 0 0 1.5px rgba(255,235,205,.5); }
+.mode .hardBadge { box-shadow: inset 0 0 0 1.5px rgba(255,235,205,.5), 0 2px 5px rgba(0,0,0,.45); }
+.dial.hard span { background: linear-gradient(#2a2523, #000); }
 .dial.hard b { color: #fff; }
-.dial.hard small { color: #ffe0cf; }
-.dial.hard.plus b { color: #d6ffd9; }
+.dial.hard small { color: #d8cfc6; }
+.dial.hard.plus b { color: #9df0a6; }
 .dial.hard.low span, .dial.hard.hit span { background: linear-gradient(#e2473a, #c4301f); }
-html.hardOn .bar i { background: linear-gradient(#e58a5f, #b5532a); }
-html.hardOn .dial.after { background: conic-gradient(#e58a5f var(--p, 360deg), #5e2a12 0); }
-html.hardOn .dial.after span { background: #8a3a18; }
-html.hardOn .dial.after small { color: #ffe0cf; }
-html.hardOn .lobbyCount { color: #e58a5f; }
+html.hardOn .bar { background: rgba(255,235,205,.22); }
+html.hardOn .bar i { background: #0b0908; }
+html.hardOn .dial.after { background: conic-gradient(#d8cfc6 var(--p, 360deg), #4a413c 0); }
+html.hardOn .dial.after span { background: #14110f; }
+html.hardOn .dial.after small { color: #d8cfc6; }
