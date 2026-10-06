@@ -324,7 +324,7 @@ function finish() {
 
   remember();
   if (online && MODES[mode].gain) timedDone();
-  $('resTitle').innerHTML = levelTitle(mode, ' · SONUÇ');
+  $('resTitle').innerHTML = levelTitle(mode);      // exactly the round's title, same size and place
   $('pbName').textContent = upper(player);
   $('pbScore').innerHTML = `<i>${score} <small>/ ${maxScore} puan</small></i><i>${dots(loadStats().points)} <small>toplam</small></i>`;
   $('again').hidden = online;
@@ -957,7 +957,7 @@ function scoreRows(rows) {
 
 // After the words have played, the round's ranking takes over the screen until the next round
 function showScoreboard() {
-  $('resTitle').innerHTML = levelTitle(mode, ' · TUR SONUÇLARI');
+  $('resTitle').innerHTML = levelTitle(mode);
   $('review').hidden = true;
   $('scoreboard').hidden = false;
   $('resDial').classList.remove('timeOnly');

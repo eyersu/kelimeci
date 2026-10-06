@@ -586,3 +586,11 @@ html.hardOn .dial.after small { color: #d8cfc6; }
 #game .hdr h2 .ic { width: 1.2em; height: 1.2em; }
 #game h2 .hardBadge { width: 1.12em; height: 1.12em; }
 @media (max-width: 359px) { #game .hdr h2 { font-size: 21px; } }
+
+/* After the round the title is the round's own title, unchanged: same words, same size, same position
+   (the "· SONUÇ" / "· TUR SONUÇLARI" tails were too long to show at this size) */
+#results .hdr h2, #resTitle { font-size: 24px; letter-spacing: .16em; }
+#results .hdr h2 .ic { width: 1.2em; height: 1.2em; }
+#results h2 .hardBadge { width: 1.12em; height: 1.12em; }
+#results .hdr > span { width: 44px; }
+@media (max-width: 359px) { #results .hdr h2, #resTitle { font-size: 21px; } }
