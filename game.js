@@ -1104,6 +1104,23 @@ addEventListener('orientationchange', lockPortrait);
 if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change', lockPortrait);
 lockPortrait();
 
+// Tablets: fill the screen by enlarging the phone layout (see the end of style.css). The game is laid out
+// about 430 wide and at least 780 tall, then scaled by --s to the tablet's upright size.
+const TABLET_MIN = 600, DESIGN_W = 430, DESIGN_H = 780;
+function fitTablet() {
+  const w = Math.min(innerWidth, innerHeight), h = Math.max(innerWidth, innerHeight);
+  const touch = matchMedia('(pointer: coarse)').matches || /[?&]tablet=1/.test(location.search);
+  const root = document.documentElement;
+  if (!touch || w < TABLET_MIN) { root.classList.remove('tablet'); return; }
+  const s = Math.max(1, Math.min(w / DESIGN_W, h / DESIGN_H));
+  root.classList.add('tablet');
+  root.style.setProperty('--s', s.toFixed(4));
+  root.style.setProperty('--app-h', (h / s).toFixed(1) + 'px');
+}
+addEventListener('resize', fitTablet);
+addEventListener('orientationchange', fitTablet);
+fitTablet();
+
 // Keep the screen awake while the game is open and in front (phones dim after a few idle seconds, and a
 // round has plenty of those). The lock is dropped by the phone whenever the app goes to the background, so
 // it is asked for again each time it comes back, and on the first touch (some phones want a touch first).

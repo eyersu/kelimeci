@@ -491,3 +491,15 @@ h2 .ic { margin-right: .45em; }
 /* Second switch sits right under the first; it greys out when the hint itself is off */
 .toggle.sub { margin-top: -4px; }
 .toggle:disabled { opacity: .4; cursor: default; }
+
+/* ---- Tablets: the same layout, scaled up to fill the screen (her call: no separate tablet layout) ----
+   A script measures the screen and sets --s (how much to enlarge) and --app-h (the game's own height before
+   enlarging). The game is laid out at phone-like proportions and then scaled, so every size grows together. */
+html.tablet body { background: #32241d; }
+html.tablet #app { position: fixed; top: 0; left: 0; margin: 0; max-width: none; width: calc(100vw / var(--s)); height: calc(100dvh / var(--s)); transform-origin: top left; transform: scale(var(--s)); }
+html.tablet .stage { width: min(calc(100% - 24px), calc(var(--app-h) - 345px)); }
+@media (orientation: landscape) and (pointer: coarse) {
+  /* held sideways it stays locked upright, exactly as on phones, at the same enlarged size */
+  html.tablet #app { width: calc(100dvh / var(--s)); height: calc(100dvw / var(--s)); transform: rotate(-90deg) translateX(calc(-100% * var(--s))) scale(var(--s)); }
+  html.tablet.turnR #app { transform: rotate(90deg) translateY(calc(-100% * var(--s))) scale(var(--s)); }
+}
