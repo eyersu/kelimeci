@@ -285,7 +285,8 @@ function start(seed) {
   solvedAt = null;
   lastLength = 0;
 
-  $('modeName').innerHTML = levelTitle(mode);
+  $('modeName').innerHTML = levelTitle(mode) + '<span class="hdrWho" id="roomPill" hidden></span>';
+  renderRoom();
   $('board').innerHTML = board.letters.map(l => `<div class="t">${upper(l)}</div>`).join('');
   $('board').classList.remove('deal');
   void $('board').offsetWidth;
@@ -352,12 +353,33 @@ function finish() {
   $('resSolved').textContent = '';      // the time is already in your scoreboard row; repeating it under the countdown was redundant
   document.querySelector('.playerBar').hidden = false;
   $('toHome').hidden = online;      // in Canlı the X in the header is the way out
-  $('review').hidden = false;
   $('scoreboard').hidden = true;
+  // On the shared clock, hints can end your round before everyone else's. The word list would give the
+  // board away while others are still playing, so it stays shut until the full round is over; a short
+  // waiting screen counts down to that moment.
+  const early = online && !MODES[mode].gain && round.playEnd - netNow() > 800;
+  $('review').hidden = early;
+  $('waitEnd').hidden = !early;
   show('results');
-  startReview();
   if (online) { announce(); awaitNextRound(); }
+  if (!early) return startReview();
+  $('wordList').innerHTML = '';
+  const token = reviewRun;
+  clearInterval(waitTimer);
+  const tick = () => {
+    if (token !== reviewRun || !online) return clearInterval(waitTimer);
+    const left = Math.ceil((round.playEnd - netNow()) / 1000);
+    $('waitCount').textContent = Math.max(0, left);
+    if (left > 0) return;
+    clearInterval(waitTimer);
+    $('waitEnd').hidden = true;
+    $('review').hidden = false;
+    startReview();
+  };
+  waitTimer = setInterval(tick, 250);
+  tick();
 }
+let waitTimer = 0;
 
 /* ---------- Last 25 hidden words (kept on the device) ---------- */
 
@@ -512,7 +534,7 @@ function startReview() {
     // Always the first 7 words, no more. In Canlı they slow down a little (up to 2 s each) when hints ended
     // your round early, so the player list still only stays a few seconds.
     const shown = words.slice(0, REVIEW_SHOWN);
-    const step = online ? Math.max(REVIEW_STEP, Math.min(2000, (round.next - netNow() - 5500) / shown.length)) : REVIEW_STEP;
+    const step = REVIEW_STEP;      // no stretching: an early finisher now waits for the round to end before this starts
     for (const w of shown) {
       light(w, 'ok');
       await wait(step);
@@ -893,7 +915,7 @@ const NET = {
   brokers: ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt'],
   lib: 'https://unpkg.com/mqtt@5.16.0/dist/mqtt.min.js',
 };
-const BREAK = 14;          // seconds between rounds: ~8.5 s of missed words lighting up, then ~5 s of scoreboard
+const BREAK = 19;          // seconds between rounds: ~8.5 s of missed words lighting up, then ~10 s of scoreboard (she asked for 5 s more, 2026-10-06)
 const JOIN_MIN = 15;       // with less than this left in a round, wait for the next one
 const myId = Math.random().toString(36).slice(2, 10);
 let online = false, menuOnline = false, round = null, client = null, clockOffset = 0, nextTimer;
@@ -1046,6 +1068,18 @@ function refreshOnline() {
   if (!$('home').hidden && menuOnline) renderHome();
   if (!online) return;
   if (!$('results').hidden && !$('scoreboard').hidden) renderScoreboard();
+  renderRoom();
+}
+
+// Who else is in this level's room right now: a small pill beside the level name during a round, and a line
+// on the "waiting for the round to end" screen. Nothing is shown when you are alone.
+function renderRoom() {
+  const n = online ? activePeers(mode).length : 0;
+  const icon = KIND_ICON.canli;
+  const pill = $('roomPill');
+  if (pill) { pill.hidden = !n; if (n) pill.innerHTML = icon + n; }
+  $('waitWho').hidden = !n;
+  if (n) $('waitWho').innerHTML = icon + n + ' oyuncu';
 }
 
 function enterOnline(level) {
@@ -1114,7 +1148,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=33', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=34', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }

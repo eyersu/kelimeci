@@ -136,3 +136,6 @@ html.hardOn .dial.after span { background: #05080f; }
 .tenWord { background: #17233a; color: #e6edf7; }
 .tenWord::before { background: #56688a; }
 .tenWord.got { color: #ffd166; } .tenWord.got::before { background: #ffd166; }
+.hdrWho { background: #17233a; color: #e6edf7; box-shadow: inset 0 0 0 1px #24344f; }
+.hdrWho svg [fill], .who svg [fill] { fill: #4cc9f0; }
+.who { color: #e6edf7; }

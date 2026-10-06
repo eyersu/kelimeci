@@ -630,3 +630,17 @@ html.tablet .side { gap: 16px; }
 
 /* Scoreboard rows slide in once, when the list first appears, not on every score update */
 .rank.big.still div { animation: none; }
+
+/* Canlı, your time ended before the round did: a short wait before the word list opens */
+.waitEnd { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 24px 10vh; }
+.waitEnd[hidden] { display: none; }
+.waitEnd .lobbyLbl { margin: 0 0 6px; }
+.waitEnd .lobbyNote { margin: 10px 0 0; }
+
+/* Other players in the room: a pill after the level name (and after the "zor" badge) in a round, a line on the wait screen */
+.hdrWho { display: inline-flex; align-items: center; gap: 4px; flex: none; margin-left: .45em; padding: 3px 9px 3px 8px; border-radius: 999px; font-size: 13px; letter-spacing: 0; font-weight: 800; color: #fff3df; background: rgba(50,22,5,.5); text-shadow: none; }
+.hdrWho[hidden], .who[hidden] { display: none; }
+.hdrWho svg { width: 16px; height: 13px; }
+.hdrWho svg [fill], .who svg [fill] { fill: var(--tan); }
+.who { margin-top: 22px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--cream); }
+.who svg { width: 20px; height: 16px; }
