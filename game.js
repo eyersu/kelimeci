@@ -14,7 +14,7 @@ const bars = n => [[14, 22], [34, 36], [54, 50]].map(([x, h], k) =>
 // Level icons: white glyphs with a fainter "ghost" layer
 const ICON = {
   dots: [0, 1, 2].map(r => [0, 1, 2].map(c => `<circle fill="#fff" cx="${22 + c * 18}" cy="${24 + r * 18}" r="6.5" opacity="${(r + c) % 2 ? 0.45 : 1}"/>`).join('')).join(''),
-  longer: '<rect fill="#fff" opacity=".45" x="14" y="20" width="22" height="11" rx="5.5"/><rect fill="#fff" opacity=".7" x="14" y="36" width="37" height="11" rx="5.5"/><rect fill="#fff" x="14" y="52" width="52" height="11" rx="5.5"/>',
+  rising: '<rect fill="#fff" opacity=".45" x="17" y="44" width="12" height="22" rx="6"/><rect fill="#fff" opacity=".7" x="34" y="30" width="12" height="36" rx="6"/><rect fill="#fff" x="51" y="14" width="12" height="52" rx="6"/>',
   target: '<circle cx="40" cy="41" r="25" fill="none" stroke="#fff" stroke-width="6" opacity=".45"/><circle cx="40" cy="41" r="14" fill="none" stroke="#fff" stroke-width="6" opacity=".7"/><circle fill="#fff" cx="40" cy="41" r="5.5"/>',
 };
 // Shown as three difficulty levels plus a timed mode. The ids are the original game's mode names.
@@ -22,7 +22,7 @@ const MODES = {
   // Named by what counts in each one (her choice, 2026-10-06): every word equal, longer words worth more,
   // one target word, and against the clock.
   rasyonel: { name: 'EŞİT', desc: 'Her kelime 1 puan', seconds: 90, flat: true, icon: ICON.dots },
-  klasik: { name: 'ARTAN', desc: 'Uzun kelime, çok puan', seconds: 90, icon: ICON.longer },
+  klasik: { name: 'ARTAN', desc: 'Uzun kelime, çok puan', seconds: 90, icon: ICON.rising },
   idealist: { name: 'HEDEF', desc: '10 harfli kelimeyi bul', seconds: 120, icon: ICON.target },
   marjinal: { name: 'HIZLI', desc: 'Kelime buldukça süre kazan', seconds: 30, gain: true,
     icon: '<circle fill="#fff" cx="34" cy="48" r="22"/><rect fill="#fff" x="28" y="15" width="12" height="9" rx="2"/><path d="M34 35v13l8 6" fill="none" stroke="#ec8112" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M65 14v12M59 20h12" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>' },
@@ -99,12 +99,19 @@ function solve(letters) {
 // Same seed -> same board for every player
 const VERB_SHARE = 0.1, isVerb = w => /m[ae]k$/.test(w);
 const SEED_VERBS = SEED_WORDS.filter(isVerb), SEED_OTHERS = SEED_WORDS.filter(w => !isVerb(w));
-function makeBoard(seed) {
+// "Zor tahtalar" (a switch in settings): the hidden word comes from HARD_SEEDS instead, 10-letter words that are
+// less everyday but still in use (see tools/build_words.py). Off by default.
+const HARD_VERBS = HARD_SEEDS.filter(isVerb), HARD_OTHERS = HARD_SEEDS.filter(w => !isVerb(w));
+const HARD_KEY = 'kelime-avi-hard';
+let hardBoards = false;
+try { hardBoards = localStorage.getItem(HARD_KEY) === '1'; } catch (e) { /* private mode */ }
+const HARD_BADGE = '<span class="hardBadge" aria-label="Zor tahta"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="13.5,2 5,13.5 11,13.5 9.5,22 19,10 12.5,10"/></svg></span>';
+function makeBoard(seed, hard = hardBoards) {
   for (let attempt = 0; ; attempt++) {
     const rng = rngFrom(seed + attempt * 7919);
     // Verbs make up 3 in 10 of the 10-letter words and also pass the board test more easily, so hidden words
     // used to come up as verbs about half the time. Now roughly 1 board in 8 is built on a verb.
-    const pool = rng() < VERB_SHARE ? SEED_VERBS : SEED_OTHERS;
+    const pool = rng() < VERB_SHARE ? (hard ? HARD_VERBS : SEED_VERBS) : (hard ? HARD_OTHERS : SEED_OTHERS);
     const secret = pool[Math.floor(rng() * pool.length)];
     const path = randomPath(rng, LONGEST);
     if (!path) continue;
@@ -228,7 +235,7 @@ function elapsedNow() {
 }
 
 // A level's name with its bar icon in front, for screen titles
-const levelTitle = id => `<svg class="ic" viewBox="0 0 80 80" aria-hidden="true">${MODES[id].icon}</svg>${MODES[id].name}`;
+const levelTitle = id => `<svg class="ic" viewBox="0 0 80 80" aria-hidden="true">${MODES[id].icon}</svg>${MODES[id].name}${hardBoards ? HARD_BADGE : ''}`;
 
 function wordPoints(w) { return MODES[mode].flat ? 1 : POINTS[w.length] + (isBonus(w) ? BONUS_POINTS : 0); }
 
@@ -805,7 +812,7 @@ function renderHome() {
   $('homeTag').textContent = menuOnline ? 'CANLI' : 'SOLO';
   const tile = (id, m) => {
     const n = menuOnline ? activePeers(id).length : 0;
-    return `<button class="mode" data-mode="${id}"><svg viewBox="0 0 80 80">${m.icon}</svg><b>${m.name}</b><span>${m.desc}</span>${n ? `<em>● ${n} oyuncu</em>` : ''}</button>`;
+    return `<button class="mode" data-mode="${id}"><svg viewBox="0 0 80 80">${m.icon}</svg><b>${m.name}</b><span>${m.desc}</span>${n ? `<em>● ${n} oyuncu</em>` : ''}${hardBoards ? HARD_BADGE : ''}</button>`;
   };
   $('modes').innerHTML = Object.entries(MODES).map(([id, m]) => tile(id, m)).join('');
 }
@@ -828,7 +835,8 @@ const peers = {};          // peers[level][id] = { name, round, score, found, so
 
 const netNow = () => Date.now() + clockOffset;
 const slotSeconds = level => MODES[level].seconds;
-const roundSeed = (level, n) => Math.imul(n * 4 + Object.keys(MODES).indexOf(level), 2654435761) >>> 0;
+// With "Zor tahtalar" on, the boards are different ones, so those players form their own Canlı pool
+const roundSeed = (level, n) => (Math.imul(n * 4 + Object.keys(MODES).indexOf(level), 2654435761) ^ (hardBoards ? 0x5bd1e995 : 0)) >>> 0;
 function roundInfo(level) {
   if (MODES[level].gain) return timedRound(level);
   const cycle = (slotSeconds(level) + BREAK) * 1000;
@@ -889,6 +897,7 @@ function onMessage(topic, payload) {
   try { m = JSON.parse(payload.toString()); } catch (e) { return; }
   const level = topic.split('/').pop();
   if (!MODES[level] || !m || m.id === myId || typeof m.name !== 'string') return;
+  if (!!m.hard !== hardBoards) { if (peers[level]) delete peers[level][m.id]; return; }      // the other pool: not on our boards
   (peers[level] = peers[level] || {})[m.id] = {
     name: m.name.slice(0, 12), round: +m.round, score: +m.score || 0, found: +m.found || 0,
     solvedAt: typeof m.solvedAt === 'number' ? m.solvedAt : null, at: Date.now(),
@@ -902,7 +911,7 @@ function onMessage(topic, payload) {
 
 function announce() {
   if (!online || !client || !client.connected) return;
-  client.publish(NET.topic + '/' + mode, JSON.stringify({ id: myId, name: player, round: round.n, score, found: found.length, solvedAt, long: longestFound(), past: MODES[mode].gain ? myPast : undefined }));
+  client.publish(NET.topic + '/' + mode, JSON.stringify({ id: myId, name: player, round: round.n, score, found: found.length, solvedAt, long: longestFound(), hard: hardBoards, past: MODES[mode].gain ? myPast : undefined }));
 }
 setInterval(announce, 3000);
 
@@ -1031,7 +1040,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=23', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=24', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }
@@ -1045,12 +1054,21 @@ function applyTheme(id) {
   renderThemes();
 }
 function renderHintOrder() {
+  $('hardToggle').classList.toggle('on', hardBoards);
+  $('hardToggle').setAttribute('aria-checked', hardBoards);
   $('hintShow').classList.toggle('on', showHint);
   $('hintShow').setAttribute('aria-checked', showHint);
   $('hintOrder').classList.toggle('on', hintOrder === 'karisik');
   $('hintOrder').setAttribute('aria-checked', hintOrder === 'karisik');
   $('hintOrder').disabled = !showHint;      // nothing to shuffle when the hint is switched off
 }
+$('hardToggle').addEventListener('click', () => {
+  hardBoards = !hardBoards;
+  try { localStorage.setItem(HARD_KEY, hardBoards ? '1' : '0'); } catch (err) { /* not remembered in private mode */ }
+  for (const level of Object.keys(peers)) peers[level] = {};      // players seen so far were in the other pool
+  myPast = [];
+  renderHintOrder();
+});
 $('hintShow').addEventListener('click', () => {
   showHint = !showHint;
   try { localStorage.setItem(HINT_SHOW_KEY, showHint ? '1' : '0'); } catch (err) { /* not remembered in private mode */ }

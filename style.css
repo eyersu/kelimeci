@@ -534,3 +534,14 @@ html.tablet .screen > .review { width: 100%; grid-template-columns: minmax(0, .8
 html.tablet .mini .t { font-size: 36px; border-radius: 8px; }
 html.tablet .board.mini { gap: 4px; }
 html.tablet .side { gap: 12px; }
+
+/* "Zor tahtalar" marker: a red badge with a lightning bolt, on the corner of each level tile and beside the level name */
+.mode { position: relative; }
+.hardBadge { display: grid; place-items: center; border-radius: 50%; color: #fff; background: #c4301f; }
+.hardBadge svg { fill: currentColor; }
+.mode .hardBadge { position: absolute; right: -7px; top: -7px; width: 30px; height: 30px; box-shadow: 0 2px 5px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.3); }
+.mode .hardBadge svg { width: 17px; height: 17px; }
+h2 .hardBadge { display: inline-grid; width: 1.05em; height: 1.05em; margin-left: .45em; vertical-align: -.16em; }
+h2 .hardBadge svg { width: 62%; height: 62%; }
+/* the three switches sit close together */
+#settingsForm .toggle { padding-top: 11px; padding-bottom: 11px; }

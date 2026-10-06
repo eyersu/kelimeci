@@ -117,3 +117,6 @@ html { background: #0a111d; }
 .slots i.gold { color: #2b2000; background: #ffd166; box-shadow: none; }
 .t[data-hint] { outline-color: #ffd166; }
 .hintNote { color: #7f92b0; }
+.hardBadge { background: #d1435b; box-shadow: none; }
+.mode .hardBadge { box-shadow: none; }
+.mode .hardBadge svg polygon { fill: #fff; }
