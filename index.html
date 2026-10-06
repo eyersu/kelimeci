@@ -7,14 +7,14 @@
 <title>Kelimeci</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=135">
+<link rel="stylesheet" href="style.css?v=136">
 <script>
   // The colour theme is the player's choice (saved on the device); ?theme= forces one for previews
   (function () {
     var files = { koyu: 'theme-cool.css', cool: 'theme-cool.css' };
     var pick = new URLSearchParams(location.search).get('theme');
     if (!pick) { try { pick = localStorage.getItem('kelime-avi-theme'); } catch (e) {} }
-    document.write('<link id="themeCss" rel="stylesheet"' + (files[pick] ? ' href="' + files[pick] + '?v=30"' : '') + '>');
+    document.write('<link id="themeCss" rel="stylesheet"' + (files[pick] ? ' href="' + files[pick] + '?v=31"' : '') + '>');
   })();
 </script>
 <link rel="manifest" href="manifest.webmanifest">
@@ -76,6 +76,7 @@
       <button type="button" class="toggle" id="hintShow" role="switch" aria-checked="true"><span><b>Oyunda ipucu göster</b></span><i></i></button>
       <button type="button" class="toggle sub" id="hintOrder" role="switch" aria-checked="false"><span><b>İpucu harfleri karışık</b><small>Kapalıyken harfler sırayla gelir</small></span><i></i></button>
       <button type="button" class="toggle" id="hardToggle" role="switch" aria-checked="false"><span><b>Oyunu zorlaştır</b><small>Az kelime, nadir gizli kelime</small></span><i></i></button>
+      <button type="button" class="toggle" id="idleToggle" role="switch" aria-checked="true"><span><b>Hareketsizlik uyarısı</b><small>Dokunmazsan oyuna devam edip etmediğini sorar</small></span><i></i></button>
       <button class="btn primary" type="submit">Tamam</button>
     </form>
   </section>
@@ -177,6 +178,16 @@
     </footer>
   </section>
 
+  <div class="idle" id="idle" hidden>
+    <div class="idleCard" role="dialog" aria-labelledby="idleTitle">
+      <div class="pz" id="idleIcon"></div>
+      <h3 id="idleTitle"></h3>
+      <p id="idleText"></p>
+      <button class="btn primary" id="idleYes" type="button"></button>
+      <button class="btn" id="idleQuit" type="button">Oyundan çık</button>
+    </div>
+  </div>
+
   <div class="sheet" id="sheet" hidden>
     <div class="sheetCard">
       <button class="sheetX" id="sheetClose" aria-label="Kapat">✕</button>
@@ -188,7 +199,7 @@
   </div>
 
 </main>
-<script src="words.js?v=135"></script>
-<script src="game.js?v=135"></script>
+<script src="words.js?v=136"></script>
+<script src="game.js?v=136"></script>
 </body>
 </html>

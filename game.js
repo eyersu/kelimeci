@@ -249,6 +249,7 @@ let currentScreen = '';
 function show(screen) {
   reviewRun++;      // leaving the results screen stops its slideshow
   $('sheet').hidden = true;
+  $('idle').hidden = true;
   const back = SCREENS.indexOf(screen) < SCREENS.indexOf(currentScreen);
   for (const id of SCREENS) {
     const el = $(id);
@@ -265,6 +266,7 @@ function show(screen) {
 }
 
 function start(seed) {
+  lastTouch = performance.now();
   board = makeBoard(seed);
   found = [];
   score = 0;
@@ -301,6 +303,7 @@ function start(seed) {
   const tick = now => {
     if (!playing) return;
     ticker = requestAnimationFrame(tick);
+    if (idleWarn && $('idle').hidden && now - lastTouch > IDLE_AFTER * 1000) askIdle();
     if (online) {
       // Everyone's clock for a shared round comes from the same schedule, not from when they joined
       const left = (round.playEnd - netNow()) / 1000 - penalty;      // hints cost you time off the shared clock
@@ -321,6 +324,10 @@ function finish() {
   playing = false;
   cancelAnimationFrame(ticker);
   path = [];
+
+  // Nobody answered "Hâlâ orada mısın?" before the round ran out: this round is not counted anywhere, and
+  // no new round starts until the player says they are back.
+  if (!$('idle').hidden) return idleGone();
 
   remember();
   if (online && MODES[mode].gain) timedDone();
@@ -413,6 +420,48 @@ $('histList').addEventListener('click', e => { const r = e.target.closest('.row'
 $('openHistory').addEventListener('click', () => { renderHistory(); show('history'); });
 renderLifetime();
 $('closeHistory').addEventListener('click', () => show('play'));
+
+/* ---------- Inactivity ("Hareketsizlik uyarısı") ----------
+   The clock never stops. This only keeps the game from playing round after round while nobody is there, so
+   that totals (and any stats added later) hold only rounds somebody actually played. After IDLE_AFTER seconds
+   without a touch in a round, a card asks; a tap answers it and play goes on. If it is still unanswered when
+   the round ends, that round is dropped and the game waits on a second card instead of starting another. */
+const IDLE_AFTER = 45, IDLE_KEY = 'kelime-avi-idle';
+let lastTouch = 0, idleWarn = true;
+try { idleWarn = localStorage.getItem(IDLE_KEY) !== '0'; } catch (e) { /* private mode */ }
+const IDLE_ICON = {
+  ask: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1 5h2v6h-2zm0 8h2v2h-2z"/></svg>',
+  gone: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-2 5.500 7 4.500-7 4.500z"/></svg>',
+};
+function idleCard(kind, title, text, yes) {
+  $('idle').dataset.kind = kind;
+  $('idleIcon').innerHTML = IDLE_ICON[kind];
+  $('idleTitle').textContent = title;
+  $('idleText').textContent = text;
+  $('idleText').hidden = !text;
+  $('idleYes').textContent = yes;
+  $('idleQuit').hidden = kind !== 'gone';
+  $('idle').hidden = false;
+}
+function askIdle() { path = []; paintTiles(); setPop('', ''); idleCard('ask', 'Hâlâ orada mısın?', 'Süre işlemeye devam ediyor. Oynuyorsan dokun.', 'Buradayım'); }
+function idleGone() {
+  clearInterval(nextTimer);
+  if (online && MODES[mode].gain) { timed.i += 1; try { localStorage.setItem(TIMED_KEY, JSON.stringify(timed)); } catch (e) { /* private mode */ } }
+  renderTimer();
+  idleCard('gone', 'Oyuna devam?', '', online ? 'Sıradaki tura katıl' : 'Yeni tur');
+  if (wakeLock) wakeLock.release().catch(() => {});      // nobody is here: let the phone dim and sleep again
+}
+$('idleYes').addEventListener('click', () => {
+  const gone = $('idle').dataset.kind === 'gone';
+  $('idle').hidden = true;
+  lastTouch = performance.now();
+  if (!gone) return;
+  if (online) enterOnline(mode); else start(newSeed());
+});
+$('idleQuit').addEventListener('click', () => { $('idle').hidden = true; leaveOnline(); renderHome(); show('home'); });
+// a tap anywhere on the dimmed round also answers the question (not the second card: that one needs a choice)
+$('idle').addEventListener('click', e => { if (e.target === $('idle') && $('idle').dataset.kind === 'ask') $('idle').hidden = true; });
+addEventListener('pointerdown', () => { lastTouch = performance.now(); }, true);
 
 /* ---------- Post-game review ---------- */
 
@@ -1046,7 +1095,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=30', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=31', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }
@@ -1062,12 +1111,19 @@ function applyTheme(id) {
 function renderHintOrder() {
   $('hardToggle').classList.toggle('on', hardBoards);
   $('hardToggle').setAttribute('aria-checked', hardBoards);
+  $('idleToggle').classList.toggle('on', idleWarn);
+  $('idleToggle').setAttribute('aria-checked', idleWarn);
   $('hintShow').classList.toggle('on', showHint);
   $('hintShow').setAttribute('aria-checked', showHint);
   $('hintOrder').classList.toggle('on', hintOrder === 'karisik');
   $('hintOrder').setAttribute('aria-checked', hintOrder === 'karisik');
   $('hintOrder').disabled = !showHint;      // nothing to shuffle when the hint is switched off
 }
+$('idleToggle').addEventListener('click', () => {
+  idleWarn = !idleWarn;
+  try { localStorage.setItem(IDLE_KEY, idleWarn ? '1' : '0'); } catch (err) { /* not remembered in private mode */ }
+  renderHintOrder();
+});
 $('hardToggle').addEventListener('click', () => {
   hardBoards = !hardBoards;
   document.documentElement.classList.toggle('hardOn', hardBoards);

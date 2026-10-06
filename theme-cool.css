@@ -129,3 +129,7 @@ html.hardOn .bar { background: #2f4468; }
 html.hardOn .bar i { background: #05080f; }
 html.hardOn .dial.after { background: conic-gradient(#e6edf7 var(--p, 360deg), #2f4468 0); }
 html.hardOn .dial.after span { background: #05080f; }
+.idle { background: rgba(5,8,15,.7); }
+.idleCard { background: #17233a; color: #e6edf7; box-shadow: 0 0 0 1px #24344f; }
+.idleCard .pz { background: #24344f; } .idleCard .pz svg { fill: #4cc9f0; }
+.idleCard p, .idleCard #idleQuit { color: #7f92b0; }
