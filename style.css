@@ -580,3 +580,9 @@ html.hardOn .bar i { background: #0b0908; }
 html.hardOn .dial.after { background: conic-gradient(#d8cfc6 var(--p, 360deg), #4a413c 0); }
 html.hardOn .dial.after span { background: #14110f; }
 html.hardOn .dial.after small { color: #d8cfc6; }
+
+/* Round title a step larger (between the old size and the "larger" mock-up she saw): name, level icon and badge */
+#game .hdr h2 { font-size: 24px; }
+#game .hdr h2 .ic { width: 1.2em; height: 1.2em; }
+#game h2 .hardBadge { width: 1.12em; height: 1.12em; }
+@media (max-width: 359px) { #game .hdr h2 { font-size: 21px; } }
