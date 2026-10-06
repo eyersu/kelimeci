@@ -426,7 +426,7 @@ $('closeHistory').addEventListener('click', () => show('play'));
    that totals (and any stats added later) hold only rounds somebody actually played. After IDLE_AFTER seconds
    without a touch in a round, a card asks; a tap answers it and play goes on. If it is still unanswered when
    the round ends, that round is dropped and the game waits on a second card instead of starting another. */
-const IDLE_AFTER = 45, IDLE_KEY = 'kelime-avi-idle';
+const IDLE_AFTER = 35, IDLE_KEY = 'kelime-avi-idle';
 let lastTouch = 0, idleWarn = true;
 try { idleWarn = localStorage.getItem(IDLE_KEY) !== '0'; } catch (e) { /* private mode */ }
 const IDLE_ICON = {
