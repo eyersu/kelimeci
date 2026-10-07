@@ -690,3 +690,7 @@ html.soloPlay #results .mini .t:not(.on):not(.ok):not(.miss) { background: linea
    slightly different brown. */
 html { background: var(--noise), #32241d; }
 body, html.tablet body { background: transparent; }
+
+/* iPhone home-screen strip (see fitStrip in game.js): the page grows by the measured strip so the game fills it */
+html.gap { height: calc(100% + var(--gap)); overflow: visible; }
+html.gap body { position: absolute; inset: 0 auto auto 0; width: 100%; height: calc(100% + var(--gap)); overflow: hidden; }

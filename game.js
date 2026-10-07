@@ -1312,6 +1312,28 @@ setTimeout(fitTablet, 400);      // some tablets report their final size a momen
 
 if (navigator.onLine !== false) connect();      // so the K mark can show whether others are playing
 
+// iPhone home-screen app: the phone can leave a strip at the bottom that the game isn't laid out in (the
+// game's area comes out shorter than the screen by about the height of the status bar). This measures that
+// strip each time, and only when it is really there makes the page that much taller so the game reaches the
+// bottom edge. The earlier fixed stretch (2026-10-05) cut the bottom off; this one is measured, and it grows
+// the page itself rather than the game inside a clipped page. Phones only, upright only. Unverified from the
+// Mac: it needs her phone to confirm.
+function fitStrip() {
+  const root = document.documentElement;
+  const homeScreen = navigator.standalone === true;      // iOS only; undefined everywhere else
+  const upright = innerHeight > innerWidth;
+  const gap = homeScreen && upright && !root.classList.contains('tablet') ? Math.round(screen.height - innerHeight) : 0;
+  const on = gap >= 30 && gap <= 70;      // a status bar's worth; anything else is not this problem
+  root.classList.toggle('gap', on);
+  if (on) root.style.setProperty('--gap', gap + 'px'); else root.style.removeProperty('--gap');
+}
+addEventListener('resize', fitStrip);
+addEventListener('orientationchange', fitStrip);
+addEventListener('pageshow', fitStrip);
+document.addEventListener('visibilitychange', fitStrip);
+addEventListener('scroll', () => { if (document.documentElement.classList.contains('gap') && (scrollX || scrollY)) scrollTo(0, 0); });      // the taller page must never drift
+fitStrip(); setTimeout(fitStrip, 400); setTimeout(fitStrip, 1500);
+
 // Keep the screen awake while the game is open and in front (phones dim after a few idle seconds, and a
 // round has plenty of those). The lock is dropped by the phone whenever the app goes to the background, so
 // it is asked for again each time it comes back, and on the first touch (some phones want a touch first).
