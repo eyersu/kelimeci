@@ -653,3 +653,6 @@ html.tablet .side { gap: 16px; }
 .logoMark .tick { transition: stroke .4s, filter .4s; }
 html.others .logoMark .tick { stroke: #ffffff; filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 7px rgba(255,255,255,.95)) drop-shadow(0 0 14px rgba(255,255,255,.6)); }
 html.othersLive .logoMark .tick { stroke: #7dff8e; filter: drop-shadow(0 0 3px #7dff8e) drop-shadow(0 0 7px rgba(90,255,120,.95)) drop-shadow(0 0 14px rgba(90,255,120,.6)); }
+
+/* The in-round player pill holds only the icon */
+.hdrWho { padding: 4px 8px; gap: 0; }

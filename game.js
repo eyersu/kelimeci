@@ -505,10 +505,9 @@ const REVIEW_SHOWN = 7, REVIEW_STEP = 1100;      // 7 words light up; the scoreb
 function startReview() {
   const run = ++reviewRun;
   // The slideshow holds still while a word's description is open
-  const wait = ms => new Promise((resolve, reject) => {
-    const check = () => (run !== reviewRun ? reject() : $('sheet').hidden ? resolve() : setTimeout(check, 200));
-    setTimeout(check, ms);
-  });
+  // The slideshow keeps its pace even while a word's meaning is open, so reading a meaning never holds up the
+  // results list (it used to pause here, which could push the list back or skip it).
+  const wait = ms => new Promise((resolve, reject) => setTimeout(() => (run !== reviewRun ? reject() : resolve()), ms));
   const byLength = (a, b) => b.length - a.length || a.localeCompare(b, 'tr');
   const mine = found.slice().sort(byLength);
   const missed = board.words.filter(w => !found.includes(w)).sort(byLength);
@@ -1101,7 +1100,7 @@ function renderPresence() {
   document.documentElement.classList.toggle('others', active.length > 0);
   document.documentElement.classList.toggle('othersLive', active.some(p => p.live));
 }
-setInterval(renderPresence, 3000);      // players drop out of the count 9 s after their last message
+setInterval(() => { renderPresence(); renderRoom(); }, 3000);      // players drop out 9 s after their last message, here and in the round's pill
 
 function refreshOnline() {
   renderPresence();
@@ -1117,7 +1116,7 @@ function renderRoom() {
   const n = online ? activePeers(mode).length : 0;
   const icon = KIND_ICON.canli;
   const pill = $('roomPill');
-  if (pill) { pill.hidden = !n; if (n) pill.innerHTML = icon + n; }
+  if (pill) { pill.hidden = !n; if (n && !pill.firstChild) pill.innerHTML = icon; }      // just the icon, no count
   $('waitWho').hidden = !n;
   if (n) $('waitWho').innerHTML = icon + n + ' oyuncu';
 }
