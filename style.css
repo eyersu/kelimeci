@@ -731,3 +731,12 @@ html.gap body { position: absolute; inset: 0 auto auto 0; width: 100%; height: c
   .stage { width: min(calc(100% - 24px), calc(100vh - 276px), calc(100dvh - 276px)); margin-top: 14px; }
   .hint { margin-top: 12px; }
 }
+
+/* Post-game: the word list can never be drawn over the bottom bar. The layout was already right (the list ends
+   where the bar begins), but on the iPad the scrolling list was painted on top of the bar: the game is
+   enlarged there, and Safari's momentum-scrolling layer is not clipped correctly inside an enlarged box. So
+   the list's area is clipped explicitly, the old momentum hint is dropped, and the bar sits on its own layer above. */
+.review { overflow: hidden; }
+.wordList { -webkit-overflow-scrolling: auto; }
+.playerBar { position: relative; z-index: 3; }
+.scoreboard { overflow: hidden; }
