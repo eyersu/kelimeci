@@ -1094,7 +1094,7 @@ setInterval(() => {
 }, 3000);
 const seen = {};      // player id -> { at: when we last heard from them, live: in Canlı rather than Solo }
 function renderPresence() {
-  // Green when anyone is in a Canlı game, yellow-orange when the only players are in Solo
+  // Green when anyone is in a Canlı game, sky blue when the only players are in Solo
   const now = Date.now(), active = Object.values(seen).filter(p => now - p.at < 9000);
   document.documentElement.classList.toggle('others', active.length > 0);
   document.documentElement.classList.toggle('othersLive', active.some(p => p.live));
@@ -1186,7 +1186,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=36', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=37', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }
