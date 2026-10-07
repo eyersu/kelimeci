@@ -673,3 +673,14 @@ html.soloPlay #results .mini .t:not(.on):not(.ok):not(.miss) { background: linea
    slides over gently too */
 .hdrWho { max-width: 44px; overflow: hidden; opacity: 1; transition: max-width .6s ease, opacity .6s ease, padding .6s ease, margin .6s ease; }
 .hdrWho.off { max-width: 0; opacity: 0; padding-left: 0; padding-right: 0; margin-left: 0; }
+
+/* ---- Calmer screen changes (2026-10-06) ----
+   Screens used to slide in whole, 26px sideways, wood bar included, which made everything shift on every tap.
+   Now the wood bars stay perfectly still and only the content under them fades in with a slight rise. Rows in
+   lists ease in from a few pixels away instead of flying across the full width. */
+.screen.enter, .screen.enterBack { animation: none; }
+.screen.enter > :not(.wood), .screen.enterBack > :not(.wood) { animation: bodyIn .26s ease-out both; }
+@keyframes bodyIn { from { opacity: 0; transform: translateY(6px); } }
+@keyframes rowIn { from { transform: translateX(-12px); opacity: 0; } }
+@keyframes rowOut { to { transform: translateX(-12px); opacity: 0; } }
+@media (orientation: landscape) and (pointer: coarse) { .screen.enter > :not(.wood), .screen.enterBack > :not(.wood) { animation: none; } }
