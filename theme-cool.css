@@ -149,3 +149,5 @@ html.soloPlay #results .mini .t:not(.on):not(.ok):not(.miss) { background: #1b27
 #home.solo .mode { color: #e6edf7; background: #17233a; border-color: #24344f; box-shadow: none; }
 #home.solo .mode > svg [fill="#fff"] { fill: #4cc9f0; }
 #home.solo .mode > svg [stroke="#fff"] { stroke: #4cc9f0; }
+html { background: #0e1726; }
+body, html.tablet body { background: transparent; }

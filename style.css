@@ -684,3 +684,9 @@ html.soloPlay #results .mini .t:not(.on):not(.ok):not(.miss) { background: linea
 @keyframes rowIn { from { transform: translateX(-12px); opacity: 0; } }
 @keyframes rowOut { to { transform: translateX(-12px); opacity: 0; } }
 @media (orientation: landscape) and (pointer: coarse) { .screen.enter > :not(.wood), .screen.enterBack > :not(.wood) { animation: none; } }
+
+/* The page behind the game is exactly the colour and grain of the game's own bottom edge. On an iPhone
+   home-screen app a strip below the game belongs to the page, not the game, and it showed as a band of a
+   slightly different brown. */
+html { background: var(--noise), #32241d; }
+body, html.tablet body { background: transparent; }
