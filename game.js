@@ -1298,8 +1298,7 @@ lockPortrait();
 const TABLET_MIN = 600, DESIGN_W = 430, DESIGN_H = 812;
 let stripGap = 0;      // the home-screen strip we are currently covering, in px (0 = none); see fitStrip
 function fitTablet() {
-  // on an upright iPad home-screen app the game also grows into the measured bottom strip
-  const w = Math.min(innerWidth, innerHeight), h = Math.max(innerWidth, innerHeight) + (innerHeight > innerWidth ? stripGap : 0);
+  const w = Math.min(innerWidth, innerHeight), h = Math.max(innerWidth, innerHeight);
   const touch = matchMedia('(pointer: coarse)').matches || /[?&]tablet=1/.test(location.search);
   const root = document.documentElement;
   if (!touch || w < TABLET_MIN) { root.classList.remove('tablet'); return; }
@@ -1327,10 +1326,11 @@ function fitStrip() {
   const root = document.documentElement;
   const homeScreen = navigator.standalone === true;      // iOS only; undefined everywhere else
   const upright = innerHeight > innerWidth;
-  const able = homeScreen && upright;      // phones and, since she saw the same strip there, iPads
+  // Phones only. The same stretch was tried on the iPad (v=169) and cut the bottom of the game off there, so it was taken out again.
+  const able = homeScreen && upright && !root.classList.contains('tablet');
   const gap = able ? Math.round(screen.height - innerHeight) : 0;
   if (!able) stripGap = 0;
-  else if (gap >= 15 && gap <= 70) stripGap = gap;      // a status bar's worth (about 24 on an iPad, 47-59 on an iPhone): this is the strip
+  else if (gap >= 30 && gap <= 70) stripGap = gap;      // a status bar's worth on an iPhone (47-59): this is the strip
   else if (stripGap) {
     // Once the page has been made taller, the phone may report the full height, which looks as if the strip had
     // gone. That used to switch the fix off again a moment after it had worked. So it now stays on, unless the
@@ -1340,7 +1340,6 @@ function fitStrip() {
   }
   root.classList.toggle('gap', stripGap > 0);
   if (stripGap) root.style.setProperty('--gap', stripGap + 'px'); else root.style.removeProperty('--gap');
-  fitTablet();      // a tablet's game size depends on the strip
 }
 addEventListener('resize', fitStrip);
 addEventListener('orientationchange', fitStrip);
