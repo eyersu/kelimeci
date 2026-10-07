@@ -648,8 +648,10 @@ html.tablet .side { gap: 16px; }
 /* The gold mark is a button once it shows the question mark */
 .hdr > span.tenMark.on { cursor: pointer; font-weight: 800; }
 
-/* The tick in the K mark lights up green while other players are in the game */
-.logoMark .tick { transition: stroke .4s, filter .4s; }
-/* sky blue: someone is playing Solo; green: someone is in a Canlı game */
-html.others .logoMark .tick { stroke: #6fd3ff; filter: drop-shadow(0 0 5px rgba(111,211,255,1)) drop-shadow(0 0 12px rgba(111,211,255,.6)); }
-html.othersLive .logoMark .tick { stroke: #7df08a; filter: drop-shadow(0 0 5px rgba(125,240,138,.95)) drop-shadow(0 0 12px rgba(125,240,138,.55)); }
+/* The round badge on the K mark lights up while other players are in a round: yellow when someone is playing
+   Solo, green when someone is in a Canlı game. The tick inside goes dark so it reads against the lit badge. */
+.logoMark .tick, .logoMark circle.cut { transition: stroke .4s, fill .4s; }
+html.others .logoMark circle.cut { fill: #ffd23f; }
+html.others .logoMark .tick { stroke: #4a2408; }
+html.othersLive .logoMark circle.cut { fill: #5fe07a; }
+html.othersLive .logoMark .tick { stroke: #0d3a17; }

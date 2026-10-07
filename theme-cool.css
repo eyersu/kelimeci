@@ -139,6 +139,6 @@ html.hardOn .dial.after span { background: #05080f; }
 .hdrWho { background: #17233a; color: #e6edf7; box-shadow: inset 0 0 0 1px #24344f; }
 .hdrWho svg [fill], .who svg [fill] { fill: #4cc9f0; }
 .who { color: #e6edf7; }
-html.others .logoMark circle.cut { fill: #e6edf7; }
+html.others .logoMark circle.cut { fill: #ffd166; }
 html.othersLive .logoMark circle.cut { fill: #3ddc97; }
 html.others .logoMark .tick, html.othersLive .logoMark .tick { stroke: #06281b; filter: none; }
