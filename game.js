@@ -1080,7 +1080,15 @@ function renderScoreboard() {
   document.querySelector('.playerBar').hidden = $('rank').scrollHeight <= $('rank').clientHeight + 1;
 }
 
+// The tick in the K mark at the top lights up while anyone else is playing, on every screen that shows the mark.
+// For that the game listens for other players from the moment it opens, not only after CANLI is tapped.
+function renderPresence() {
+  document.documentElement.classList.toggle('others', Object.keys(MODES).some(level => activePeers(level).length));
+}
+setInterval(renderPresence, 3000);      // players drop out of the count 9 s after their last message
+
 function refreshOnline() {
+  renderPresence();
   if (!$('home').hidden && menuOnline) renderHome();
   if (!online) return;
   if (!$('results').hidden && !$('scoreboard').hidden) renderScoreboard();
@@ -1164,7 +1172,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=34', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=35', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }
@@ -1284,6 +1292,8 @@ addEventListener('orientationchange', fitTablet);
 if (window.visualViewport) visualViewport.addEventListener('resize', fitTablet);
 fitTablet();
 setTimeout(fitTablet, 400);      // some tablets report their final size a moment after opening
+
+if (navigator.onLine !== false) connect();      // so the K mark can show whether others are playing
 
 // Keep the screen awake while the game is open and in front (phones dim after a few idle seconds, and a
 // round has plenty of those). The lock is dropped by the phone whenever the app goes to the background, so

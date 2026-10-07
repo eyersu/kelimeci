@@ -647,3 +647,7 @@ html.tablet .side { gap: 16px; }
 
 /* The gold mark is a button once it shows the question mark */
 .hdr > span.tenMark.on { cursor: pointer; font-weight: 800; }
+
+/* The tick in the K mark lights up green while other players are in the game */
+.logoMark .tick { transition: stroke .4s, filter .4s; }
+html.others .logoMark .tick { stroke: #7df08a; filter: drop-shadow(0 0 5px rgba(125,240,138,.95)) drop-shadow(0 0 12px rgba(125,240,138,.55)); }
