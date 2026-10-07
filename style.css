@@ -694,3 +694,40 @@ body, html.tablet body { background: transparent; }
 /* iPhone home-screen strip (see fitStrip in game.js): the page grows by the measured strip so the game fills it */
 html.gap { height: calc(100% + var(--gap)); overflow: visible; }
 html.gap body { position: absolute; inset: 0 auto auto 0; width: 100%; height: calc(100% + var(--gap)); overflow: hidden; }
+
+/* ---- Short phones (2026-10-06): iPhone SE / 6-7-8 and older, held upright ----
+   Taller phones are untouched. On a short screen the wood bars are lower and the spacing tighter, so the menu
+   screens fit without scrolling and the grid in a round gets the height that is saved. */
+@media (max-height: 700px) and (orientation: portrait) {
+  .homeTop, #play .homeTop, #settings .wood, #history .wood, #lobby .wood { height: calc(124px + var(--safe-top)); padding-top: calc(20px + var(--safe-top)); }
+  .body, #play .body { gap: 10px; padding-top: 14px; }
+  #play .body { gap: 14px; }
+  #play .modes { gap: 12px; }
+  #play .total { padding: 12px 16px; }
+  #play .btn { padding: 13px; }
+  #play .btn + .btn { margin-top: -4px; }
+  #settingsForm .toggle, #settingsForm .chips { padding-top: 8px; padding-bottom: 8px; }
+  #settingsForm .field { padding-top: 11px; padding-bottom: 11px; }
+  #game .hdr, #results .hdr { height: 56px; padding: 12px 16px 8px; }
+  #game .panel, #results .panel.resTop { padding: 10px 12px 11px; }
+  #game .dial, #results .dial.after { width: 66px; height: 66px; }
+  #game .dial b { font-size: 26px; }
+  #game > .wood, #results > header.wood { min-height: calc(156px + var(--safe-top)); }      /* identical on both, so nothing moves when a round ends */
+  .stage { width: min(calc(100% - 24px), calc(100vh - 290px), calc(100dvh - 290px)); margin-top: 18px; }
+  .hint { margin-top: 16px; }
+  .hintNote { margin-top: 10px; }
+  .lobbyLbl { margin-top: 18px; }
+  .lobbyCount { font-size: 68px; }
+}
+@media (max-height: 600px) and (orientation: portrait) {
+  .homeTop, #play .homeTop, #settings .wood, #history .wood, #lobby .wood { height: calc(100px + var(--safe-top)); padding-top: calc(8px + var(--safe-top)); }
+  .body, #play .body { gap: 8px; padding-top: 10px; }
+  .mode { aspect-ratio: 1.18; }
+  #settingsForm .toggle small { display: none; }
+  #settingsForm .toggle, #settingsForm .chips { padding-top: 6px; padding-bottom: 6px; }
+  .chips button { width: 32px; height: 32px; }
+  .btn { padding: 11px; }
+  .credit { font-size: 9.5px; }
+  .stage { width: min(calc(100% - 24px), calc(100vh - 276px), calc(100dvh - 276px)); margin-top: 14px; }
+  .hint { margin-top: 12px; }
+}
