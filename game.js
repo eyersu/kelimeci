@@ -1000,9 +1000,9 @@ function onMessage(topic, payload) {
   let m;
   try { m = JSON.parse(payload.toString()); } catch (e) { return; }
   const level = topic.split('/').pop();
+  if (level === 'here') { if (m && m.id && m.id !== myId) { seen[m.id] = Date.now(); renderPresence(); } return; }
   if (!MODES[level] || !m || m.id === myId || typeof m.name !== 'string') return;
-  seen[m.id] = Date.now();      // anyone at all, for the light on the K mark
-  if (!!m.hard !== hardBoards) { if (peers[level]) delete peers[level][m.id]; return renderPresence(); }      // the other pool: not on our boards
+  if (!!m.hard !== hardBoards) { if (peers[level]) delete peers[level][m.id]; return; }      // the other pool: not on our boards
   (peers[level] = peers[level] || {})[m.id] = {
     name: m.name.slice(0, 12), round: +m.round, score: +m.score || 0, found: +m.found || 0,
     solvedAt: typeof m.solvedAt === 'number' ? m.solvedAt : null, at: Date.now(),
@@ -1083,8 +1083,15 @@ function renderScoreboard() {
 
 // The tick in the K mark at the top lights up while anyone else is playing, on every screen that shows the mark.
 // For that the game listens for other players from the moment it opens, not only after CANLI is tapped.
-// It counts everyone, whatever level they are in and whatever their "Oyunu zorlaştır" setting; the scoreboard
-// and the player counts inside a level still show only the people on your own boards.
+// It counts anyone who is actually playing: in a round on any board, Solo or Canlı, any level, any "Oyunu
+// zorlaştır" setting, and who has touched the screen in the last minute (so a game left open in a forgotten
+// browser tab doesn't count). Each such player sends a tiny "here" note every few seconds. The scoreboard and
+// the player counts inside a level still show only the people on your own boards.
+const ACTIVE_FOR = 60;      // seconds since the last touch
+setInterval(() => {
+  if (!client || !client.connected || !(playing || online) || performance.now() - lastTouch > ACTIVE_FOR * 1000) return;
+  client.publish(NET.topic + '/here', JSON.stringify({ id: myId }));
+}, 3000);
 const seen = {};      // player id -> when we last heard from them
 function renderPresence() {
   const now = Date.now();
