@@ -143,3 +143,9 @@ html.hardOn .dial.after span { background: #05080f; }
 html.others .logoMark circle.cut { fill: #0e1726; }
 html.others .logoMark .tick { stroke: #ffffff; filter: drop-shadow(0 0 4px #fff); }
 html.othersLive .logoMark .tick { stroke: #7dff8e; filter: drop-shadow(0 0 4px #7dff8e); }
+html.soloPlay #game .board .t:not(.on):not(.ok):not(.dup):not(.bad):not(.hinted),
+html.soloPlay #results .mini .t:not(.on):not(.ok):not(.miss) { background: #1b2740; border-color: #3a5380; }
+.mode .liveDot { background: #3ddc97; box-shadow: 0 0 0 2px rgba(61,220,151,.25); }
+#home.solo .mode { color: #e6edf7; background: #17233a; border-color: #24344f; box-shadow: none; }
+#home.solo .mode > svg [fill="#fff"] { fill: #4cc9f0; }
+#home.solo .mode > svg [stroke="#fff"] { stroke: #4cc9f0; }

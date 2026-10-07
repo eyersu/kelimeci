@@ -274,6 +274,7 @@ function show(screen) {
 
 function start(seed) {
   lastTouch = performance.now();
+  document.documentElement.classList.toggle('soloPlay', !online);      // Solo boards have porcelain tiles, Canlı ivory
   board = makeBoard(seed);
   found = [];
   score = 0;
@@ -914,9 +915,10 @@ boardEl.addEventListener('pointercancel', release);
 
 function renderHome() {
   $('homeTag').textContent = menuOnline ? 'CANLI' : 'SOLO';
+  $('home').classList.toggle('solo', !menuOnline);      // Solo's level tiles are ivory, Canlı's stay orange
   const tile = (id, m) => {
     const n = menuOnline ? activePeers(id).length : 0;
-    return `<button class="mode" data-mode="${id}"><svg viewBox="0 0 80 80">${m.icon}</svg><b>${m.name}</b><span>${m.desc}</span>${n ? `<em>● ${n} oyuncu</em>` : ''}${hardBoards ? HARD_BADGE : ''}</button>`;
+    return `<button class="mode" data-mode="${id}"><svg viewBox="0 0 80 80">${m.icon}</svg><b>${m.name}</b><span>${m.desc}</span>${n ? `<i class="liveDot" aria-label="${n} oyuncu"></i>` : ''}${hardBoards ? HARD_BADGE : ''}</button>`;
   };
   $('modes').innerHTML = Object.entries(MODES).map(([id, m]) => tile(id, m)).join('');
 }
@@ -1187,7 +1189,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=39', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=41', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }

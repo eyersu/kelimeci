@@ -656,3 +656,15 @@ html.othersLive .logoMark .tick { stroke: #7dff8e; filter: drop-shadow(0 0 3px #
 
 /* The in-round player pill holds only the icon */
 .hdrWho { padding: 4px 8px; gap: 0; }
+
+/* Solo boards use cooler "porcelain" tiles so you can tell Solo from Canlı at a glance (her pick). Only the
+   resting tile changes; the orange, green, gray, red and gold states are the same in both. */
+html.soloPlay #game .board .t:not(.on):not(.ok):not(.dup):not(.bad):not(.hinted),
+html.soloPlay #results .mini .t:not(.on):not(.ok):not(.miss) { background: linear-gradient(#f4f7fb, #dfe6ee); border-color: #9aa7b6; }
+/* Level tiles in Canlı: a small green dot in the corner when someone is in that level (was a line of text) */
+.mode .liveDot { position: absolute; left: 11px; bottom: 11px; width: 7px; height: 7px; border-radius: 50%; background: #5fe07a; box-shadow: 0 0 0 2px rgba(255,255,255,.35); }
+
+/* Solo level screen: ivory tiles with orange icons and dark text (Canlı keeps the orange tiles) */
+#home.solo .mode { color: var(--ink); background: var(--ivory); border-color: #a48a56; box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 2px 0 rgba(0,0,0,.35); }
+#home.solo .mode > svg [fill="#fff"] { fill: #ec8112; }
+#home.solo .mode > svg [stroke="#fff"] { stroke: #ec8112; }
