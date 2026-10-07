@@ -1000,7 +1000,7 @@ function onMessage(topic, payload) {
   let m;
   try { m = JSON.parse(payload.toString()); } catch (e) { return; }
   const level = topic.split('/').pop();
-  if (level === 'here') { if (m && m.id && m.id !== myId) { seen[m.id] = Date.now(); renderPresence(); } return; }
+  if (level === 'here') { if (m && m.id && m.id !== myId) { seen[m.id] = { at: Date.now(), live: !!m.live }; renderPresence(); } return; }
   if (!MODES[level] || !m || m.id === myId || typeof m.name !== 'string') return;
   if (!!m.hard !== hardBoards) { if (peers[level]) delete peers[level][m.id]; return; }      // the other pool: not on our boards
   (peers[level] = peers[level] || {})[m.id] = {
@@ -1090,12 +1090,14 @@ function renderScoreboard() {
 const ACTIVE_FOR = 60;      // seconds since the last touch
 setInterval(() => {
   if (!client || !client.connected || !(playing || online) || performance.now() - lastTouch > ACTIVE_FOR * 1000) return;
-  client.publish(NET.topic + '/here', JSON.stringify({ id: myId }));
+  client.publish(NET.topic + '/here', JSON.stringify({ id: myId, live: online }));
 }, 3000);
-const seen = {};      // player id -> when we last heard from them
+const seen = {};      // player id -> { at: when we last heard from them, live: in Canlı rather than Solo }
 function renderPresence() {
-  const now = Date.now();
-  document.documentElement.classList.toggle('others', Object.values(seen).some(at => now - at < 9000));
+  // Green when anyone is in a Canlı game, yellow-orange when the only players are in Solo
+  const now = Date.now(), active = Object.values(seen).filter(p => now - p.at < 9000);
+  document.documentElement.classList.toggle('others', active.length > 0);
+  document.documentElement.classList.toggle('othersLive', active.some(p => p.live));
 }
 setInterval(renderPresence, 3000);      // players drop out of the count 9 s after their last message
 
@@ -1184,7 +1186,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=35', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=36', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }

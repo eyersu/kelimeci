@@ -650,4 +650,6 @@ html.tablet .side { gap: 16px; }
 
 /* The tick in the K mark lights up green while other players are in the game */
 .logoMark .tick { transition: stroke .4s, filter .4s; }
-html.others .logoMark .tick { stroke: #7df08a; filter: drop-shadow(0 0 5px rgba(125,240,138,.95)) drop-shadow(0 0 12px rgba(125,240,138,.55)); }
+/* yellow-orange: someone is playing Solo; green: someone is in a Canlı game */
+html.others .logoMark .tick { stroke: #ffc233; filter: drop-shadow(0 0 5px rgba(255,194,51,.95)) drop-shadow(0 0 12px rgba(255,170,40,.55)); }
+html.othersLive .logoMark .tick { stroke: #7df08a; filter: drop-shadow(0 0 5px rgba(125,240,138,.95)) drop-shadow(0 0 12px rgba(125,240,138,.55)); }
