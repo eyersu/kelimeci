@@ -714,7 +714,8 @@ function renderHint() {
   $('hintRow').classList.toggle('used', hints > 0);
   // The ten boxes are there from the start, so each letter's position in the word is always readable.
   // A revealed letter is a small tile.
-  $('hintSlots').style.gridTemplateColumns = `repeat(${(word || '').length || LONGEST}, 1fr)`;      // as many boxes as the word has letters
+  // As many boxes as the word has letters, each the size it would be in a 10-letter row, lined up from the left
+  $('hintSlots').style.gridTemplateColumns = `repeat(${(word || '').length || LONGEST}, calc((100% - 36px) / 10))`;
   $('hintSlots').innerHTML = [...(word || '')].map((l, i) => {
     const got = hintGold || revealed.includes(i);
     return `<i class="${hintGold ? 'gold' : got ? 'got' : ''}${i === landed ? ' land' : ''}">${got ? upper(l) : ''}</i>`;
@@ -812,7 +813,9 @@ function renderTimer() {
 
 function renderStatus() {
   let html = '';
-  $('counts').style.gridTemplateColumns = `repeat(${board.top - 2}, 1fr)`;      // no empty columns above the board's longest word
+  // Columns keep the width they have on a 10-letter board (an eighth of the row) and line up from the left,
+  // so a board whose longest word is 8 or 9 letters simply has fewer of them, not wider ones
+  $('counts').style.gridTemplateColumns = `repeat(${board.top - 2}, 12.5%)`;
   for (let n = board.top; n >= 3; n--) {
     const left = board.words.filter(w => w.length === n && !found.includes(w)).length;
     html += `<div class="${n === lastLength ? 'last' : ''}">${n}<i>${left || ''}</i></div>`;
@@ -1293,8 +1296,10 @@ lockPortrait();
 // scaled by --s to the tablet's upright size. The game's own width and height are set in pixels from the
 // same measurement as the scale, so the scaled game is exactly the visible screen and nothing hangs off it.
 const TABLET_MIN = 600, DESIGN_W = 430, DESIGN_H = 812;
+let stripGap = 0;      // the home-screen strip we are currently covering, in px (0 = none); see fitStrip
 function fitTablet() {
-  const w = Math.min(innerWidth, innerHeight), h = Math.max(innerWidth, innerHeight);
+  // on an upright iPad home-screen app the game also grows into the measured bottom strip
+  const w = Math.min(innerWidth, innerHeight), h = Math.max(innerWidth, innerHeight) + (innerHeight > innerWidth ? stripGap : 0);
   const touch = matchMedia('(pointer: coarse)').matches || /[?&]tablet=1/.test(location.search);
   const root = document.documentElement;
   if (!touch || w < TABLET_MIN) { root.classList.remove('tablet'); return; }
@@ -1318,15 +1323,14 @@ if (navigator.onLine !== false) connect();      // so the K mark can show whethe
 // bottom edge. The earlier fixed stretch (2026-10-05) cut the bottom off; this one is measured, and it grows
 // the page itself rather than the game inside a clipped page. Phones only, upright only. Unverified from the
 // Mac: it needs her phone to confirm.
-let stripGap = 0;      // the strip we are currently covering, in px (0 = not covering one)
 function fitStrip() {
   const root = document.documentElement;
   const homeScreen = navigator.standalone === true;      // iOS only; undefined everywhere else
   const upright = innerHeight > innerWidth;
-  const able = homeScreen && upright && !root.classList.contains('tablet');
+  const able = homeScreen && upright;      // phones and, since she saw the same strip there, iPads
   const gap = able ? Math.round(screen.height - innerHeight) : 0;
   if (!able) stripGap = 0;
-  else if (gap >= 30 && gap <= 70) stripGap = gap;      // a status bar's worth: this is the strip
+  else if (gap >= 15 && gap <= 70) stripGap = gap;      // a status bar's worth (about 24 on an iPad, 47-59 on an iPhone): this is the strip
   else if (stripGap) {
     // Once the page has been made taller, the phone may report the full height, which looks as if the strip had
     // gone. That used to switch the fix off again a moment after it had worked. So it now stays on, unless the
@@ -1336,6 +1340,7 @@ function fitStrip() {
   }
   root.classList.toggle('gap', stripGap > 0);
   if (stripGap) root.style.setProperty('--gap', stripGap + 'px'); else root.style.removeProperty('--gap');
+  fitTablet();      // a tablet's game size depends on the strip
 }
 addEventListener('resize', fitStrip);
 addEventListener('orientationchange', fitStrip);
