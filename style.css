@@ -644,3 +644,6 @@ html.tablet .side { gap: 16px; }
 .hdrWho svg [fill], .who svg [fill] { fill: var(--tan); }
 .who { margin-top: 22px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--cream); }
 .who svg { width: 20px; height: 16px; }
+
+/* The gold mark is a button once it shows the question mark */
+.hdr > span.tenMark.on { cursor: pointer; font-weight: 800; }

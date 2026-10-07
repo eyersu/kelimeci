@@ -25,7 +25,7 @@ const MODES = {
   // one target word, and against the clock.
   rasyonel: { name: 'EŞİT', desc: 'Her kelime 1 puan', seconds: 90, flat: true, icon: ICON.dots },
   klasik: { name: 'ARTAN', desc: 'Uzun kelime, çok puan', seconds: 90, icon: ICON.rising },
-  idealist: { name: 'HEDEF', desc: '10 harfli kelimeyi bul', seconds: 120, icon: ICON.target },
+  idealist: { name: 'HEDEF', desc: 'En uzun kelimeyi bul', seconds: 120, icon: ICON.target },
   marjinal: { name: 'HIZLI', desc: 'Kelime buldukça süre kazan', seconds: 30, gain: true, icon: ICON.clock },
 };
 
@@ -108,24 +108,31 @@ let hardBoards = false;
 try { hardBoards = localStorage.getItem(HARD_KEY) === '1'; } catch (e) { /* private mode */ }
 document.documentElement.classList.toggle('hardOn', hardBoards);      // red clock, bars and countdowns everywhere
 const HARD_BADGE = '<span class="hardBadge" aria-label="Zor tahta"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="13.5,2 5,13.5 11,13.5 9.5,22 19,10 12.5,10"/></svg></span>';
+const TOPS = [8, 9, 10];
+const NORMAL_SEEDS = Object.fromEntries([[8, SEEDS_8], [9, SEEDS_9], [10, SEED_WORDS]].map(([n, list]) =>
+  [n, { verbs: list.filter(isVerb), others: list.filter(w => !isVerb(w)) }]));
 function makeBoard(seed, hard = hardBoards) {
   for (let attempt = 0; ; attempt++) {
     const rng = rngFrom(seed + attempt * 7919);
     // Verbs make up 3 in 10 of the 10-letter words and also pass the board test more easily, so hidden words
     // used to come up as verbs about half the time. Now roughly 1 board in 8 is built on a verb.
-    const pool = hard ? HARD_SEEDS : rng() < VERB_SHARE ? SEED_VERBS : SEED_OTHERS;
+    // A normal board is built around a well-known word of 8, 9 or 10 letters, a third each; only "Oyunu
+    // zorlaştır" always hides a 10-letter word. That word is the board's longest one: `top` is its length.
+    const top = hard ? LONGEST : TOPS[Math.floor(rng() * TOPS.length)];
+    const pool = hard ? HARD_SEEDS : NORMAL_SEEDS[top][rng() < VERB_SHARE ? 'verbs' : 'others'];
     const secret = pool[Math.floor(rng() * pool.length)];
-    const path = randomPath(rng, LONGEST);
+    const path = randomPath(rng, top);
     if (!path) continue;
     const letters = Array(SIZE * SIZE).fill('');
     path.forEach((cell, i) => { letters[cell] = secret[i]; });
     for (let i = 0; i < letters.length; i++) if (!letters[i]) letters[i] = FILLER[Math.floor(rng() * FILLER.length)];
     const words = solve(letters).sort((a, b) => b.length - a.length || a.localeCompare(b, 'tr'));
     if (words.length < MIN_BOARD_WORDS || (hard && words.length > HARD_MAX_WORDS)) continue;
-    const clued = shuffled(words.filter(w => CLUES[w] && w.length >= 4 && w.length < LONGEST), rng);
+    if (words[0].length !== top) continue;      // the filler letters must not have made something longer
+    const clued = shuffled(words.filter(w => CLUES[w] && w.length >= 4 && w.length < top), rng);
     const bonus = clued[0] || null;
     const shown = bonus ? shuffled([...bonus].map((_, i) => i), rng).slice(0, Math.floor(bonus.length / 2)) : [];
-    return { letters, words, bonus, shown };
+    return { letters, words, bonus, shown, top };
   }
 }
 
@@ -276,9 +283,10 @@ function start(seed) {
   elapsed = 0;
   path = [];
   playing = true;
-  secret = board.words.find(w => w.length === LONGEST);
+  secret = board.words.find(w => w.length === board.top);
   hintWord = secret;       // the 10-letter word the hint button is currently spelling out
   tenLanded = false;       // the tick only appears top-left once it has flown there
+  tenFirst = null;
   hints = 0; revealed = [];
   penalty = 0;
   $('dial').classList.remove('hit'); landed = hintGold = null; clearTimeout(goldTimer);
@@ -390,9 +398,9 @@ function loadHistory() {
 // Called when a round ends: notes its 10-letter word and whether you found it
 function remember() {
   const list = loadHistory();
-  list.unshift({ w: secret, hit: found.some(w => w.length === LONGEST), level: mode, t: Date.now(), n: online ? round.n : null });
+  list.unshift({ w: secret, hit: found.some(w => w.length === board.top), level: mode, t: Date.now(), n: online ? round.n : null });
   const stats = loadStats();
-  stats.points += score; stats.rounds += 1; stats.tens += found.some(w => w.length === LONGEST) ? 1 : 0;
+  stats.points += score; stats.rounds += 1; stats.tens += found.some(w => w.length === board.top) ? 1 : 0;
   try {
     localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX)));
     localStorage.setItem(STATS_KEY, JSON.stringify(stats));
@@ -429,7 +437,7 @@ function recentWords(count, only) {
   const played = r => mine.find(m => m.level === r.level && m.n === r.n);
   const list = only ? pastRounds(count, only).map(r => played(r) || r)
     : mine.concat(pastRounds(count).filter(r => !played(r))).sort((a, b) => b.t - a.t).slice(0, count);
-  for (const r of list) if (!r.w) r.w = makeBoard(roundSeed(r.level, r.n)).words.find(w => w.length === LONGEST);
+  for (const r of list) if (!r.w) r.w = makeBoard(roundSeed(r.level, r.n)).words[0];      // sorted longest first
   return list;
 }
 const wordRows = (list, tag) => list.map(r =>
@@ -442,6 +450,9 @@ $('histList').addEventListener('click', e => { const r = e.target.closest('.row'
 $('openHistory').addEventListener('click', () => { renderHistory(); show('history'); });
 renderLifetime();
 $('closeHistory').addEventListener('click', () => show('play'));
+
+let tenFirst = null;
+$('tenMark').addEventListener('click', () => { if (tenLanded && tenFirst && playing) describe(tenFirst); });
 
 /* ---------- Inactivity ("Hareketsizlik uyarısı") ----------
    The clock never stops. This only keeps the game from playing round after round while nobody is there, so
@@ -510,8 +521,8 @@ function startReview() {
   };
   // A 10-letter word you found sits under the small board, so its meaning can still be opened (the list only
   // shows what you missed, so a missed one is already there and isn't repeated here).
-  const gotTens = board.words.filter(w => w.length === LONGEST && found.includes(w));
-  $('tens').innerHTML = gotTens.length ? '<span class="lbl">10 HARFLİ KELİME</span>' + gotTens.map(w =>
+  const gotTens = board.words.filter(w => w.length === board.top && found.includes(w));
+  $('tens').innerHTML = gotTens.length ? '<span class="lbl">EN UZUN KELİME</span>' + gotTens.map(w =>
     `<button type="button" class="tenWord got" data-w="${w}">${upper(w)}</button>`).join('') : '';
   $('tens').onclick = e => {
     const b = e.target.closest('.tenWord');
@@ -615,10 +626,10 @@ function submit(word, tiles) {
     setTimeout(() => $('dial').classList.remove('plus'), 400);
   }
   // In İdealist the long word stops your clock, but the round carries on
-  if (word.length === LONGEST) {
+  if (word.length === board.top) {
     if (mode === 'idealist' && solvedAt === null) solvedAt = elapsedNow();
     // Some boards hide more than one 10-letter word: the hint then starts over on the next one
-    hintWord = board.words.find(w => w.length === LONGEST && !found.includes(w)) || null;
+    hintWord = board.words.find(w => w.length === board.top && !found.includes(w)) || null;
     hints = 0; revealed = [];
     for (const t of $('board').children) delete t.dataset.hint;
     // The found word fills the ten boxes in gold for a moment before the row clears (or starts on the next word)
@@ -631,13 +642,14 @@ function submit(word, tiles) {
   if (online) announce();
 
   // The long word and the hidden bonus word get the same green flash, held longer, plus a celebration
-  if (word.length === LONGEST) {
+  if (word.length === board.top) {
     flash(word, tiles, 'ok', 2600, true);
     // With the hint row on, the word is spelled out there in gold, so no label over the grid as well.
     // With the hint switched off there is no row, and the gold label is back where every other word's is.
     if (showHint) setPop('', ''); else $('pop').classList.add('gold');
     FX.fireworks();
     starBurst();
+    if (!tenFirst) tenFirst = word;      // the word that "solved" the board; a second 10-letter word doesn't replace it
     if (!tenLanded) checkFly();
   } else if (isBonus(word)) {
     flash(word, tiles, 'ok', 1200, true);
@@ -658,7 +670,7 @@ let hintOrder = 'sira', showHint = true;      // the hint can be switched off al
 try { hintOrder = localStorage.getItem(HINT_ORDER_KEY) || hintOrder; showHint = localStorage.getItem(HINT_SHOW_KEY) !== '0'; } catch (e) { /* private mode */ }
 const HINT_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.4-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.4 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>';
 function useHint() {
-  if (!playing || !showHint || !hintWord || hintGold || revealed.length >= LONGEST) return;      // no limit: every letter can be bought
+  if (!playing || !showHint || !hintWord || hintGold || revealed.length >= hintWord.length) return;      // no limit: every letter can be bought
   hints++;
   // The first hint is always the word's first letter. After that: the next letter in order, or (her setting)
   // any letter not shown yet.
@@ -701,6 +713,7 @@ function renderHint() {
   $('hintRow').classList.toggle('used', hints > 0);
   // The ten boxes are there from the start, so each letter's position in the word is always readable.
   // A revealed letter is a small tile.
+  $('hintSlots').style.gridTemplateColumns = `repeat(${(word || '').length || LONGEST}, 1fr)`;      // as many boxes as the word has letters
   $('hintSlots').innerHTML = [...(word || '')].map((l, i) => {
     const got = hintGold || revealed.includes(i);
     return `<i class="${hintGold ? 'gold' : got ? 'got' : ''}${i === landed ? ' land' : ''}">${got ? upper(l) : ''}</i>`;
@@ -708,7 +721,7 @@ function renderHint() {
   landed = null;
   $('hint').innerHTML = HINT_ICON;
   $('hint').setAttribute('aria-label', 'İpucu: sürenizi 3 saniye kısaltır');
-  $('hint').disabled = !!hintGold || revealed.length >= LONGEST;
+  $('hint').disabled = !!hintGold || !hintWord || revealed.length >= hintWord.length;
   $('solved').textContent = solved ? formatTime(solvedAt) : '';     // your time sits under the clock, as in the original
 }
 
@@ -798,13 +811,16 @@ function renderTimer() {
 
 function renderStatus() {
   let html = '';
-  for (let n = LONGEST; n >= 3; n--) {
+  $('counts').style.gridTemplateColumns = `repeat(${board.top - 2}, 1fr)`;      // no empty columns above the board's longest word
+  for (let n = board.top; n >= 3; n--) {
     const left = board.words.filter(w => w.length === n && !found.includes(w)).length;
     html += `<div class="${n === lastLength ? 'last' : ''}">${n}<i>${left || ''}</i></div>`;
   }
   $('counts').innerHTML = html;
   $('tenMark').classList.toggle('on', tenLanded);
-  $('tenMark').textContent = tenLanded ? '✓' : LONGEST;
+  // Once the tick has landed the mark turns into a question mark: tap it for the meaning of the 10-letter word
+  $('tenMark').textContent = tenLanded ? '?' : board.top;      // the ghost number is this board's longest word
+  $('tenMark').setAttribute('aria-label', tenLanded ? 'Kelimenin anlamı' : `En uzun kelime ${board.top} harfli`);
   $('score').textContent = score;
   $('scoreMax').textContent = ' / ' + maxScore;
   $('meter').style.width = (100 * score / maxScore) + '%';
