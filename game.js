@@ -1001,7 +1001,8 @@ function onMessage(topic, payload) {
   try { m = JSON.parse(payload.toString()); } catch (e) { return; }
   const level = topic.split('/').pop();
   if (!MODES[level] || !m || m.id === myId || typeof m.name !== 'string') return;
-  if (!!m.hard !== hardBoards) { if (peers[level]) delete peers[level][m.id]; return; }      // the other pool: not on our boards
+  seen[m.id] = Date.now();      // anyone at all, for the light on the K mark
+  if (!!m.hard !== hardBoards) { if (peers[level]) delete peers[level][m.id]; return renderPresence(); }      // the other pool: not on our boards
   (peers[level] = peers[level] || {})[m.id] = {
     name: m.name.slice(0, 12), round: +m.round, score: +m.score || 0, found: +m.found || 0,
     solvedAt: typeof m.solvedAt === 'number' ? m.solvedAt : null, at: Date.now(),
@@ -1082,8 +1083,12 @@ function renderScoreboard() {
 
 // The tick in the K mark at the top lights up while anyone else is playing, on every screen that shows the mark.
 // For that the game listens for other players from the moment it opens, not only after CANLI is tapped.
+// It counts everyone, whatever level they are in and whatever their "Oyunu zorlaştır" setting; the scoreboard
+// and the player counts inside a level still show only the people on your own boards.
+const seen = {};      // player id -> when we last heard from them
 function renderPresence() {
-  document.documentElement.classList.toggle('others', Object.keys(MODES).some(level => activePeers(level).length));
+  const now = Date.now();
+  document.documentElement.classList.toggle('others', Object.values(seen).some(at => now - at < 9000));
 }
 setInterval(renderPresence, 3000);      // players drop out of the count 9 s after their last message
 
