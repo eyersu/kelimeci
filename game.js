@@ -1318,14 +1318,24 @@ if (navigator.onLine !== false) connect();      // so the K mark can show whethe
 // bottom edge. The earlier fixed stretch (2026-10-05) cut the bottom off; this one is measured, and it grows
 // the page itself rather than the game inside a clipped page. Phones only, upright only. Unverified from the
 // Mac: it needs her phone to confirm.
+let stripGap = 0;      // the strip we are currently covering, in px (0 = not covering one)
 function fitStrip() {
   const root = document.documentElement;
   const homeScreen = navigator.standalone === true;      // iOS only; undefined everywhere else
   const upright = innerHeight > innerWidth;
-  const gap = homeScreen && upright && !root.classList.contains('tablet') ? Math.round(screen.height - innerHeight) : 0;
-  const on = gap >= 30 && gap <= 70;      // a status bar's worth; anything else is not this problem
-  root.classList.toggle('gap', on);
-  if (on) root.style.setProperty('--gap', gap + 'px'); else root.style.removeProperty('--gap');
+  const able = homeScreen && upright && !root.classList.contains('tablet');
+  const gap = able ? Math.round(screen.height - innerHeight) : 0;
+  if (!able) stripGap = 0;
+  else if (gap >= 30 && gap <= 70) stripGap = gap;      // a status bar's worth: this is the strip
+  else if (stripGap) {
+    // Once the page has been made taller, the phone may report the full height, which looks as if the strip had
+    // gone. That used to switch the fix off again a moment after it had worked. So it now stays on, unless the
+    // page really does hang off the bottom by the strip's height: then the strip truly is gone and we let go.
+    const hangsOff = Math.round(root.scrollHeight - innerHeight);
+    if (hangsOff >= stripGap - 2) stripGap = 0;
+  }
+  root.classList.toggle('gap', stripGap > 0);
+  if (stripGap) root.style.setProperty('--gap', stripGap + 'px'); else root.style.removeProperty('--gap');
 }
 addEventListener('resize', fitStrip);
 addEventListener('orientationchange', fitStrip);
