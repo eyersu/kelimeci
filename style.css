@@ -668,3 +668,8 @@ html.soloPlay #results .mini .t:not(.on):not(.ok):not(.miss) { background: linea
 #home.solo .mode { color: var(--ink); background: var(--ivory); border-color: #a48a56; box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 2px 0 rgba(0,0,0,.35); }
 #home.solo .mode > svg [fill="#fff"] { fill: #ec8112; }
 #home.solo .mode > svg [stroke="#fff"] { stroke: #ec8112; }
+
+/* The player pill eases in and out instead of popping: it grows from nothing while fading, so the title beside it
+   slides over gently too */
+.hdrWho { max-width: 44px; overflow: hidden; opacity: 1; transition: max-width .6s ease, opacity .6s ease, padding .6s ease, margin .6s ease; }
+.hdrWho.off { max-width: 0; opacity: 0; padding-left: 0; padding-right: 0; margin-left: 0; }

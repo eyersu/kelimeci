@@ -294,7 +294,7 @@ function start(seed) {
   solvedAt = null;
   lastLength = 0;
 
-  $('modeName').innerHTML = levelTitle(mode) + '<span class="hdrWho" id="roomPill" hidden></span>';
+  $('modeName').innerHTML = levelTitle(mode) + `<span class="hdrWho${online && activePeers(mode).length ? '' : ' off'}" id="roomPill">${KIND_ICON.canli}</span>`;
   renderRoom();
   $('board').innerHTML = board.letters.map(l => `<div class="t">${upper(l)}</div>`).join('');
   $('board').classList.remove('deal');
@@ -1118,7 +1118,7 @@ function renderRoom() {
   const n = online ? activePeers(mode).length : 0;
   const icon = KIND_ICON.canli;
   const pill = $('roomPill');
-  if (pill) { pill.hidden = !n; if (n && !pill.firstChild) pill.innerHTML = icon; }      // just the icon, no count
+  if (pill) pill.classList.toggle('off', !n);      // just the icon, no count; it eases in and out (see .hdrWho)
   $('waitWho').hidden = !n;
   if (n) $('waitWho').innerHTML = icon + n + ' oyuncu';
 }
