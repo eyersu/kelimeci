@@ -339,6 +339,7 @@ function finish() {
   if (!$('idle').hidden) return idleGone();
 
   remember();
+  lookForUpdate();
   if (online && MODES[mode].gain) timedDone();
   $('resTitle').innerHTML = levelTitle(mode);      // exactly the round's title, same size and place
   $('pbName').textContent = upper(player);
@@ -1059,6 +1060,7 @@ $('rank').addEventListener('click', e => { const u = e.target.closest('[data-w]'
 
 // After the words have played, the round's ranking takes over the screen until the next round
 function showScoreboard() {
+  if (reloadInto({ live: true, level: mode })) return;      // a newer version is out: update now, rejoin this level
   $('resTitle').innerHTML = levelTitle(mode);
   $('review').hidden = true;
   $('scoreboard').hidden = false;
@@ -1174,8 +1176,8 @@ $('modes').addEventListener('click', e => {
   mode = button.dataset.mode;
   start(newSeed());
 });
-$('again').addEventListener('click', () => start(newSeed()));
-$('toHome').addEventListener('click', () => { leaveOnline(); renderHome(); show('home'); });
+$('again').addEventListener('click', () => { if (!reloadInto({ live: false, level: mode })) start(newSeed()); });
+$('toHome').addEventListener('click', () => { if (reloadInto({ live: false })) return; leaveOnline(); renderHome(); show('home'); });
 $('lobbyQuit').addEventListener('click', () => { leaveOnline(); renderHome(); show('home'); });
 $('resQuit').addEventListener('click', () => { leaveOnline(); renderHome(); show('home'); });
 $('offline').addEventListener('click', () => { menuOnline = false; renderHome(); show('home'); });
@@ -1340,3 +1342,37 @@ async function checkUpdate() {
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpdate(); });
 checkUpdate();
+
+// Someone who keeps playing never passes through the welcome screen, so they would stay on an old version (and,
+// when the boards or the timing changed, on different boards from everyone else). So every round also ends
+// with a check. If a newer version is out, the game reloads at the next natural pause and puts the player
+// straight back where they were: in Canlı after the word list, in place of that one scoreboard; in Solo when
+// they tap "Yeni tur" or "Ana menü".
+const RESUME_KEY = 'kelimeci-resume', TRIED_KEY = 'kelimeci-update-tried';
+let updateWaiting = null;      // the newer version number, once one has been seen
+async function lookForUpdate() {
+  if (!BUILD || updateWaiting) return;
+  try {
+    const page = await (await fetch('index.html?fresh=' + Date.now(), { cache: 'no-store' })).text();
+    const latest = (page.match(/game\.js\?v=(\d+)/) || [])[1];
+    // one reload per version: if the phone still serves the old files afterwards, don't keep reloading
+    if (latest && +latest > +BUILD && sessionStorage.getItem(TRIED_KEY) !== latest) updateWaiting = latest;
+  } catch (e) { /* offline or blocked: carry on with the copy we have */ }
+}
+function reloadInto(where) {
+  if (!updateWaiting) return false;
+  try { sessionStorage.setItem(TRIED_KEY, updateWaiting); sessionStorage.setItem(RESUME_KEY, JSON.stringify(where)); } catch (e) { return false; }
+  location.reload();
+  return true;
+}
+(async () => {
+  let where = null;
+  try { where = JSON.parse(sessionStorage.getItem(RESUME_KEY)); sessionStorage.removeItem(RESUME_KEY); } catch (e) { /* nothing to resume */ }
+  if (!where || !player) return;
+  if (where.level && !MODES[where.level]) return;
+  menuOnline = !!where.live;
+  if (where.live) { connect(); await syncClock(); }
+  if (!where.level) { renderHome(); return show('home'); }
+  mode = where.level;
+  if (where.live) enterOnline(where.level); else start(newSeed());
+})();
