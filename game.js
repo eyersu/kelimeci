@@ -933,7 +933,9 @@ function renderHome() {
 
 const NET = {
   topic: 'kelimeavi-r7x2q9/v1',
-  brokers: ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt'],
+  // Free public message services. On 2026-10-11 EMQX's was refusing every connection ("server busy") and only
+  // HiveMQ's answered, sometimes slowly. Both are kept, HiveMQ first; see connect().
+  brokers: ['wss://broker.hivemq.com:8884/mqtt', 'wss://broker.emqx.io:8084/mqtt'],
   lib: 'https://unpkg.com/mqtt@5.16.0/dist/mqtt.min.js',
 };
 const BREAK = 19;          // seconds between rounds: ~8.5 s of missed words lighting up, then ~10 s of scoreboard (she asked for 5 s more, 2026-10-06)
@@ -985,20 +987,41 @@ async function syncClock() {
   } catch (e) { /* offline or blocked: fall back to the phone's own clock */ }
 }
 
+// Players find each other through public message services. The game used to talk to one and switch to the
+// second after two errors, for good. So after a while (a nap, a weak signal) one phone could end up on the
+// second service while the other was still on the first: same boards, but invisible to each other until the
+// page was reloaded. Now every phone stays connected to both at once, sends to both, and listens on both.
+// Each player is counted once however many copies of a message arrive, because players are kept by their id.
+let clients = [];
 function connect() {
   if (client) return;
   const begin = () => {
-    client = mqtt.connect(NET.brokers[0], { clientId: 'ka-' + myId, keepalive: 30, reconnectPeriod: 3000, connectTimeout: 8000 });
-    let failures = 0;
-    client.on('connect', () => client.subscribe(NET.topic + '/#'));
-    client.on('error', () => { if (++failures === 2) { client.end(true); client = mqtt.connect(NET.brokers[1], { clientId: 'ka-' + myId }); client.on('connect', () => client.subscribe(NET.topic + '/#')); client.on('message', onMessage); } });
-    client.on('message', onMessage);
+    clients = NET.brokers.map((url, i) => {
+      // patient settings: these services can take several seconds to answer, and hammering them gets a client refused
+      const c = mqtt.connect(url, { clientId: 'ka-' + myId + '-' + i, keepalive: 30, reconnectPeriod: 5000 + i * 2000, connectTimeout: 20000 });
+      c.on('connect', () => c.subscribe(NET.topic + '/#'));
+      c.on('message', onMessage);
+      c.on('error', () => { /* it retries by itself */ });
+      return c;
+    });
+    client = clients[0];
   };
   if (window.mqtt) return begin();
   const s = document.createElement('script');
   s.src = NET.lib; s.onload = begin;
   document.head.appendChild(s);
 }
+const linked = () => clients.some(c => c.connected);
+function send(topic, message) {
+  const text = JSON.stringify(message);
+  for (const c of clients) if (c.connected) c.publish(topic, text);
+}
+// Coming back to the front, or back online, nudges any connection that is down to retry now instead of on its
+// own timer. (Dropping and remaking live connections was tried and made things worse: these services can take
+// 20 s to accept a new one.)
+function relink() { for (const c of clients) { try { if (!c.connected && !c.reconnecting) c.reconnect(); } catch (e) { /* it keeps retrying by itself */ } } }
+document.addEventListener('visibilitychange', () => { if (!document.hidden) relink(); });
+addEventListener('online', relink);
 
 let refreshQueued = false;
 function onMessage(topic, payload) {
@@ -1020,8 +1043,8 @@ function onMessage(topic, payload) {
 }
 
 function announce() {
-  if (!online || !client || !client.connected) return;
-  client.publish(NET.topic + '/' + mode, JSON.stringify({ id: myId, name: player, round: round.n, score, found: found.length, solvedAt, long: longestFound(), hard: hardBoards, past: MODES[mode].gain ? myPast : undefined }));
+  if (!online || !linked()) return;
+  send(NET.topic + '/' + mode, { id: myId, name: player, round: round.n, score, found: found.length, solvedAt, long: longestFound(), hard: hardBoards, past: MODES[mode].gain ? myPast : undefined });
 }
 setInterval(announce, 3000);
 
@@ -1095,8 +1118,8 @@ function renderScoreboard() {
 // the player counts inside a level still show only the people on your own boards.
 const ACTIVE_FOR = 60;      // seconds since the last touch
 setInterval(() => {
-  if (!client || !client.connected || !(playing || online) || performance.now() - lastTouch > ACTIVE_FOR * 1000) return;
-  client.publish(NET.topic + '/here', JSON.stringify({ id: myId, live: online }));
+  if (!linked() || !(playing || online) || performance.now() - lastTouch > ACTIVE_FOR * 1000) return;
+  send(NET.topic + '/here', { id: myId, live: online });
 }, 3000);
 const seen = {};      // player id -> { at: when we last heard from them, live: in Canlı rather than Solo }
 function renderPresence() {
