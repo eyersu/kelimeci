@@ -740,3 +740,16 @@ html.gap body { position: absolute; inset: 0 auto auto 0; width: 100%; height: c
 .wordList { -webkit-overflow-scrolling: auto; }
 .playerBar { position: relative; z-index: 3; }
 .scoreboard { overflow: hidden; }
+
+/* Halfway nudge (see halfwayNudge in game.js): a gold light runs along the hint row, then the eye stays lit */
+@keyframes sweepGlow { 0%, 100% { box-shadow: inset 0 0 0 1.5px rgba(255,213,150,.34); }
+  40% { box-shadow: inset 0 0 0 1.5px #ffd766, 0 0 8px rgba(255,200,80,.6); background-color: rgba(255,210,110,.22); } }
+/* The eye's glow is made of the same four shadows at every step (only their colour and size change). Its
+   resting shadow starts with an inner highlight while the glow didn't, and the browser can't blend between
+   lists that don't line up, so it used to jump straight from off to on. */
+@keyframes eyeGlow { 0%, 100% { box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 2px 0 rgba(0,0,0,.35), 0 0 0 0 rgba(255,215,102,0), 0 0 0 0 rgba(255,200,80,0); }
+  40% { box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 2px 0 rgba(0,0,0,.35), 0 0 0 2px #ffd766, 0 0 10px rgba(255,200,80,.6); } }
+.hint.sweep .hintBtn { animation: eyeGlow 1.4s ease-in-out both; }
+.hint.sweep .slots i { animation: sweepGlow 1.4s ease-in-out both; animation-delay: calc(.2s + var(--n, 0) * .2s); }
+.hint .hintBtn { box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 2px 0 rgba(0,0,0,.35), 0 0 0 0 rgba(255,215,102,0), 0 0 0 0 rgba(255,200,80,0); }
+.hint.eyeLit .hintBtn { box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 2px 0 rgba(0,0,0,.35), 0 0 0 2px #ffd766, 0 0 10px rgba(255,200,80,.6); transition: box-shadow .8s ease; }

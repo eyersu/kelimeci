@@ -274,6 +274,7 @@ function show(screen) {
 
 function start(seed) {
   lastTouch = performance.now();
+  nudged = false; stopNudge();
   document.documentElement.classList.toggle('soloPlay', !online);      // Solo boards have porcelain tiles, Canlı ivory
   board = makeBoard(seed);
   found = [];
@@ -324,6 +325,7 @@ function start(seed) {
     elapsed = elapsedNow();
     last = now;
     if (timeLeft <= 0) { timeLeft = 0; finish(); }
+    if (!nudged && !MODES[mode].gain && timeLeft <= MODES[mode].seconds / 2) halfwayNudge();
     renderTimer();
   };
   ticker = requestAnimationFrame(tick);
@@ -634,6 +636,7 @@ function submit(word, tiles) {
     hints = 0; revealed = [];
     for (const t of $('board').children) delete t.dataset.hint;
     // The found word fills the ten boxes in gold for a moment before the row clears (or starts on the next word)
+    stopNudge();
     hintGold = word;
     clearTimeout(goldTimer);
     goldTimer = setTimeout(() => { hintGold = null; if (playing) renderHint(); }, 2600);      // as long as the green tiles
@@ -670,8 +673,25 @@ const HINT_SHOW_KEY = 'kelime-avi-hint-show';
 let hintOrder = 'sira', showHint = true;      // the hint can be switched off altogether in settings
 try { hintOrder = localStorage.getItem(HINT_ORDER_KEY) || hintOrder; showHint = localStorage.getItem(HINT_SHOW_KEY) !== '0'; } catch (e) { /* private mode */ }
 const HINT_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.4-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.4 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>';
+// Halfway through a round with the longest word still not found, a gold light sweeps along the hint row (the
+// eye, then each box in turn) three times, then the eye stays lit until the end. Taking a hint, or finding the
+// word, switches it off. Not in HIZLI (its clock keeps growing), and only when the hint row is shown.
+let nudged = false, nudgeTimers = [];
+function halfwayNudge() {
+  nudged = true;
+  if (!showHint || !hintWord || hintGold || hints > 0 || found.some(w => w.length === board.top)) return;
+  const row = $('hintRow');
+  const sweep = () => { row.classList.remove('sweep'); void row.offsetWidth; row.classList.add('sweep'); };
+  [0, 4500, 9000].forEach(at => nudgeTimers.push(setTimeout(sweep, at)));      // each sweep takes about 3.4 s
+  nudgeTimers.push(setTimeout(() => { row.classList.remove('sweep'); row.classList.add('eyeLit'); }, 12600));
+}
+function stopNudge() {
+  nudgeTimers.forEach(clearTimeout); nudgeTimers = [];
+  $('hintRow').classList.remove('sweep', 'eyeLit');
+}
 function useHint() {
   if (!playing || !showHint || !hintWord || hintGold || revealed.length >= hintWord.length) return;      // no limit: every letter can be bought
+  stopNudge();
   hints++;
   // The first hint is always the word's first letter. After that: the next letter in order, or (her setting)
   // any letter not shown yet.
@@ -718,7 +738,7 @@ function renderHint() {
   $('hintSlots').style.gridTemplateColumns = `repeat(${(word || '').length || LONGEST}, calc((100% - 36px) / 10))`;
   $('hintSlots').innerHTML = [...(word || '')].map((l, i) => {
     const got = hintGold || revealed.includes(i);
-    return `<i class="${hintGold ? 'gold' : got ? 'got' : ''}${i === landed ? ' land' : ''}">${got ? upper(l) : ''}</i>`;
+    return `<i class="${hintGold ? 'gold' : got ? 'got' : ''}${i === landed ? ' land' : ''}" style="--n:${i}">${got ? upper(l) : ''}</i>`;
   }).join('');
   landed = null;
   $('hint').innerHTML = HINT_ICON;
