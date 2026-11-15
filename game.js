@@ -335,7 +335,11 @@ function finish() {
   if (!playing) return;
   playing = false;
   cancelAnimationFrame(ticker);
+  // A word half-swiped when time runs out lets go gently: its orange fades off the tiles instead of sticking
+  for (const i of path) { const t = $('board').children[i]; t.classList.remove('unpick'); void t.offsetWidth; t.classList.add('unpick'); }
   path = [];
+  paintTiles();
+  setPop('', '');
 
   // Nobody answered "Hâlâ orada mısın?" before the round ran out: this round is not counted anywhere, and
   // no new round starts until the player says they are back.
@@ -865,7 +869,7 @@ function setPop(word, state) {
 function paintTiles() {
   const tiles = $('board').children;
   for (let i = 0; i < tiles.length; i++) {
-    const cls = 't' + (path.includes(i) ? ' on' : '');
+    const cls = 't' + (path.includes(i) ? ' on' : '') + (tiles[i].classList.contains('unpick') ? ' unpick' : '');
     if (tiles[i].className !== cls) tiles[i].className = cls;
   }
 }

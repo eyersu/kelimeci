@@ -769,3 +769,8 @@ html.gap body { position: absolute; inset: 0 auto auto 0; width: 100%; height: c
 #game.waiting .dial.low span, #game.waiting .dial.hit span { background: #f6ebd0; }
 #game.waiting .dial.low b { color: var(--ink); }
 #game.waiting .dial.low small { color: #8a6a3a; }
+
+/* Letting go of a half-swiped word when the round ends: the orange fades off the tile */
+.t { position: relative; }
+.t.unpick::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; background: linear-gradient(#f9a53c, #ec8112); animation: unpick .45s ease-out forwards; }
+@keyframes unpick { to { opacity: 0; } }
