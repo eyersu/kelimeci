@@ -756,7 +756,12 @@ html.gap body { position: absolute; inset: 0 auto auto 0; width: 100%; height: c
 
 /* Canlı, your time ran out before the shared round did: the board stays, darkened, and a pill counts down */
 #game .board { transition: filter .4s ease; }
-#game.waiting .board { filter: brightness(.42) saturate(.55); }
+/* A see-through layer of the game's dark brown over the header, board and hint row (her pick: the light wash);
+   the countdown pill sits above it in full colour */
+#game.waiting > .wood, #game.waiting .board, #game.waiting .hint { position: relative; }
+#game.waiting > .wood::after, #game.waiting .board::after, #game.waiting .hint::after { content: ""; position: absolute; inset: -4px; z-index: 4; pointer-events: none; background: rgba(46,28,18,.55); border-radius: 12px; animation: sheetFade .4s ease-out; }
+#game.waiting > .wood::after { inset: 0; border-radius: 0; }
+#game.waiting .hintNote { opacity: .35; }
 .waitPill { position: absolute; left: 50%; top: -22px; z-index: 6; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 9px 18px; border-radius: 999px; white-space: nowrap; font-size: 13px; font-weight: 700; color: #fff3df; background: rgba(28,18,12,.94); box-shadow: 0 6px 18px rgba(0,0,0,.5); animation: popIn .25s ease-out; }
 .waitPill[hidden] { display: none; }
 .waitPill b { font-size: 24px; font-weight: 800; line-height: 1; color: #ffc061; font-variant-numeric: tabular-nums; }
