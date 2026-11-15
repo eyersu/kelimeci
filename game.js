@@ -274,7 +274,7 @@ function show(screen) {
 
 function start(seed) {
   lastTouch = performance.now();
-  nudged = false; stopNudge();
+  nudged = false; stopNudge(); endWait();
   document.documentElement.classList.toggle('soloPlay', !online);      // Solo boards have porcelain tiles, Canlı ivory
   board = makeBoard(seed);
   found = [];
@@ -341,6 +341,7 @@ function finish() {
   // no new round starts until the player says they are back.
   if (!$('idle').hidden) return idleGone();
 
+  stopNudge();
   remember();
   lookForUpdate();
   if (online && MODES[mode].gain) timedDone();
@@ -367,29 +368,32 @@ function finish() {
   $('toHome').hidden = online;      // in Canlı the X in the header is the way out
   $('scoreboard').hidden = true;
   // On the shared clock, hints can end your round before everyone else's. The word list would give the
-  // board away while others are still playing, so it stays shut until the full round is over; a short
-  // waiting screen counts down to that moment.
+  // board away while others are still playing, so until the full round is over you stay on your board,
+  // darkened, with a pill counting down to the moment the word list opens.
   const early = online && !MODES[mode].gain && round.playEnd - netNow() > 800;
-  $('review').hidden = early;
-  $('waitEnd').hidden = !early;
-  show('results');
+  $('review').hidden = false;
   if (online) { announce(); awaitNextRound(); }
-  if (!early) return startReview();
-  $('wordList').innerHTML = '';
-  const token = reviewRun;
+  if (!early) { show('results'); return startReview(); }
+  $('game').classList.add('waiting');
+  $('waitPill').hidden = false;
+  const token = round.n;
   clearInterval(waitTimer);
   const tick = () => {
-    if (token !== reviewRun || !online) return clearInterval(waitTimer);
+    if (!online || round.n !== token || $('game').hidden) return endWait();
     const left = Math.ceil((round.playEnd - netNow()) / 1000);
     $('waitCount').textContent = Math.max(0, left);
     if (left > 0) return;
-    clearInterval(waitTimer);
-    $('waitEnd').hidden = true;
-    $('review').hidden = false;
+    endWait();
+    show('results');
     startReview();
   };
   waitTimer = setInterval(tick, 250);
   tick();
+}
+function endWait() {
+  clearInterval(waitTimer);
+  $('game').classList.remove('waiting');
+  $('waitPill').hidden = true;
 }
 let waitTimer = 0;
 
@@ -1165,8 +1169,6 @@ function renderRoom() {
   const icon = KIND_ICON.canli;
   const pill = $('roomPill');
   if (pill) pill.classList.toggle('off', !n);      // just the icon, no count; it eases in and out (see .hdrWho)
-  $('waitWho').hidden = !n;
-  if (n) $('waitWho').innerHTML = icon + n + ' oyuncu';
 }
 
 function enterOnline(level) {
@@ -1235,7 +1237,7 @@ $('backToPlay').addEventListener('click', () => show('play'));
 
 const THEMES = {
   nostaljik: { name: 'Nostaljik', desc: 'Ahşap, fildişi ve turuncu', css: '', bar: '#96551f', sw: ['#96551f', '#f6ebd0', '#ec8112'] },
-  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=42', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
+  koyu: { name: 'Koyu', desc: 'Koyu, düz ve serin', css: 'theme-cool.css?v=43', bar: '#0e1726', sw: ['#0e1726', '#17233a', '#4cc9f0'] },
 };
 let theme = 'nostaljik';
 try { theme = localStorage.getItem('kelime-avi-theme') || theme; } catch (e) { /* private mode */ }

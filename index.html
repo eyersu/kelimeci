@@ -7,14 +7,14 @@
 <title>Kelimeci</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=175">
+<link rel="stylesheet" href="style.css?v=176">
 <script>
   // The colour theme is the player's choice (saved on the device); ?theme= forces one for previews
   (function () {
     var files = { koyu: 'theme-cool.css', cool: 'theme-cool.css' };
     var pick = new URLSearchParams(location.search).get('theme');
     if (!pick) { try { pick = localStorage.getItem('kelime-avi-theme'); } catch (e) {} }
-    document.write('<link id="themeCss" rel="stylesheet"' + (files[pick] ? ' href="' + files[pick] + '?v=42"' : '') + '>');
+    document.write('<link id="themeCss" rel="stylesheet"' + (files[pick] ? ' href="' + files[pick] + '?v=43"' : '') + '>');
   })();
 </script>
 <link rel="manifest" href="manifest.webmanifest">
@@ -125,6 +125,7 @@
     <div class="stage">
       <div class="board" id="board"></div>
       <div class="pop" id="pop" hidden></div>
+      <div class="waitPill" id="waitPill" hidden><b id="waitCount"></b>Tur bitince kelimeler açılacak</div>
     </div>
     <div class="hint" id="hintRow">
       <button class="hintBtn" id="hint"></button>
@@ -170,11 +171,6 @@
         <button class="btn" id="toHome">Ana menü</button>
       </div>
     </div>
-    <div class="waitEnd" id="waitEnd" hidden>
-      <div class="lobbyCount" id="waitCount"></div>
-      <p class="lobbyNote">Tur bitince kelimeler açılacak.</p>
-      <div class="who" id="waitWho" hidden></div>
-    </div>
     <div class="scoreboard" id="scoreboard" hidden>
       <div class="rank big" id="rank"></div>
     </div>
@@ -205,7 +201,7 @@
   </div>
 
 </main>
-<script src="words.js?v=175"></script>
-<script src="game.js?v=175"></script>
+<script src="words.js?v=176"></script>
+<script src="game.js?v=176"></script>
 </body>
 </html>

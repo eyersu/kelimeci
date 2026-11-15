@@ -632,7 +632,7 @@ html.tablet .side { gap: 16px; }
 .rank.big.still div { animation: none; }
 
 /* Canlı, your time ended before the round did: a short wait before the word list opens */
-.waitEnd { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 24px 10vh; }
+.waitEndOld { padding: 0 24px 10vh; }
 .waitEnd[hidden] { display: none; }
 .waitEnd .lobbyLbl { margin: 0 0 6px; }
 .waitEnd .lobbyNote { margin: 10px 0 0; }
@@ -753,3 +753,10 @@ html.gap body { position: absolute; inset: 0 auto auto 0; width: 100%; height: c
 .hint.sweep .slots i { animation: sweepGlow 1.4s ease-in-out both; animation-delay: calc(.2s + var(--n, 0) * .2s); }
 .hint .hintBtn { box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 2px 0 rgba(0,0,0,.35), 0 0 0 0 rgba(255,215,102,0), 0 0 0 0 rgba(255,200,80,0); }
 .hint.eyeLit .hintBtn { box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 2px 0 rgba(0,0,0,.35), 0 0 0 2px #ffd766, 0 0 10px rgba(255,200,80,.6); transition: box-shadow .8s ease; }
+
+/* Canlı, your time ran out before the shared round did: the board stays, darkened, and a pill counts down */
+#game .board { transition: filter .4s ease; }
+#game.waiting .board { filter: brightness(.42) saturate(.55); }
+.waitPill { position: absolute; left: 50%; top: -22px; z-index: 6; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 9px 18px; border-radius: 999px; white-space: nowrap; font-size: 13px; font-weight: 700; color: #fff3df; background: rgba(28,18,12,.94); box-shadow: 0 6px 18px rgba(0,0,0,.5); animation: popIn .25s ease-out; }
+.waitPill[hidden] { display: none; }
+.waitPill b { font-size: 24px; font-weight: 800; line-height: 1; color: #ffc061; font-variant-numeric: tabular-nums; }

@@ -151,3 +151,5 @@ html.soloPlay #results .mini .t:not(.on):not(.ok):not(.miss) { background: #1b27
 #home.solo .mode > svg [stroke="#fff"] { stroke: #4cc9f0; }
 html { background: #0e1726; }
 body, html.tablet body { background: transparent; }
+.waitPill { background: #0e1726; color: #e6edf7; box-shadow: 0 0 0 1px #24344f, 0 6px 18px rgba(0,0,0,.5); }
+.waitPill b { color: #4cc9f0; }
