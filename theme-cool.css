@@ -154,3 +154,5 @@ body, html.tablet body { background: transparent; }
 .waitPill { background: #0e1726; color: #e6edf7; box-shadow: 0 0 0 1px #24344f, 0 6px 18px rgba(0,0,0,.5); }
 .waitPill b { color: #4cc9f0; }
 #game.waiting > .wood::after, #game.waiting .board::after, #game.waiting .hint::after { background: rgba(10,17,29,.6); }
+#game.waiting .dial.low span, #game.waiting .dial.hit span { background: #0e1726; }
+#game.waiting .dial.low b { color: #e6edf7; }

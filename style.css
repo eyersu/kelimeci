@@ -765,3 +765,7 @@ html.gap body { position: absolute; inset: 0 auto auto 0; width: 100%; height: c
 .waitPill { position: absolute; left: 50%; top: -22px; z-index: 6; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 9px 18px; border-radius: 999px; white-space: nowrap; font-size: 13px; font-weight: 700; color: #fff3df; background: rgba(28,18,12,.94); box-shadow: 0 6px 18px rgba(0,0,0,.5); animation: popIn .25s ease-out; }
 .waitPill[hidden] { display: none; }
 .waitPill b { font-size: 24px; font-weight: 800; line-height: 1; color: #ffc061; font-variant-numeric: tabular-nums; }
+/* while waiting, the clock (which ended on red) goes back to its plain look so nothing red pulls the eye */
+#game.waiting .dial.low span, #game.waiting .dial.hit span { background: #f6ebd0; }
+#game.waiting .dial.low b { color: var(--ink); }
+#game.waiting .dial.low small { color: #8a6a3a; }
